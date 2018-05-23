@@ -27,6 +27,23 @@ public class Hand implements Comparable<Card>{
 
         int handValue=0;
         Arrays.sort(hand);
+        if(checkRoyalFlush()){
+            handValue=9;
+            return handValue;
+        }
+            
+        if(checkStraight()&&checkFlush()){
+            handValue=8;
+            return handValue;
+        }
+        if(checkFourKind()){
+            handValue=7;
+            return handValue;
+        }
+        if(checkFullHouse()){
+            handValue=6;
+            return handValue;
+        }
         if(checkFlush()){
             handValue=5;
             return handValue;
@@ -120,13 +137,52 @@ public class Hand implements Comparable<Card>{
     
     private boolean checkFullHouse(){
         boolean triple=false,pair=false;
-        int valueOfTrip;
+        int valueOfTrip=0;
         for(int i =0;i<hand.length-2;i++){
             if(hand[i].getValue()==hand[i+1].getValue()&&hand[i].getValue()==hand[i+2].getValue()){
                 triple=true;
                 valueOfTrip=hand[i].getValue();
             }
         }
+        for(int i =0;i<hand.length-1;i++){
+            if(hand[i].getValue()==hand[i+1].getValue()&&hand[i].getValue()!=valueOfTrip){
+                pair=true;
+            }
+        }
+        
+        if(triple&&pair){
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean checkFourKind(){
+        for(int i =0;i<hand.length-3;i++){
+            if(hand[i].getValue()==hand[i+1].getValue()&&hand[i].getValue()==hand[i+2].getValue()&&hand[i].getValue()==hand[i+3].getValue()){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean checkRoyalFlush(){
+        boolean straight = false;
+        boolean flush = true;
+        
+        if(hand[0].getValue()==1&&hand[1].getValue()==13&&hand[2].getValue()==12&&hand[3].getValue()==11&&hand[4].getValue()==10){
+             straight = true;
+        }
+        
+        String suit = hand[0].getSuit();
+        for(Card card : hand){
+            if(!(card.getSuit().equals(suit))){
+                flush = false;
+            }
+        }
+        if(flush&&straight){
+            return true;
+        }
+        return false;
         
     }
 
