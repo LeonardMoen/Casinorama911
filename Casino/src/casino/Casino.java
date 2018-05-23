@@ -4,11 +4,11 @@ package casino;
 public class Casino {
 
     public static void main(String[] args) {
-        Card card=new Card(1,"Spade");
-        Card card1=new Card(1,"Heart");
-        Card card2=new Card(4,"Diamond");
-        Card card3=new Card(12,"Spade");
-        Card card4=new Card(12,"Heart");
+        Card card=new Card(4,"Spade");
+        Card card1=new Card(3,"Heart");
+        Card card2=new Card(1,"Diamond");
+        Card card3=new Card(2,"Spade");
+        Card card4=new Card(5,"Heart");
         Hand hand = new Hand();
         hand.getHand()[0]=card;
         hand.getHand()[1]=card1;
