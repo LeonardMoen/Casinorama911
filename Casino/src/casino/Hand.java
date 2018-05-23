@@ -31,20 +31,20 @@ public class Hand implements Comparable<Card>{
             handValue=9;
             return handValue;
         }
-            
-        if(checkStraight()&&checkFlush()){
+  
+        else if (checkStraight()&&checkFlush()){
             handValue=8;
             return handValue;
         }
-        if(checkFourKind()){
+        else if(checkFourKind()){
             handValue=7;
             return handValue;
         }
-        if(checkFullHouse()){
+        else if(checkFullHouse()){
             handValue=6;
             return handValue;
         }
-        if(checkFlush()){
+        else if(checkFlush()){
             handValue=5;
             return handValue;
         }
