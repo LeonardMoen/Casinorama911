@@ -12,4 +12,8 @@ package casino;
 public class Bet {
     private double betAmount;
     private int payout, odds;
+    
+    //make methods of all types of bets, return a number for odds and payout multiplyer (payout is odds-1 to keep house advantage)
+   
+    
 }
