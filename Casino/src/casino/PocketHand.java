@@ -13,6 +13,12 @@ public class PocketHand {
         }
     }
 
+    PocketHand(Deck deck, int value, String suit) {
+        playerHand.add(new Card(value, suit));
+        playerHand.add(deck.getDeck().get(0));
+        deck.getDeck().remove(0);
+    }
+
     public ArrayList<Card> getPlayerHand() {
         return playerHand;
     }
