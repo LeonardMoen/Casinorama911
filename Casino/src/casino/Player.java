@@ -25,6 +25,18 @@ public class Player {
         chips = chips - bet;
     }
 
+    public void setTotal(int total) {
+        this.total = total;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public int getBet() {
+        return bet;
+    }
+
     public void setPocketHand(Deck deck) {
         this.pocketHand.getPlayerHand().clear();
         this.pocketHand = new PocketHand(deck);
