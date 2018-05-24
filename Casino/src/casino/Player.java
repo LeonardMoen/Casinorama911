@@ -40,12 +40,16 @@ public class Player {
     }
 
     public void ifSplit(Deck deck) {
-        this.pocketHand.add(new PocketHand(deck,pocketHand.get(0).getPlayerHand().get(1).getValue(),pocketHand.get(0).getPlayerHand().get(1).getSuit()));
+        this.pocketHand.add(new PocketHand(deck, pocketHand.get(0).getPlayerHand().get(1).getValue(), pocketHand.get(0).getPlayerHand().get(1).getSuit()));
     }
 
     public void setPocketHand(Deck deck) {
         this.pocketHand.clear();
         this.pocketHand.add(new PocketHand(deck));
+    }
+
+    public ArrayList<PocketHand> getPocketHand() {
+        return pocketHand;
     }
 
     public String getName() {
@@ -71,7 +75,7 @@ public class Player {
     public void setChips(int chips) {
         this.chips = chips;
     }
-    
+
     public void setHand(Hand hand) {
         this.hand = hand;
     }
