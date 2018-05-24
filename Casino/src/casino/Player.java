@@ -1,10 +1,12 @@
 package casino;
 
+import java.util.ArrayList;
+
 public class Player {
 
     String name;
     int chips;
-    PocketHand pocketHand;
+    ArrayList<PocketHand> pocketHand;
     Hand hand;
     int playerNum, total, bet;
 
@@ -16,8 +18,8 @@ public class Player {
     public Player(String name, Deck deck) {
         this.name = name;
         this.chips = 500;
-        this.pocketHand = new PocketHand(deck);
-        this.total = pocketHand.getPlayerHand().get(0).getValue() + pocketHand.getPlayerHand().get(1).getValue();
+        this.pocketHand.add(new PocketHand(deck));
+        this.total = pocketHand.get(0).getPlayerHand().get(0).getValue() + pocketHand.get(0).getPlayerHand().get(1).getValue();
     }
 
     public void setBet(int bet) {
@@ -37,10 +39,14 @@ public class Player {
         return bet;
     }
 
+    public void ifSplit(Deck deck) {
+        this.pocketHand.add(new PocketHand(deck,pocketHand.get(0).getPlayerHand().get(1).getValue(),pocketHand.get(0).getPlayerHand().get(1).getSuit()));
+    }
+
     public void setPocketHand(Deck deck) {
-        this.pocketHand.getPlayerHand().clear();
-        this.pocketHand = new PocketHand(deck);
-        this.total = pocketHand.getPlayerHand().get(0).getValue() + pocketHand.getPlayerHand().get(1).getValue();
+        this.pocketHand.clear();
+        this.pocketHand.add(new PocketHand(deck));
+        this.total = pocketHand.get(0).getPlayerHand().get(0).getValue() + pocketHand.get(0).getPlayerHand().get(1).getValue();
     }
 
     public String getName() {
