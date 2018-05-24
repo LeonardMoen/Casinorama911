@@ -18,11 +18,11 @@ public class BlackjackJAVA {
     }
 
     public static void placeBets() throws IOException {
-//        for (int i = 0; i < numOfPlayers.size();i++) {
-//            System.out.println(numOfPlayers.get(i).getName() + "\t\tChips: $" + numOfPlayers.get(i).getValue());
-//            System.out.print("How much would you like to bet: $");
-//            numOfPlayers.get(i).setBet(Integer.parseInt(stdin.readLine()));
-//        }
+        for (int i = 0; i < numOfPlayers.size();i++) {
+            System.out.println(numOfPlayers.get(i).getName() + "\t\tChips: $" + numOfPlayers.get(i).getChips());
+            System.out.print("How much would you like to bet: $");
+            numOfPlayers.get(i).setBet(Integer.parseInt(stdin.readLine()));
+        }
     }
 
     public static void printBoard() throws IOException {
@@ -40,8 +40,8 @@ public class BlackjackJAVA {
         deck.shuffle();
         for (int i = 1; i <= number; i++) {
             System.out.print("Player name #" + i + ": ");
-//            String name = stdin.readLine();
-//            numOfPlayers.add(new Player(name, deck));
+            String name = stdin.readLine();
+            numOfPlayers.add(new Player(name, deck));
         }
     }
 
