@@ -1,17 +1,34 @@
-
 package casino;
 
-
 public class Player {
+
     String name;
     int chips;
     PocketHand pocketHand;
     Hand hand;
-    int playerNum;
+    int playerNum, total, bet;
 
     public Player(String name) {
         this.name = name;
         this.chips = 500;
+    }
+
+    public Player(String name, Deck deck) {
+        this.name = name;
+        this.chips = 500;
+        this.pocketHand = new PocketHand(deck);
+        this.total = pocketHand.getPlayerHand().get(0).getValue() + pocketHand.getPlayerHand().get(1).getValue();
+    }
+
+    public void setBet(int bet) {
+        this.bet = bet;
+        chips = chips - bet;
+    }
+
+    public void setPocketHand(Deck deck) {
+        this.pocketHand.getPlayerHand().clear();
+        this.pocketHand = new PocketHand(deck);
+        this.total = pocketHand.getPlayerHand().get(0).getValue() + pocketHand.getPlayerHand().get(1).getValue();
     }
 
     public String getName() {
