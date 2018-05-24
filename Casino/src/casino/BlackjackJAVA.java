@@ -9,16 +9,19 @@ public class BlackjackJAVA {
     public static BufferedReader stdin = new BufferedReader(inStream);
     public static ArrayList<Player> numOfPlayers = new ArrayList<>();
     public static Deck deck;
+    public static Dealer dealer;
 
     public static void main(String[] args) throws IOException {
         initializeGame();
         System.out.println("");
+        dealer = new Dealer(deck);
         placeBets();
+        System.out.println("");
         printBoard();
     }
 
     public static void placeBets() throws IOException {
-        for (int i = 0; i < numOfPlayers.size();i++) {
+        for (int i = 0; i < numOfPlayers.size(); i++) {
             System.out.println(numOfPlayers.get(i).getName() + "\t\tChips: $" + numOfPlayers.get(i).getChips());
             System.out.print("How much would you like to bet: $");
             numOfPlayers.get(i).setBet(Integer.parseInt(stdin.readLine()));
@@ -26,7 +29,14 @@ public class BlackjackJAVA {
     }
 
     public static void printBoard() throws IOException {
-
+        for (int i = 0; i < numOfPlayers.size(); i++) {
+            System.out.println(numOfPlayers.get(i).getName() + "\t\tBet: $" + numOfPlayers.get(i).getBet());
+            System.out.println("\n~HAND~\n");
+            System.out.println(numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(0) + "\t" + numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal());
+            if (numOfPlayers.get(i).getPocketHand().get(i).checkSplit()) {
+                System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
+            }
+        }
     }
 
     public static void initializeGame() throws IOException {
@@ -40,7 +50,8 @@ public class BlackjackJAVA {
         deck.shuffle();
         for (int i = 1; i <= number; i++) {
             System.out.print("Player name #" + i + ": ");
-            numOfPlayers.add(new Player(stdin.readLine(), deck));
+            String name = stdin.readLine();
+            numOfPlayers.add(new Player(name, deck));
         }
     }
 
