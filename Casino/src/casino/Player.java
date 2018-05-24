@@ -19,7 +19,7 @@ public class Player {
         this.name = name;
         this.chips = 500;
         this.pocketHand.add(new PocketHand(deck));
-        this.total = pocketHand.get(0).getPlayerHand().get(0).getValue() + pocketHand.get(0).getPlayerHand().get(1).getValue();
+        setTotal();
     }
 
     public void setBet(int bet) {
@@ -27,8 +27,23 @@ public class Player {
         chips = chips - bet;
     }
 
-    public void setTotal(int n) {
-        this.total = pocketHand.get(n).getPlayerHand().get(0).getValue() + pocketHand.get(n).getPlayerHand().get(1).getValue();
+    public int setTotal() {
+        this.total = 0;
+        int optionalTotal = 0;
+        for (int i = 0; i < pocketHand.get(0).getPlayerHand().size(); i++) {
+            if (pocketHand.get(0).getPlayerHand().get(i).getValue() == 1) {
+                optionalTotal += 11;
+                total += 1;
+            } else {
+                optionalTotal += pocketHand.get(0).getPlayerHand().get(i).getValue();
+                total += pocketHand.get(0).getPlayerHand().get(i).getValue();
+            }
+        }
+        if (optionalTotal <= 21) {
+            return optionalTotal;
+        } else {
+            return 0;
+        }
     }
 
     public int getTotal() {
