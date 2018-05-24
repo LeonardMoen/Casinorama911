@@ -27,8 +27,7 @@ public class Deck implements Comparable {
     }
 
     public Deck(int n) {
-        While(n > 0)
-        {
+        while (n > 0) {
             for (int i = 1; i <= 13; i++) {
                 Card card = new Card(i, "Heart");
                 deck.add(card);
