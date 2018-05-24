@@ -40,8 +40,7 @@ public class BlackjackJAVA {
         deck.shuffle();
         for (int i = 1; i <= number; i++) {
             System.out.print("Player name #" + i + ": ");
-            String name = stdin.readLine();
-            numOfPlayers.add(new Player(name, deck));
+            numOfPlayers.add(new Player(stdin.readLine(), deck));
         }
     }
 
