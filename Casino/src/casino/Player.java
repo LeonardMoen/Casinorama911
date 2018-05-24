@@ -6,7 +6,7 @@ public class Player {
 
     String name;
     int chips;
-    ArrayList<PocketHand> pocketHand;
+    ArrayList<PocketHand> pocketHand = new ArrayList<>();
     Hand hand;
     int playerNum, total, bet;
 
@@ -41,6 +41,7 @@ public class Player {
 
     public void ifSplit(Deck deck) {
         this.pocketHand.add(new PocketHand(deck, pocketHand.get(0).getPlayerHand().get(1).getValue(), pocketHand.get(0).getPlayerHand().get(1).getSuit()));
+        this.pocketHand.remove(pocketHand.get(0).getPlayerHand().get(1));
     }
 
     public void setPocketHand(Deck deck) {
