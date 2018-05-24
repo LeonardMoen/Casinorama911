@@ -27,8 +27,8 @@ public class Player {
         chips = chips - bet;
     }
 
-    public void setTotal(int total) {
-        this.total = total;
+    public void setTotal(int n) {
+        this.total = pocketHand.get(n).getPlayerHand().get(0).getValue() + pocketHand.get(n).getPlayerHand().get(1).getValue();
     }
 
     public int getTotal() {
@@ -46,7 +46,6 @@ public class Player {
     public void setPocketHand(Deck deck) {
         this.pocketHand.clear();
         this.pocketHand.add(new PocketHand(deck));
-        this.total = pocketHand.get(0).getPlayerHand().get(0).getValue() + pocketHand.get(0).getPlayerHand().get(1).getValue();
     }
 
     public String getName() {
@@ -55,10 +54,6 @@ public class Player {
 
     public int getChips() {
         return chips;
-    }
-
-    public PocketHand getPocketHand() {
-        return pocketHand;
     }
 
     public Hand getHand() {
@@ -76,11 +71,7 @@ public class Player {
     public void setChips(int chips) {
         this.chips = chips;
     }
-
-    public void setPocketHand(PocketHand pocketHand) {
-        this.pocketHand = pocketHand;
-    }
-
+    
     public void setHand(Hand hand) {
         this.hand = hand;
     }
