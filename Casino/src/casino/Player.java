@@ -7,6 +7,7 @@ public class Player {
     String name;
     int chips;
     ArrayList<PocketHand> pocketHand = new ArrayList<>();
+    ArrayList <Integer> numsBetOn = new ArrayList <Integer>();
     Hand hand;
     int playerNum, total, bet;
 
