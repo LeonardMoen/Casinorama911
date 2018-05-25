@@ -99,4 +99,14 @@ public class Player {
     public void setPlayerNum(int playerNum) {
         this.playerNum = playerNum;
     }
+
+    public ArrayList<Integer> getNumsBetOn() {
+        return numsBetOn;
+    }
+
+    public void setNumsBetOn(ArrayList<Integer> numsBetOn) {
+        this.numsBetOn = numsBetOn;
+    }
+    
+   
 }
