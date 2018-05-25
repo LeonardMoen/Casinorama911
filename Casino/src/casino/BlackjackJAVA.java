@@ -31,7 +31,7 @@ public class BlackjackJAVA {
     public static void printBoard() throws IOException {
         System.out.println("\nDEALER ~ HAND");
         System.out.println(dealer.getDealerHand().getPlayerHand().get(0) + "\t*********");
-        if (dealer.getDealerHand().getPlayerHand().get(0).getValue() == 1) {
+        if (dealer.checkInsured()) {
             System.out.println("Would you like insurance?");
         }
         for (int i = 0; i < numOfPlayers.size(); i++) {
