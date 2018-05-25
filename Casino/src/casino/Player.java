@@ -31,12 +31,12 @@ public class Player {
         this.total = 0;
         int optionalTotal = 0;
         for (int i = 0; i < pocketHand.get(0).getPlayerHand().size(); i++) {
-            if (pocketHand.get(0).getPlayerHand().get(i).getValue() == 1) {
+            if (pocketHand.get(0).getPlayerHand().get(i).getWorth() == 1) {
                 optionalTotal += 11;
                 total += 1;
             } else {
-                optionalTotal += pocketHand.get(0).getPlayerHand().get(i).getValue();
-                total += pocketHand.get(0).getPlayerHand().get(i).getValue();
+                optionalTotal += pocketHand.get(0).getPlayerHand().get(i).getWorth();
+                total += pocketHand.get(0).getPlayerHand().get(i).getWorth();
             }
         }
         if (optionalTotal <= 21) {
