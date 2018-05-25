@@ -28,6 +28,9 @@ public class Roulette {
     }
 
     public void playRoulette() throws IOException {
+        
+        
+        
         createBoard(board);
         Bet bet = new Bet();
 
