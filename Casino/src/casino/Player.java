@@ -7,6 +7,7 @@ public class Player {
     String name;
     int chips;
     ArrayList<PocketHand> pocketHand = new ArrayList<>();
+    ArrayList <Integer> numsBetOn = new ArrayList <Integer>();
     Hand hand;
     int playerNum, total, bet;
     boolean insurance;
@@ -107,4 +108,14 @@ public class Player {
     public void setPlayerNum(int playerNum) {
         this.playerNum = playerNum;
     }
+
+    public ArrayList<Integer> getNumsBetOn() {
+        return numsBetOn;
+    }
+
+    public void setNumsBetOn(ArrayList<Integer> numsBetOn) {
+        this.numsBetOn = numsBetOn;
+    }
+    
+   
 }
