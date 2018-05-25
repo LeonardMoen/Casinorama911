@@ -28,7 +28,7 @@ public class BlackjackJAVA {
                 System.out.print("How much would you like to bet: $");
                 int bet = Integer.parseInt(stdin.readLine());
                 if (bet > numOfPlayers.get(i).getChips()) {
-                    System.out.println("You only have $" + numOfPlayers.get(i).getChips());
+                    System.out.println("\nYou only have $" + numOfPlayers.get(i).getChips() + "\n");
                     repeat = true;
                 } else {
                     numOfPlayers.get(i).setBet(bet);
@@ -45,7 +45,7 @@ public class BlackjackJAVA {
             if (dealer.getDealerHand().getPlayerHand().get(0).getValue() == 1) {
                 System.out.print(numOfPlayers.get(i).getName().toUpperCase() + " ~ Would you like insurance?");
                 if (stdin.readLine().equalsIgnoreCase("yes")) {
-                    getInsurance();
+                    getInsurance(i);
                 }
             }
         }
@@ -65,7 +65,8 @@ public class BlackjackJAVA {
         }
     }
 
-    public static void getInsurance() throws IOException {
+    public static void getInsurance(int i) throws IOException {
+        numOfPlayers.get(i).setInsurance(true);
     }
 
     public static void playRound(int i) throws IOException {
