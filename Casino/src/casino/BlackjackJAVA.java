@@ -33,6 +33,7 @@ public class BlackjackJAVA {
         System.out.println(dealer.getDealerHand().getPlayerHand().get(0) + "\t*********");
         if (dealer.getDealerHand().getPlayerHand().get(0).getValue() == 1) {
             System.out.println("Would you like insurance?");
+            getInsurance();
         }
         System.out.println("");
         for (int i = 0; i < numOfPlayers.size(); i++) {
@@ -43,11 +44,20 @@ public class BlackjackJAVA {
             } else {
                 System.out.println(numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(0) + "\t" + numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal());
             }
-            if (numOfPlayers.get(i).getPocketHand().get(0).checkSplit()) {
-                System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
-            } else {
-                System.out.println("Would you like to\n1) Hit\n2) Stay");
-            }
+            playRound(i);
+        }
+    }
+
+    public static void getInsurance() throws IOException {
+    }
+
+    public static void playRound(int i) throws IOException {
+        if (numOfPlayers.get(i).getPocketHand().get(0).checkBlackJack()) {
+            System.out.println("BLACKJACK!");
+        } else if (numOfPlayers.get(i).getPocketHand().get(0).checkSplit()) {
+            System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
+        } else {
+            System.out.println("Would you like to\n1) Hit\n2) Stay");
         }
     }
 
