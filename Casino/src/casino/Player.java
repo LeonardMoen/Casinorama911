@@ -9,6 +9,7 @@ public class Player {
     ArrayList<PocketHand> pocketHand = new ArrayList<>();
     Hand hand;
     int playerNum, total, bet;
+    boolean insurance;
 
     public Player(String name) {
         this.name = name;
@@ -19,6 +20,14 @@ public class Player {
         this.name = name;
         this.chips = 500;
         this.pocketHand.add(new PocketHand(deck));
+    }
+
+    public void setInsurance(boolean insurance) {
+        this.insurance = insurance;
+    }
+
+    public boolean isInsurance() {
+        return insurance;
     }
 
     public void setBet(int bet) {
