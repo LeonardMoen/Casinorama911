@@ -21,10 +21,18 @@ public class BlackjackJAVA {
     }
 
     public static void placeBets() throws IOException {
+        boolean repeat = false;
         for (int i = 0; i < numOfPlayers.size(); i++) {
             System.out.println(numOfPlayers.get(i).getName() + "\t\tChips: $" + numOfPlayers.get(i).getChips());
-            System.out.print("How much would you like to bet: $");
-            numOfPlayers.get(i).setBet(Integer.parseInt(stdin.readLine()));
+            do {
+                System.out.print("How much would you like to bet: $");
+                if (Integer.parseInt(stdin.readLine()) > numOfPlayers.get(i).getChips()) {
+                    System.out.println("You only have $" + numOfPlayers.get(i).getChips());
+                    repeat = true;
+                } else {
+                    numOfPlayers.get(i).setBet(Integer.parseInt(stdin.readLine()));
+                }
+            } while (repeat);
         }
     }
 
@@ -44,8 +52,8 @@ public class BlackjackJAVA {
         }
         System.out.println("");
         for (int i = 0; i < numOfPlayers.size(); i++) {
-            System.out.println(numOfPlayers.get(i).getName().toUpperCase() + "\t\tBet: $" + numOfPlayers.get(i).getBet());
-            System.out.println("\n~HAND~");
+            System.out.println("\t\t" + numOfPlayers.get(i).getName().toUpperCase() + "\t\tBet: $" + numOfPlayers.get(i).getBet());
+            System.out.println("~HAND~");
             if (numOfPlayers.get(i).setTotal(0) != numOfPlayers.get(i).getTotal()) {
                 System.out.println(numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(0) + "\t" + numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal() + " or " + numOfPlayers.get(i).setTotal(0));
             } else {
