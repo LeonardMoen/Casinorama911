@@ -8,6 +8,7 @@ package casino;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -27,31 +28,52 @@ public class Roulette {
 
     }
 
-    public void playRoulette() throws IOException {
-        
-        
-        
+    public void playRoulette(ArrayList<Player> players) throws IOException {
         createBoard(board);
         Bet bet = new Bet();
 
-        System.out.println("Pick a bet type");
-        System.out.println("(1)Single\t(2)Split\t(3)Street\t(4)Double Street\t(5)Corner\t(6)High, Low, even, odd, black or red");
-        System.out.println("(7)Dozen or snake or Column");
-        int choice = Integer.parseInt(stdin.readLine());
-
-        System.out.println("How much do you want to bet?"); //need to substract bet from player chips
-        int amountBet = Integer.parseInt(stdin.readLine());
-
-        if (choice == 1) {
-            System.out.println("What num do you want to bet on?");  //place chip here (on board)
-            int betNum = Integer.parseInt(stdin.readLine());
+        for (int i = 0; i < players.size(); i++) {
             
+            int choice = -1;
+            while (true) {
+                System.out.println("Pick a bet type");
+                System.out.println("(0)Exit\t(1)Single\t(2)Split\t(3)Street\t(4)Double Street\t(5)Corner");
+                System.out.println("(6)High, Low, even, odd, black or red\t(7)Dozen or snake or Column");
+                choice = Integer.parseInt(stdin.readLine());
+                if(choice ==0){
+                    break;
+                }
+
+                System.out.println("How much do you want to bet?"); //need to substract bet from player chips
+                int amountBet = Integer.parseInt(stdin.readLine());
+            }
+
+            if (choice == 1) {
+                System.out.println("What num do you want to bet on?");  //place chip here (on board)
+                int betNum = Integer.parseInt(stdin.readLine());
+
+                ArrayList<Integer> numsBetOn = new ArrayList<Integer>();
+                numsBetOn.add(betNum);
+
+                players.get(i).setNumsBetOn(numsBetOn);
+            }
+            if(choice ==2){
+                
+            }
         }
 
     }
-    
-    public void Winner(){
+
+    public void Winner() {
         System.out.println("You Won!!!!!!!!");
+    }
+
+    public static void checkWin() {
+        //get odds from bet method and see if they win
+    }
+
+    public static void payout() {
+        //get pay ratio (odds-1), add to player's account
     }
 
     public static void createBoard(int[][] board) {
@@ -73,14 +95,6 @@ public class Roulette {
             }
             System.out.println("");
         }
-    }
-
-    public static void checkWin() {
-        //get odds from bet method and see if they win
-    }
-
-    public static void payout() {
-        //get pay ratio (odds-1), add to player's account
     }
 
 }
