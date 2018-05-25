@@ -96,9 +96,6 @@ public class Player {
         this.hand = hand;
     }
 
-    public ArrayList<PocketHand> getPocketHand() {
-        return pocketHand;
-    }
 
     public void setPlayerNum(int playerNum) {
         this.playerNum = playerNum;
