@@ -26,11 +26,13 @@ public class BlackjackJAVA {
             System.out.println(numOfPlayers.get(i).getName() + "\t\tChips: $" + numOfPlayers.get(i).getChips());
             do {
                 System.out.print("How much would you like to bet: $");
-                if (Integer.parseInt(stdin.readLine()) > numOfPlayers.get(i).getChips()) {
+                int bet = Integer.parseInt(stdin.readLine());
+                if (bet > numOfPlayers.get(i).getChips()) {
                     System.out.println("You only have $" + numOfPlayers.get(i).getChips());
                     repeat = true;
                 } else {
-                    numOfPlayers.get(i).setBet(Integer.parseInt(stdin.readLine()));
+                    numOfPlayers.get(i).setBet(bet);
+                    repeat = false;
                 }
             } while (repeat);
         }
