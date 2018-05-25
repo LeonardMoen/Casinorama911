@@ -28,12 +28,14 @@ public class BlackjackJAVA {
         }
     }
 
-    public static void printBoard() throws IOException {
+    public static void printBoard() throws IOException, InterruptedException {
         System.out.println("\nDEALER ~ HAND");
         System.out.println(dealer.getDealerHand().getPlayerHand().get(0) + "\t*********");
         if (dealer.getDealerHand().getPlayerHand().get(0).getValue() == 1) {
             System.out.println("Would you like insurance?");
             getInsurance();
+        } else {
+            Thread.sleep(2000);
         }
         System.out.println("");
         for (int i = 0; i < numOfPlayers.size(); i++) {
