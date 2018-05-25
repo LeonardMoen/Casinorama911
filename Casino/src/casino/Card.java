@@ -8,6 +8,7 @@ public class Card implements Comparable {
     public Card(int value, String suit) {
         this.value = value;
         this.suit = suit;
+        setWorth();
     }
 
     public int getWorth() {
