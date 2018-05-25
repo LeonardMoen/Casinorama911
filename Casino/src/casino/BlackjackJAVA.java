@@ -34,11 +34,12 @@ public class BlackjackJAVA {
         if (dealer.getDealerHand().getPlayerHand().get(0).getValue() == 1) {
             System.out.println("Would you like insurance?");
         }
+        System.out.println("");
         for (int i = 0; i < numOfPlayers.size(); i++) {
-            System.out.println(numOfPlayers.get(i).getName() + "\t\tBet: $" + numOfPlayers.get(i).getBet());
+            System.out.println(numOfPlayers.get(i).getName().toUpperCase() + "\t\tBet: $" + numOfPlayers.get(i).getBet());
             System.out.println("\n~HAND~");
-            if (numOfPlayers.get(i).setTotal() != numOfPlayers.get(i).getTotal()) {
-                System.out.println(numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(0) + "\t" + numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal() + " or " + numOfPlayers.get(i).setTotal());
+            if (numOfPlayers.get(i).setTotal(0) != numOfPlayers.get(i).getTotal()) {
+                System.out.println(numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(0) + "\t" + numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal() + " or " + numOfPlayers.get(i).setTotal(0));
             } else {
                 System.out.println(numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(0) + "\t" + numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal());
             }
