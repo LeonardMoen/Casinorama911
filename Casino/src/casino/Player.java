@@ -7,8 +7,10 @@ public class Player {
     String name;
     int chips;
     ArrayList<PocketHand> pocketHand = new ArrayList<>();
+    ArrayList <Integer> numsBetOn = new ArrayList <Integer>();
     Hand hand;
     int playerNum, total, bet;
+    boolean insurance;
 
     public Player(String name) {
         this.name = name;
@@ -19,7 +21,14 @@ public class Player {
         this.name = name;
         this.chips = 500;
         this.pocketHand.add(new PocketHand(deck));
-        setTotal();
+    }
+
+    public void setInsurance(boolean insurance) {
+        this.insurance = insurance;
+    }
+
+    public boolean isInsurance() {
+        return insurance;
     }
 
     public void setBet(int bet) {
@@ -27,16 +36,16 @@ public class Player {
         chips = chips - bet;
     }
 
-    public int setTotal() {
+    public int setTotal(int n) {
         this.total = 0;
         int optionalTotal = 0;
-        for (int i = 0; i < pocketHand.get(0).getPlayerHand().size(); i++) {
-            if (pocketHand.get(0).getPlayerHand().get(i).getValue() == 1) {
+        for (int i = 0; i < pocketHand.get(n).getPlayerHand().size(); i++) {
+            if (pocketHand.get(n).getPlayerHand().get(i).getWorth() == 1) {
                 optionalTotal += 11;
                 total += 1;
             } else {
-                optionalTotal += pocketHand.get(0).getPlayerHand().get(i).getValue();
-                total += pocketHand.get(0).getPlayerHand().get(i).getValue();
+                optionalTotal += pocketHand.get(n).getPlayerHand().get(i).getWorth();
+                total += pocketHand.get(n).getPlayerHand().get(i).getWorth();
             }
         }
         if (optionalTotal <= 21) {
@@ -100,4 +109,14 @@ public class Player {
     public void setPlayerNum(int playerNum) {
         this.playerNum = playerNum;
     }
+
+    public ArrayList<Integer> getNumsBetOn() {
+        return numsBetOn;
+    }
+
+    public void setNumsBetOn(ArrayList<Integer> numsBetOn) {
+        this.numsBetOn = numsBetOn;
+    }
+    
+   
 }
