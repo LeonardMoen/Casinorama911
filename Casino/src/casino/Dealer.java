@@ -7,7 +7,6 @@ public class Dealer {
 
     public Dealer(Deck deck) {
         this.dealerHand = new PocketHand(deck);
-        this.total = dealerHand.getPlayerHand().get(0).getValue() + dealerHand.getPlayerHand().get(1).getValue();
     }
 
     public PocketHand getDealerHand() {
@@ -17,7 +16,7 @@ public class Dealer {
     public void setTotal() {
         this.total = 0;
         for (int i = 0; i < dealerHand.getPlayerHand().size(); i++) {
-            this.total = dealerHand.getPlayerHand().get(i).getValue();
+            this.total = dealerHand.getPlayerHand().get(i).getWorth();
         }
     }
 
