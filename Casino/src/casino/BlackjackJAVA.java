@@ -11,7 +11,7 @@ public class BlackjackJAVA {
     public static Deck deck;
     public static Dealer dealer;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         initializeGame();
         System.out.println("");
         dealer = new Dealer(deck);
@@ -21,32 +21,64 @@ public class BlackjackJAVA {
     }
 
     public static void placeBets() throws IOException {
+        boolean repeat = false;
         for (int i = 0; i < numOfPlayers.size(); i++) {
             System.out.println(numOfPlayers.get(i).getName() + "\t\tChips: $" + numOfPlayers.get(i).getChips());
-            System.out.print("How much would you like to bet: $");
-            numOfPlayers.get(i).setBet(Integer.parseInt(stdin.readLine()));
+            do {
+                System.out.print("How much would you like to bet: $");
+                int bet = Integer.parseInt(stdin.readLine());
+                if (bet > numOfPlayers.get(i).getChips()) {
+                    System.out.println("\nYou only have $" + numOfPlayers.get(i).getChips() + "\n");
+                    repeat = true;
+                } else {
+                    numOfPlayers.get(i).setBet(bet);
+                    repeat = false;
+                }
+            } while (repeat);
         }
     }
 
-    public static void printBoard() throws IOException {
+    public static void printBoard() throws IOException, InterruptedException {
         System.out.println("\nDEALER ~ HAND");
         System.out.println(dealer.getDealerHand().getPlayerHand().get(0) + "\t*********");
         if (dealer.checkInsured()) {
             System.out.println("Would you like insurance?");
         }
         for (int i = 0; i < numOfPlayers.size(); i++) {
-            System.out.println(numOfPlayers.get(i).getName() + "\t\tBet: $" + numOfPlayers.get(i).getBet());
-            System.out.println("\n~HAND~");
-            if (numOfPlayers.get(i).setTotal() != numOfPlayers.get(i).getTotal()) {
-                System.out.println(numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(0) + "\t" + numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal() + " or " + numOfPlayers.get(i).setTotal());
+            if (dealer.getDealerHand().getPlayerHand().get(0).getValue() == 1) {
+                System.out.print(numOfPlayers.get(i).getName().toUpperCase() + " ~ Would you like insurance?");
+                if (stdin.readLine().equalsIgnoreCase("yes")) {
+                    getInsurance(i);
+                }
+            }
+        }
+        if (1 != dealer.getDealerHand().getPlayerHand().get(0).getValue()) {
+            Thread.sleep(2000);
+        }
+        System.out.println("");
+        for (int i = 0; i < numOfPlayers.size(); i++) {
+            System.out.println("\t\t" + numOfPlayers.get(i).getName().toUpperCase() + "\t\tBet: $" + numOfPlayers.get(i).getBet());
+            System.out.println("~HAND~");
+            if (numOfPlayers.get(i).setTotal(0) != numOfPlayers.get(i).getTotal()) {
+                System.out.println(numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(0) + "\t" + numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal() + " or " + numOfPlayers.get(i).setTotal(0));
             } else {
                 System.out.println(numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(0) + "\t" + numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal());
             }
-            if (numOfPlayers.get(i).getPocketHand().get(0).checkSplit()) {
-                System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
-            } else {
-                System.out.println("Would you like to\n1) Hit\n2) Stay");
-            }
+            playRound(i);
+        }
+    }
+
+    public static void getInsurance(int i) throws IOException {
+        numOfPlayers.get(i).setInsurance(true);
+    }
+
+    public static void playRound(int i) throws IOException {
+        if (numOfPlayers.get(i).getPocketHand().get(0).checkBlackJack()) {
+            System.out.println("BLACKJACK!");
+        } else if (numOfPlayers.get(i).getPocketHand().get(0).checkSplit()) {
+            System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
+        } else {
+            System.out.println("Would you like to\n1) Hit\n2) Stay");
         }
     }
 
