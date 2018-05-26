@@ -31,19 +31,19 @@ public class PocketHand {
     public boolean checkBust() {
         int check = 0;
         for (int i = 0; i < playerHand.size(); i++) {
-            check += playerHand.get(i).getValue();
+            check += playerHand.get(i).getWorth();
         }
         return check > 21;
     }
 
     public boolean checkSplit() {
-        return this.playerHand.get(0).getValue() == this.playerHand.get(1).getValue();
+        return this.playerHand.get(0).getWorth() == this.playerHand.get(1).getWorth();
     }
 
     public boolean checkBlackJack() {
         int check = 0;
         for (int i = 0; i < playerHand.size(); i++) {
-            check += playerHand.get(i).getValue();
+            check += playerHand.get(i).getWorth();
         }
         return check == 21;
     }
