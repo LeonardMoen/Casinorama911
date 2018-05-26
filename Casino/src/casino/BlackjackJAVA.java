@@ -73,13 +73,16 @@ public class BlackjackJAVA {
     }
 
     public static void playRound(int i) throws IOException {
-        if (numOfPlayers.get(i).getPocketHand().get(0).checkBlackJack()) {
-            System.out.println("BLACKJACK!");
-        } else if (numOfPlayers.get(i).getPocketHand().get(0).checkSplit()) {
-            System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
-        } else {
-            System.out.println("Would you like to\n1) Hit\n2) Stay");
-        }
+       // do {
+            if (numOfPlayers.get(i).getPocketHand().get(0).checkBlackJack()) {
+                System.out.println("BLACKJACK!");
+                numOfPlayers.get(i).setChips((int) (numOfPlayers.get(i).getBet() * 1.5 + numOfPlayers.get(i).getChips()));
+            } else if (numOfPlayers.get(i).getPocketHand().get(0).checkSplit()) {
+                System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
+            } else {
+                System.out.println("Would you like to\n1) Hit\n2) Stay");
+            }
+      //  } while (numOfPlayers.get(i).getTotal() <= 21);
     }
 
     public static void initializeGame() throws IOException {
