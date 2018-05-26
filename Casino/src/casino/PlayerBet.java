@@ -5,12 +5,14 @@
  */
 package casino;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author laua8572
  */
 public class PlayerBet extends Player{
-    private Arraylist <Integer> numbers = new Arraylist <Integers>();
+    private ArrayList <Integer> numbers = new ArrayList <>();
     
     public PlayerBet(String name) {
         super(name);
