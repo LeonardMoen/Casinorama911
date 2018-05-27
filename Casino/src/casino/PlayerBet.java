@@ -9,7 +9,7 @@ package casino;
  *
  * @author laua8572
  */
-public class PlayerBet extends Player{
+public class PlayerBet extends Player{///HOW DO I DELETE THIS
     private Arraylist <Integer> numbers = new Arraylist <Integers>();
     
     public PlayerBet(String name) {
