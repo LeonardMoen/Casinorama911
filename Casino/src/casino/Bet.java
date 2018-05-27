@@ -66,6 +66,14 @@ public class Bet {
     public void setPlayerNum(int playerNum) {
         this.playerNum = playerNum;
     }
+        public ArrayList<Integer> getNumsBetOn() {
+        return numsBetOn;
+    }
+
+    public void setNumsBetOn(ArrayList<Integer> numsBetOn) {
+        this.numsBetOn = numsBetOn;
+    }
+}
 
     //    public int single(){1
 //        return 1;
@@ -91,4 +99,5 @@ public class Bet {
 //    public int dozenOrSnakeOrColumn(){
 //        return 12;
 //    }
-}
+
+
