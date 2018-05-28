@@ -11,6 +11,7 @@ import java.util.ArrayList;
  *
  * @author laua8572
  */
+
 public class PlayerBet extends Player{
     private ArrayList <Integer> numbers = new ArrayList <>();
     
