@@ -73,7 +73,9 @@ public class BlackjackJAVA {
     }
 
     public static void playDealer() {
+    }
 
+    public static void printCards(int i) throws IOException {
     }
 
     public static void playerHit(int i) throws IOException {
