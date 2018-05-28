@@ -21,7 +21,7 @@ public class BlackjackJAVA {
     }
 
     public static void placeBets() throws IOException {
-        boolean repeat = false;
+        boolean repeat;
         for (int i = 0; i < numOfPlayers.size(); i++) {
             System.out.println(numOfPlayers.get(i).getName() + "\t\tChips: $" + numOfPlayers.get(i).getChips());
             do {
