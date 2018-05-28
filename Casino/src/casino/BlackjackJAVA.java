@@ -10,7 +10,7 @@ public class BlackjackJAVA {
     public static ArrayList<Player> numOfPlayers = new ArrayList<>();
     public static Deck deck;
     public static Dealer dealer;
-    public static int round;
+    public static int round=1;
 
     public static void main(String[] args) throws IOException, InterruptedException {
         initializeGame();
@@ -64,12 +64,17 @@ public class BlackjackJAVA {
             }
             playRound(i);
         }
+        playDealer();
     }
 
     public static void getInsurance(int i) throws IOException {
         numOfPlayers.get(i).setInsurance(true);
     }
 
+    public static void playDealer() {
+    
+    }
+    
     public static void playRound(int i) throws IOException {
         if (!numOfPlayers.get(i).isWin()) {
             if (round == 1) {
@@ -92,6 +97,7 @@ public class BlackjackJAVA {
                 }
             }
         }
+        round++;
     }
 
     public static void initializeGame() throws IOException {
