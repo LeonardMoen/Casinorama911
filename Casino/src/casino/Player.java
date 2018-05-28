@@ -10,7 +10,7 @@ public class Player {
     ArrayList<Integer> numsBetOn = new ArrayList<Integer>();
     Hand hand;
     int playerNum, total, bet;
-    boolean insurance;
+    boolean insurance, win;
     
     public Player(String name) {
         this.name = name;
@@ -25,6 +25,14 @@ public class Player {
     
     public void setInsurance(boolean insurance) {
         this.insurance = insurance;
+    }
+
+    public boolean isWin() {
+        return win;
+    }
+
+    public void setWin(boolean win) {
+        this.win = win;
     }
     
     public boolean isInsurance() {
