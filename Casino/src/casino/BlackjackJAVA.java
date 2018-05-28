@@ -10,6 +10,7 @@ public class BlackjackJAVA {
     public static ArrayList<Player> numOfPlayers = new ArrayList<>();
     public static Deck deck;
     public static Dealer dealer;
+    public static int round;
 
     public static void main(String[] args) throws IOException, InterruptedException {
         initializeGame();
@@ -21,7 +22,7 @@ public class BlackjackJAVA {
     }
 
     public static void placeBets() throws IOException {
-        boolean repeat = false;
+        boolean repeat;
         for (int i = 0; i < numOfPlayers.size(); i++) {
             System.out.println(numOfPlayers.get(i).getName() + "\t\tChips: $" + numOfPlayers.get(i).getChips());
             do {
@@ -70,12 +71,26 @@ public class BlackjackJAVA {
     }
 
     public static void playRound(int i) throws IOException {
-        if (numOfPlayers.get(i).getPocketHand().get(0).checkBlackJack()) {
-            System.out.println("BLACKJACK!");
-        } else if (numOfPlayers.get(i).getPocketHand().get(0).checkSplit()) {
-            System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
-        } else {
-            System.out.println("Would you like to\n1) Hit\n2) Stay");
+        if (!numOfPlayers.get(i).isWin()) {
+            if (round == 1) {
+                if (numOfPlayers.get(i).getPocketHand().get(0).checkBlackJack()) {
+                    System.out.println("BLACKJACK!");
+                    numOfPlayers.get(i).setWin(true);
+                    numOfPlayers.get(i).setChips((int) (numOfPlayers.get(i).getBet() * 1.5 + numOfPlayers.get(i).getChips()));
+                } else if (numOfPlayers.get(i).getPocketHand().get(0).checkSplit()) {
+                    System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split\n4) Double Down");
+                } else {
+                    System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Double down");
+                }
+            } else {
+                if (numOfPlayers.get(i).getPocketHand().get(0).checkBlackJack()) {
+                    System.out.println("BLACKJACK!");
+                } else if (numOfPlayers.get(i).getPocketHand().get(0).checkSplit()) {
+                    System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
+                } else {
+                    System.out.println("Would you like to\n1) Hit\n2) Stay");
+                }
+            }
         }
     }
 
