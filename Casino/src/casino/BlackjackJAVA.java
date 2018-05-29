@@ -144,17 +144,19 @@ public class BlackjackJAVA {
         } else {
             for (int i = 0; i < numOfPlayers.size(); i++) {
                 for (int s = 0; s < numOfPlayers.get(i).getPocketHand().size(); s++) {
-                    if (numOfPlayers.get(i).setTotal(s) > numOfPlayers.get(i).getTotal(s)) {
+                    if (numOfPlayers.get(i).setTotal(s) > numOfPlayers.get(i).getTotal(s) && numOfPlayers.get(i).setTotal(s) <= 21) {
                         numOfPlayers.get(i).setObTotal(numOfPlayers.get(i).setTotal(s));
+                    } else {
+                        numOfPlayers.get(i).setObTotal(numOfPlayers.get(i).getTotal(s));
                     }
-                    if (!numOfPlayers.get(i).isNaturalBlackJack() && numOfPlayers.get(i).getTotal(s) <= 21) {
-                        if (dealer.getTotal() > numOfPlayers.get(i).getTotal(s)) {
+                    if (!numOfPlayers.get(i).isNaturalBlackJack() && numOfPlayers.get(i).getTotal() <= 21) {
+                        if (dealer.getTotal() > numOfPlayers.get(i).getTotal()) {
                             System.out.println("Player " + numOfPlayers.get(i).getName() + " lost!");
                             numOfPlayers.get(i).setBet(0);
-                        } else if (dealer.getTotal() == numOfPlayers.get(i).getTotal(s)) {
+                        } else if (dealer.getTotal() == numOfPlayers.get(i).getTotal()) {
                             System.out.println("Player " + numOfPlayers.get(i).getName() + " stands!");
                             numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet());
-                        } else if (dealer.getTotal() < numOfPlayers.get(i).getTotal(s)) {
+                        } else if (dealer.getTotal() < numOfPlayers.get(i).getTotal()) {
                             System.out.println("Player " + numOfPlayers.get(i).getName() + " won!");
                             numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet() * 2);
                         }
