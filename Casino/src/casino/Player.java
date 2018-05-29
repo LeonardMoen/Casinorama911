@@ -96,6 +96,10 @@ public class Player {
         return total;
     }
 
+    public int getTotal() {
+        return total;
+    }
+
     public int getBet() {
         return bet;
     }
