@@ -24,7 +24,7 @@ public class BlackjackJAVA {
             resetCharacteristics();
             System.out.print("\nAnother round? (1 - yes, 2 - no) ");
             answer = Integer.parseInt(stdin.readLine());
-        } while (answer==1);
+        } while (answer == 1);
     }
 
     public static void placeBets() throws IOException {
@@ -55,6 +55,7 @@ public class BlackjackJAVA {
             for (int s = 0; s < numOfPlayers.get(i).getPocketHand().size(); s++) {
                 numOfPlayers.get(i).getPocketHand().remove(s);
             }
+            numOfPlayers.get(i).getPocketHand().add(new PocketHand(deck));
         }
     }
 
@@ -91,6 +92,7 @@ public class BlackjackJAVA {
             playRound(i, 0);
         }
         playDealer();
+        System.out.println("");
         checkWin();
     }
 
@@ -108,7 +110,7 @@ public class BlackjackJAVA {
         } else {
             for (int i = 0; i < numOfPlayers.size(); i++) {
                 for (int s = 0; s < numOfPlayers.get(i).getPocketHand().size(); s++) {
-                    if (numOfPlayers.get(i).isNaturalBlackJack() && numOfPlayers.get(i).getTotal(s) <= 21) {
+                    if (!numOfPlayers.get(i).isNaturalBlackJack() && numOfPlayers.get(i).getTotal(s) <= 21) {
                         if (dealer.getTotal() > numOfPlayers.get(i).getTotal(s)) {
                             System.out.println("Player " + numOfPlayers.get(i).getName() + " lost!");
                             numOfPlayers.get(i).setBet(0);
