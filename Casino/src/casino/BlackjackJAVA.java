@@ -84,6 +84,25 @@ public class BlackjackJAVA {
     }
 
     public static void playDealer() {
+        System.out.println("\n~ DEALER ~ ");
+        printDealer();
+
+        do {
+            System.out.println("");
+            dealer.getDealerHand().hitCard(deck);
+            printDealer();
+        } while (!dealer.checkSeventeen());
+        if (dealer.getTotal() > 21) {
+            System.out.println("\nDealer BUST!");
+            dealer.setBust(true);
+        }
+    }
+
+    public static void printDealer() {
+        for (int i = 0; i < dealer.getDealerHand().getPlayerHand().size(); i++) {
+            System.out.print(dealer.getDealerHand().getPlayerHand().get(i) + "\t\t");
+        }
+        System.out.print("Total: " + dealer.getTotal());
     }
 
     public static void printCards(int i) throws IOException {
@@ -127,6 +146,7 @@ public class BlackjackJAVA {
         } else {
             System.out.println("You do not have enough chips to double down!");
         }
+        System.out.println("");
     }
 
     public static void playRound(int i) throws IOException {
