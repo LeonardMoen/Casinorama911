@@ -5,12 +5,21 @@ import java.util.ArrayList;
 public class PocketHand {
 
     private ArrayList<Card> playerHand = new ArrayList<>();
+    private int splitBet;
 
     public PocketHand(Deck deck) {
         for (int x = 0; x < 2; x++) {
             playerHand.add(deck.getDeck().get(x));
             deck.getDeck().remove(x);
         }
+    }
+
+    public void setSplitBet(int splitBet) {
+        this.splitBet = splitBet;
+    }
+
+    public int getSplitBet() {
+        return splitBet;
     }
 
     public PocketHand(Deck deck, int value, String suit) {
