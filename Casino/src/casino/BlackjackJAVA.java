@@ -22,12 +22,17 @@ public class BlackjackJAVA {
             System.out.println("");
             printBoard();
             resetCharacteristics();
-            System.out.print("\nWould you like to:\n1) Play again\n2) Cash out");
-            answer = Integer.parseInt(stdin.readLine());
+            for (int i = 0; i < numOfPlayers.size(); i++) {
+                System.out.print("\n" + numOfPlayers.get(i).getName().toUpperCase() + " would you like to:\n1) Play again\n2) Cash out");
+                answer = Integer.parseInt(stdin.readLine());
+                if (answer == 2) {
+                    numOfPlayers.remove(i);
+                }
+            }
             if (deck.getDeck().isEmpty()) {
                 deck = new Deck();
             }
-        } while (answer == 1);
+        } while (!numOfPlayers.isEmpty());
     }
 
     public static void placeBets() throws IOException {
