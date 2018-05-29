@@ -27,13 +27,14 @@ public class BlackjackJAVA {
                 answer = Integer.parseInt(stdin.readLine());
                 if (answer == 2) {
                     numOfPlayers.remove(i);
+                    i = i - 1;
                 }
             }
             if (deck.getDeck().isEmpty()) {
                 deck = new Deck();
             }
         } while (!numOfPlayers.isEmpty());
-        System.out.println("Yee blackjack!");
+        System.out.println("\nThank god youre gone!");
     }
 
     public static void placeBets() throws IOException {
