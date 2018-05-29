@@ -237,15 +237,15 @@ public class BlackjackJAVA {
         printCards(i, handNum);
     }
 
-    public static void playerSplit(int i) throws IOException {
+    public static void playerSplit(int i, int handNum) throws IOException {
         if (numOfPlayers.get(i).getChips() >= numOfPlayers.get(i).getBet()) {
             numOfPlayers.get(i).ifSplit(deck);
             numOfPlayers.get(i).getPocketHand().get(1).setSplitBet(numOfPlayers.get(i).getBet());
             numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() - numOfPlayers.get(i).getPocketHand().get(1).getSplitBet());
-            for (int d = 0; d < numOfPlayers.get(i).getPocketHand().size(); d++) {
-                System.out.println("\nDeck " + (d+1) + ":\t");
-                printCards(i,d);
-                playRound(i,d);
+            for (int d = handNum; d < numOfPlayers.get(i).getPocketHand().size(); d++) {
+                System.out.println("\nDeck " + (d + 1) + ":\t");
+                printCards(i, d);
+                playRound(i, d);
             }
         } else {
             System.out.println("You do not have enough chips to split!");
@@ -285,7 +285,7 @@ public class BlackjackJAVA {
                         response = Integer.parseInt(stdin.readLine());
                         switch (response) {
                             case 3:
-                                playerSplit(i);
+                                playerSplit(i, handNum);
                                 break;
                             case 4:
                                 playerDD(i, handNum);
@@ -305,7 +305,7 @@ public class BlackjackJAVA {
                         System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
                         response = Integer.parseInt(stdin.readLine());
                         if (response == 3) {
-                            playerSplit(i);
+                            playerSplit(i, handNum);
                         }
                     } else {
                         System.out.println("Would you like to\n1) Hit\n2) Stay");
