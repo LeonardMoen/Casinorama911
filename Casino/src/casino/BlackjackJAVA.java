@@ -143,6 +143,9 @@ public class BlackjackJAVA {
         } else {
             for (int i = 0; i < numOfPlayers.size(); i++) {
                 for (int s = 0; s < numOfPlayers.get(i).getPocketHand().size(); s++) {
+                    if (numOfPlayers.get(i).setTotal(s) > numOfPlayers.get(i).getTotal(s)) {
+                        numOfPlayers.get(i).setObTotal(numOfPlayers.get(i).setTotal(s));
+                    }
                     if (!numOfPlayers.get(i).isNaturalBlackJack() && numOfPlayers.get(i).getTotal(s) <= 21) {
                         if (dealer.getTotal() > numOfPlayers.get(i).getTotal(s)) {
                             System.out.println("Player " + numOfPlayers.get(i).getName() + " lost!");
