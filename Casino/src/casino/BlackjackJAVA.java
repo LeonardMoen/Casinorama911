@@ -22,8 +22,11 @@ public class BlackjackJAVA {
             System.out.println("");
             printBoard();
             resetCharacteristics();
-            System.out.print("\nAnother round? (1 - yes, 2 - no) ");
+            System.out.print("\nWould you like to:\n1) Play again\n2) Cash out");
             answer = Integer.parseInt(stdin.readLine());
+            if (deck.getDeck().isEmpty()) {
+                deck = new Deck();
+            }
         } while (answer == 1);
     }
 
