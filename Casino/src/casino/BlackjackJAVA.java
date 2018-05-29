@@ -269,6 +269,9 @@ public class BlackjackJAVA {
     public static void playRound(int i, int handNum) throws IOException {
         int response;
         round = 1;
+        if (handNum > 0) {
+            numOfPlayers.get(i).setStay(false);
+        }
         while (!numOfPlayers.get(i).isStay()) {
             if (round == 1) {
                 if (numOfPlayers.get(i).getPocketHand().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
