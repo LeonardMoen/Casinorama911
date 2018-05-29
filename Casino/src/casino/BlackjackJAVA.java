@@ -23,7 +23,7 @@ public class BlackjackJAVA {
             printBoard();
             resetCharacteristics();
             for (int i = 0; i < numOfPlayers.size(); i++) {
-                System.out.print("\n" + numOfPlayers.get(i).getName().toUpperCase() + " would you like to:\n1) Play again\n2) Cash out");
+                System.out.print("\n" + numOfPlayers.get(i).getName().toUpperCase() + " would you like to:\n1) Play again\n2) Cash out\nEnter choice: ");
                 answer = Integer.parseInt(stdin.readLine());
                 if (answer == 2) {
                     numOfPlayers.remove(i);
@@ -59,7 +59,7 @@ public class BlackjackJAVA {
             }
             System.out.println("");
             if (response != 2) {
-                System.out.println(numOfPlayers.get(i).getName() + "\t\tChips: $" + numOfPlayers.get(i).getChips());
+                System.out.println(numOfPlayers.get(i).getName().toUpperCase() + "\t\tChips: $" + numOfPlayers.get(i).getChips());
                 do {
                     System.out.print("How much would you like to bet: $");
                     int bet = Integer.parseInt(stdin.readLine());
