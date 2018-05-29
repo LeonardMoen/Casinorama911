@@ -39,8 +39,9 @@ public class BlackjackJAVA {
 
     public static void placeBets() throws IOException {
         boolean repeat;
-        int response = 0;
+        int response;
         for (int i = 0; i < numOfPlayers.size(); i++) {
+            response = 0;
             if (numOfPlayers.get(i).getChips() == 0) {
                 System.out.println(numOfPlayers.get(i).getName().toUpperCase() + ", you have no more CHIPS!\n");
                 System.out.print("Would you like to:\n1) Buy more chips\n2) Leave table\nEnter your choice: ");
