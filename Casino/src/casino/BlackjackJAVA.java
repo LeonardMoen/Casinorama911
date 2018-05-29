@@ -29,19 +29,41 @@ public class BlackjackJAVA {
 
     public static void placeBets() throws IOException {
         boolean repeat;
+        int response = 0;
         for (int i = 0; i < numOfPlayers.size(); i++) {
-            System.out.println(numOfPlayers.get(i).getName() + "\t\tChips: $" + numOfPlayers.get(i).getChips());
-            do {
-                System.out.print("How much would you like to bet: $");
-                int bet = Integer.parseInt(stdin.readLine());
-                if (bet > numOfPlayers.get(i).getChips()) {
-                    System.out.println("\nYou only have $" + numOfPlayers.get(i).getChips() + "\n");
-                    repeat = true;
-                } else {
-                    numOfPlayers.get(i).setBet(bet);
-                    repeat = false;
+            if (numOfPlayers.get(i).getChips() == 0) {
+                System.out.println(numOfPlayers.get(i).getName().toUpperCase() + ", you have no more CHIPS!\n");
+                System.out.print("Would you like to:\n1) Buy more chips\n2) Leave table\nEnter your choice: ");
+                response = Integer.parseInt(stdin.readLine());
+                switch (response) {
+                    case 1:
+                        System.out.print("How many chips would you like to buy? ");
+                        int buy = Integer.parseInt(stdin.readLine());
+                        numOfPlayers.get(i).setChips(buy);
+                        break;
+                    case 2:
+                        numOfPlayers.remove(i);
+                        break;
+                    default:
+                        System.out.println("That was not one of the options!");
+                        break;
                 }
-            } while (repeat);
+            }
+            System.out.println("");
+            if (response != 2) {
+                System.out.println(numOfPlayers.get(i).getName() + "\t\tChips: $" + numOfPlayers.get(i).getChips());
+                do {
+                    System.out.print("How much would you like to bet: $");
+                    int bet = Integer.parseInt(stdin.readLine());
+                    if (bet > numOfPlayers.get(i).getChips()) {
+                        System.out.println("\nYou only have $" + numOfPlayers.get(i).getChips() + "\n");
+                        repeat = true;
+                    } else {
+                        numOfPlayers.get(i).setBet(bet);
+                        repeat = false;
+                    }
+                } while (repeat);
+            }
         }
     }
 
