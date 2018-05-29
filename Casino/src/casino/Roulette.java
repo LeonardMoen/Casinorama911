@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Random;
 
+
 /**
  *
  * @author laua8572
@@ -24,8 +25,11 @@ public class Roulette {
     static ArrayList<Integer> blackNums = new ArrayList<Integer>();
     static ArrayList<Bet> bets = new ArrayList<Bet>();
 
-    public Roulette() {
 
+    public Roulette() {
+       
+        
+        
     }
 
     public void playRoulette(ArrayList<Player> players) throws IOException {
@@ -38,20 +42,27 @@ public class Roulette {
             while (true) {  //allows  you to bet more than once
 
                 System.out.println("You currently have: $" + players.get(i).getChips());
+                if (players.get(i).getChips() == 0) {
+                    System.out.println(players.get(i).getName() + " cannot bet because they have no more chips");
+                } else {
 
-                System.out.println("Pick a bet type");
-                System.out.println("(0)Exit\t(1)Single\t(2)Split\t(3)Street\t(4)Corner");
-                System.out.println("(5)High\t(6)Low\t(7)even\t(8)odd\t(9)black");
-                System.out.println("(10)red\t(11)1st 12\t(12)2nd 12\t(13)3rd 12\t(14)Column 1\t(15)Column 2\t(16)Column 3");
-                choice = Integer.parseInt(stdin.readLine());
-                if (choice == 0) {
-                    break;
+                    System.out.println("Pick a bet type");
+                    System.out.println("(0)Exit\t(1)Single\t(2)Split\t(3)Street\t(4)Corner");
+                    System.out.println("(5)High\t(6)Low\t(7)even\t(8)odd\t(9)black");
+                    System.out.println("(10)red\t(11)1st 12\t(12)2nd 12\t(13)3rd 12\t(14)Column 1\t(15)Column 2\t(16)Column 3");
+                    choice = Integer.parseInt(stdin.readLine());
+                    if (choice == 0) {
+                        break;
+                    }
+                    choices(i, players, choice);
                 }
-                choices(i, players, choice);
             }
             int winNum = rand.nextInt(36);
+            winNum = 5;//set winning number to 5 for testing
+
             System.out.println("Rolled number was " + winNum);
             checkWin(winNum, players, i);
+
         }
 
     }
@@ -317,7 +328,7 @@ public class Roulette {
 
                     double amountWon = bets.get(i).getAmountBet() * bets.get(i).getPayout();
                     players.get(playerIndex).payout((int) amountWon);
-                    System.out.println("Player " + playerIndex + " WON!!!");
+                    System.out.println(players.get(playerIndex).getName() + " WON!!!");
                     System.out.println("You currently have: $" + players.get(i).getChips());
 
                     break;
