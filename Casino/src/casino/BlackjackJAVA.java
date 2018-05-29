@@ -19,6 +19,9 @@ public class BlackjackJAVA {
             System.out.println("");
             dealer = new Dealer(deck);
             placeBets();
+            if (numOfPlayers.isEmpty()) {
+                break;
+            }
             System.out.println("");
             printBoard();
             resetCharacteristics();
@@ -39,8 +42,9 @@ public class BlackjackJAVA {
 
     public static void placeBets() throws IOException {
         boolean repeat;
-        int response = 0;
+        int response;
         for (int i = 0; i < numOfPlayers.size(); i++) {
+            response = 0;
             if (numOfPlayers.get(i).getChips() == 0) {
                 System.out.println(numOfPlayers.get(i).getName().toUpperCase() + ", you have no more CHIPS!\n");
                 System.out.print("Would you like to:\n1) Buy more chips\n2) Leave table\nEnter your choice: ");
@@ -143,17 +147,19 @@ public class BlackjackJAVA {
         } else {
             for (int i = 0; i < numOfPlayers.size(); i++) {
                 for (int s = 0; s < numOfPlayers.get(i).getPocketHand().size(); s++) {
-                    if (numOfPlayers.get(i).setTotal(s) > numOfPlayers.get(i).getTotal(s)) {
+                    if (numOfPlayers.get(i).setTotal(s) > numOfPlayers.get(i).getTotal(s) && numOfPlayers.get(i).setTotal(s) <= 21) {
                         numOfPlayers.get(i).setObTotal(numOfPlayers.get(i).setTotal(s));
+                    } else {
+                        numOfPlayers.get(i).setObTotal(numOfPlayers.get(i).getTotal(s));
                     }
-                    if (!numOfPlayers.get(i).isNaturalBlackJack() && numOfPlayers.get(i).getTotal(s) <= 21) {
-                        if (dealer.getTotal() > numOfPlayers.get(i).getTotal(s)) {
+                    if (!numOfPlayers.get(i).isNaturalBlackJack() && numOfPlayers.get(i).getTotal() <= 21) {
+                        if (dealer.getTotal() > numOfPlayers.get(i).getTotal()) {
                             System.out.println("Player " + numOfPlayers.get(i).getName() + " lost!");
                             numOfPlayers.get(i).setBet(0);
-                        } else if (dealer.getTotal() == numOfPlayers.get(i).getTotal(s)) {
+                        } else if (dealer.getTotal() == numOfPlayers.get(i).getTotal()) {
                             System.out.println("Player " + numOfPlayers.get(i).getName() + " stands!");
                             numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet());
-                        } else if (dealer.getTotal() < numOfPlayers.get(i).getTotal(s)) {
+                        } else if (dealer.getTotal() < numOfPlayers.get(i).getTotal()) {
                             System.out.println("Player " + numOfPlayers.get(i).getName() + " won!");
                             numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet() * 2);
                         }
@@ -186,13 +192,12 @@ public class BlackjackJAVA {
     public static void playDealer() throws InterruptedException {
         System.out.println("\n~ DEALER ~ ");
         printDealer();
-
-        do {
+        while (!dealer.checkSeventeen()) {
             System.out.println("");
             dealer.getDealerHand().hitCard(deck);
             printDealer();
             Thread.sleep(1000);
-        } while (!dealer.checkSeventeen());
+        }
         if (dealer.getTotal() > 21) {
             System.out.println("\nDealer BUST!");
             dealer.setBust(true);
@@ -237,7 +242,11 @@ public class BlackjackJAVA {
             numOfPlayers.get(i).ifSplit(deck);
             numOfPlayers.get(i).getPocketHand().get(1).setSplitBet(numOfPlayers.get(i).getBet());
             numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() - numOfPlayers.get(i).getPocketHand().get(1).getSplitBet());
+            System.out.println("\nDeck 1:\t");
+            printCards(i, 0);
             playRound(i, 0);
+            System.out.println("\nDeck 2:\t");
+            printCards(i, 1);
             playRound(i, 1);
         } else {
             System.out.println("You do not have enough chips to split!");
@@ -260,6 +269,9 @@ public class BlackjackJAVA {
     public static void playRound(int i, int handNum) throws IOException {
         int response;
         round = 1;
+        if (handNum > 0) {
+            numOfPlayers.get(i).setStay(false);
+        }
         while (!numOfPlayers.get(i).isStay()) {
             if (round == 1) {
                 if (numOfPlayers.get(i).getPocketHand().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
@@ -306,12 +318,6 @@ public class BlackjackJAVA {
                     System.out.println("BLACKJACK!");
                     numOfPlayers.get(i).setStay(true);
                     break;
-                } else if (numOfPlayers.get(i).getPocketHand().get(handNum).checkSplit()) {
-                    System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
-                    response = Integer.parseInt(stdin.readLine());
-                    if (response == 3) {
-                        playerSplit(i);
-                    }
                 } else {
                     System.out.println("Would you like to\n1) Hit\n2) Stay");
                     response = Integer.parseInt(stdin.readLine());

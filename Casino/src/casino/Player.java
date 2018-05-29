@@ -96,13 +96,17 @@ public class Player {
         return total;
     }
 
+    public int getTotal() {
+        return total;
+    }
+
     public int getBet() {
         return bet;
     }
 
     public void ifSplit(Deck deck) {
         this.pocketHand.add(new PocketHand(deck, pocketHand.get(0).getPlayerHand().get(1).getValue(), pocketHand.get(0).getPlayerHand().get(1).getSuit()));
-        this.pocketHand.remove(pocketHand.get(0).getPlayerHand().get(1));
+        this.pocketHand.get(0).getPlayerHand().remove(1);
         this.pocketHand.get(0).hitCard(deck);
     }
 
