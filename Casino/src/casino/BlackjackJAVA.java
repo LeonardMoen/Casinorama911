@@ -242,12 +242,11 @@ public class BlackjackJAVA {
             numOfPlayers.get(i).ifSplit(deck);
             numOfPlayers.get(i).getPocketHand().get(1).setSplitBet(numOfPlayers.get(i).getBet());
             numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() - numOfPlayers.get(i).getPocketHand().get(1).getSplitBet());
-            System.out.println("\nDeck 1:\t");
-            printCards(i, 0);
-            playRound(i, 0);
-            System.out.println("\nDeck 2:\t");
-            printCards(i, 1);
-            playRound(i, 1);
+            for (int d = 0; d < numOfPlayers.get(i).getPocketHand().size(); d++) {
+                System.out.println("\nDeck " + (d+1) + ":\t");
+                printCards(i,d);
+                playRound(i,d);
+            }
         } else {
             System.out.println("You do not have enough chips to split!");
         }
