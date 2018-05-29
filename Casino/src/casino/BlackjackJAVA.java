@@ -33,6 +33,7 @@ public class BlackjackJAVA {
                 deck = new Deck();
             }
         } while (!numOfPlayers.isEmpty());
+        System.out.println("Yee blackjack!");
     }
 
     public static void placeBets() throws IOException {
