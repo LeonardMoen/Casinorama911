@@ -19,6 +19,9 @@ public class BlackjackJAVA {
             System.out.println("");
             dealer = new Dealer(deck);
             placeBets();
+            if (numOfPlayers.isEmpty()) {
+                break;
+            }
             System.out.println("");
             printBoard();
             resetCharacteristics();
