@@ -192,13 +192,12 @@ public class BlackjackJAVA {
     public static void playDealer() throws InterruptedException {
         System.out.println("\n~ DEALER ~ ");
         printDealer();
-
-        do {
+        while (!dealer.checkSeventeen()) {
             System.out.println("");
             dealer.getDealerHand().hitCard(deck);
             printDealer();
             Thread.sleep(1000);
-        } while (!dealer.checkSeventeen());
+        }
         if (dealer.getTotal() > 21) {
             System.out.println("\nDealer BUST!");
             dealer.setBust(true);
@@ -243,7 +242,11 @@ public class BlackjackJAVA {
             numOfPlayers.get(i).ifSplit(deck);
             numOfPlayers.get(i).getPocketHand().get(1).setSplitBet(numOfPlayers.get(i).getBet());
             numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() - numOfPlayers.get(i).getPocketHand().get(1).getSplitBet());
+            System.out.println("\nDeck 1:\t");
+            printCards(i, 0);
             playRound(i, 0);
+            System.out.println("\nDeck 2:\t");
+            printCards(i, 1);
             playRound(i, 1);
         } else {
             System.out.println("You do not have enough chips to split!");
@@ -312,12 +315,6 @@ public class BlackjackJAVA {
                     System.out.println("BLACKJACK!");
                     numOfPlayers.get(i).setStay(true);
                     break;
-                } else if (numOfPlayers.get(i).getPocketHand().get(handNum).checkSplit()) {
-                    System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
-                    response = Integer.parseInt(stdin.readLine());
-                    if (response == 3) {
-                        playerSplit(i);
-                    }
                 } else {
                     System.out.println("Would you like to\n1) Hit\n2) Stay");
                     response = Integer.parseInt(stdin.readLine());
