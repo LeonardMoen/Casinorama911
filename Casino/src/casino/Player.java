@@ -84,6 +84,10 @@ public class Player {
         }
     }
 
+    public void setObTotal(int n) {
+        this.total = n;
+    }
+
     public int getTotal(int n) {
         total = 0;
         for (int i = 0; i < pocketHand.get(n).getPlayerHand().size(); i++) {
