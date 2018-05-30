@@ -3,7 +3,7 @@ package casino;
 public class Dealer {
 
     private PocketHand dealerHand;
-    private int total;
+    private int total, optionalTotal;
     private boolean bust = false;
 
     public Dealer(Deck deck) {
@@ -12,6 +12,22 @@ public class Dealer {
 
     public PocketHand getDealerHand() {
         return dealerHand;
+    }
+
+    public void setOptionalTotal(int optionalTotal) {
+        this.optionalTotal = optionalTotal;
+    }
+
+    public int getOptionalTotal() {
+        optionalTotal = 0;
+        for (int i = 0; i < dealerHand.getPlayerHand().size(); i++) {
+            if (this.dealerHand.getPlayerHand().get(i).getWorth() == 1) {
+                optionalTotal += 11;
+            } else {
+                optionalTotal += this.dealerHand.getPlayerHand().get(i).getWorth();
+            }
+        }
+        return optionalTotal;
     }
 
     public boolean isBust() {
@@ -31,6 +47,9 @@ public class Dealer {
 
     public int getTotal() {
         setTotal();
+        if (total < getOptionalTotal() && getOptionalTotal() <= 21) {
+            total = getOptionalTotal();
+        }
         return total;
     }
 
