@@ -2,16 +2,22 @@
 package casino;
 
 
-public class Player {
-    String name;
-    int chips;
-    PocketHand pocketHand;
-    Hand hand;
-    int playerNum;
+public class Player implements Comparable {
+    private String name;
+    private int chips;
+    private PocketHand pocketHand;
+    private Hand hand;
+    private int playerNum;
+    private Blind blind;
+    private int chipsInCurrent;
 
-    public Player(String name) {
+    public Player(String name, int playerNum) {
         this.name = name;
+        this.playerNum=playerNum;
         this.chips = 500;
+        blind=new Blind();
+        pocketHand = new PocketHand();
+        this.chipsInCurrent=0;
     }
 
     public String getName() {
@@ -34,6 +40,25 @@ public class Player {
         return playerNum;
     }
 
+    public Blind getBlind() {
+        return blind;
+    }
+
+    public int getChipsInCurrent() {
+        return chipsInCurrent;
+    }
+
+    public void setChipsInCurrent(int chipsInCurrent) {
+        this.chipsInCurrent = chipsInCurrent;
+    }
+    
+
+    public void setBlind(Blind blind) {
+        this.blind = blind;
+    }
+    
+    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -52,5 +77,16 @@ public class Player {
 
     public void setPlayerNum(int playerNum) {
         this.playerNum = playerNum;
+    }
+
+    @Override
+    public int compareTo(Object t) {
+        Player player = (Player)t;
+        if(playerNum>player.getPlayerNum()){
+            return 1;
+        }
+        else{
+            return -1;
+        }
     }
 }
