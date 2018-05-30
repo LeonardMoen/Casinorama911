@@ -1,17 +1,36 @@
 package casino;
 
 import java.util.ArrayList;
-
-public class PocketHand {
-
+    
+public class PocketHand{
+    private ArrayList<Card>pocketHand;
     private ArrayList<Card> playerHand = new ArrayList<>();
     private int splitBet;
-
+    public PocketHand() {
+        pocketHand= new ArrayList<Card>();
+    }
+    
     public PocketHand(Deck deck) {
         for (int x = 0; x < 2; x++) {
             playerHand.add(deck.getDeck().get(x));
             deck.getDeck().remove(x);
         }
+    }
+
+    public ArrayList<Card> getPocketHand() {
+        return pocketHand;
+    }
+
+    public void setPocketHand(ArrayList<Card> pocketHand) {
+        this.pocketHand = pocketHand;
+    }
+    
+    
+    public boolean checkSuited(){
+        if(pocketHand.get(0).getSuit().equals(pocketHand.get(1).getSuit())){
+            return true;
+        }
+        return false;
     }
 
     public void setSplitBet(int splitBet) {
@@ -42,9 +61,8 @@ public class PocketHand {
         for (int i = 0; i < playerHand.size(); i++) {
             check += playerHand.get(i).getWorth();
         }
-        return check > 21;
+        return check>21;
     }
-
     public boolean checkSplit() {
         return this.playerHand.get(0).getWorth() == this.playerHand.get(1).getWorth();
     }
@@ -56,19 +74,12 @@ public class PocketHand {
         }
         return check == 21;
     }
-//
-//    public boolean checkSuited() {
-//        if (hand[0].getSuit().equals(hand[1].getSuit())) {
-//            return true;
-//        }
-//        return false;
-//    }
-//
-//    public boolean pocketPair() {
-//        if (hand[0].getValue() == hand[1].getValue()) {
-//            return true;
-//        }
-//        return false;
-//    }
+
+    public boolean pocketPair() {
+        if (pocketHand.get(0).getValue() == pocketHand.get(1).getValue()) {
+            return true;
+        }
+        return false;
+    }
 
 }

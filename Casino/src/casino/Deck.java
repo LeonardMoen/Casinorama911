@@ -5,7 +5,7 @@ import java.util.Collections;
 
 public class Deck implements Comparable {
 
-    ArrayList<Card> deck = new ArrayList<Card>();
+    private ArrayList<Card> deck = new ArrayList<Card>();
 
     public Deck() {
         for (int i = 1; i <= 13; i++) {
