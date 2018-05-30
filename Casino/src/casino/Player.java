@@ -2,26 +2,34 @@ package casino;
 
 import java.util.ArrayList;
 
-   
 public class Player implements Comparable {
+
     private String name;
     private int chips;
     private PocketHand pocketHand;
     private Hand hand;
-    private int playerNum,total,bet,insuranceAmount;
+    private int playerNum, total, bet, insuranceAmount;
     private Blind blind;
     private int chipsInCurrent;
     private ArrayList<PocketHand> pocketHands = new ArrayList<>();
     private ArrayList<Integer> numsBetOn = new ArrayList<Integer>();
-    private boolean insurance = false, stay = false, naturalBlackJack;
+    private boolean insurance = false, stay = false, naturalBlackJack, ai = false;
 
     public Player(String name, int playerNum) {
         this.name = name;
-        this.playerNum=playerNum;
+        this.playerNum = playerNum;
         this.chips = 500;
-        blind=new Blind();
+        blind = new Blind();
         pocketHand = new PocketHand();
-        this.chipsInCurrent=0;
+        this.chipsInCurrent = 0;
+    }
+
+    public void setAi(boolean ai) {
+        this.ai = ai;
+    }
+
+    public boolean isAi() {
+        return ai;
     }
 
     public void setInsuranceAmount(int insuranceAmount) {
@@ -103,6 +111,13 @@ public class Player implements Comparable {
         return total;
     }
 
+    public int getRealTotal(int n) {
+        if (setTotal(n) > getTotal(n)) {
+            this.total = setTotal(n);
+        }
+        return this.total;
+    }
+
     public int getTotal() {
         return total;
     }
@@ -121,15 +136,15 @@ public class Player implements Comparable {
         this.pocketHands.clear();
         this.pocketHands.add(new PocketHand(deck));
     }
-    
+
     public void setPocketHand(PocketHand pocketHand) {
-        this.pocketHand=pocketHand;
+        this.pocketHand = pocketHand;
     }
 
     public ArrayList<PocketHand> getPocketHands() {
         return pocketHands;
     }
-    
+
     public PocketHand getPocketHand() {
         return pocketHand;
     }
@@ -161,13 +176,10 @@ public class Player implements Comparable {
     public void setChipsInCurrent(int chipsInCurrent) {
         this.chipsInCurrent = chipsInCurrent;
     }
-    
 
     public void setBlind(Blind blind) {
         this.blind = blind;
     }
-    
-    
 
     public void setName(String name) {
         this.name = name;
@@ -196,13 +208,13 @@ public class Player implements Comparable {
     public void setNumsBetOn(ArrayList<Integer> numsBetOn) {
         this.numsBetOn = numsBetOn;
     }
+
     @Override
     public int compareTo(Object t) {
-        Player player = (Player)t;
-        if(playerNum>player.getPlayerNum()){
+        Player player = (Player) t;
+        if (playerNum > player.getPlayerNum()) {
             return 1;
-        }
-        else{
+        } else {
             return -1;
         }
     }
