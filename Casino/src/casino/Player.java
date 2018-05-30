@@ -2,19 +2,26 @@ package casino;
 
 import java.util.ArrayList;
 
-public class Player {
-
+   
+public class Player implements Comparable {
     private String name;
     private int chips;
-    private ArrayList<PocketHand> pocketHand = new ArrayList<>();
-    private ArrayList<Integer> numsBetOn = new ArrayList<>();
+    private PocketHand pocketHand;
     private Hand hand;
-    private int playerNum, total, bet, insuranceAmount;
+    private int playerNum,total,bet,insuranceAmount;
+    private Blind blind;
+    private int chipsInCurrent;
+    private ArrayList<PocketHand> pocketHands = new ArrayList<>();
+    private ArrayList<Integer> numsBetOn = new ArrayList<Integer>();
     private boolean insurance = false, stay = false, naturalBlackJack;
 
-    public Player(String name) {
+    public Player(String name, int playerNum) {
         this.name = name;
+        this.playerNum=playerNum;
         this.chips = 500;
+        blind=new Blind();
+        pocketHand = new PocketHand();
+        this.chipsInCurrent=0;
     }
 
     public void setInsuranceAmount(int insuranceAmount) {
@@ -49,7 +56,7 @@ public class Player {
     public Player(String name, Deck deck) {
         this.name = name;
         this.chips = 500;
-        this.pocketHand.add(new PocketHand(deck));
+        this.pocketHands.add(new PocketHand(deck));
     }
 
     public void setInsurance(boolean insurance) {
@@ -68,13 +75,13 @@ public class Player {
     public int setTotal(int n) {
         this.total = 0;
         int optionalTotal = 0;
-        for (int i = 0; i < pocketHand.get(n).getPlayerHand().size(); i++) {
-            if (pocketHand.get(n).getPlayerHand().get(i).getWorth() == 1) {
+        for (int i = 0; i < pocketHands.get(n).getPlayerHand().size(); i++) {
+            if (pocketHands.get(n).getPlayerHand().get(i).getWorth() == 1) {
                 optionalTotal += 11;
                 total += 1;
             } else {
-                optionalTotal += pocketHand.get(n).getPlayerHand().get(i).getWorth();
-                total += pocketHand.get(n).getPlayerHand().get(i).getWorth();
+                optionalTotal += pocketHands.get(n).getPlayerHand().get(i).getWorth();
+                total += pocketHands.get(n).getPlayerHand().get(i).getWorth();
             }
         }
         if (optionalTotal <= 21) {
@@ -90,8 +97,8 @@ public class Player {
 
     public int getTotal(int n) {
         total = 0;
-        for (int i = 0; i < pocketHand.get(n).getPlayerHand().size(); i++) {
-            total += pocketHand.get(n).getPlayerHand().get(i).getWorth();
+        for (int i = 0; i < pocketHands.get(n).getPlayerHand().size(); i++) {
+            total += pocketHands.get(n).getPlayerHand().get(i).getWorth();
         }
         return total;
     }
@@ -105,17 +112,25 @@ public class Player {
     }
 
     public void ifSplit(Deck deck) {
-        this.pocketHand.add(new PocketHand(deck, pocketHand.get(0).getPlayerHand().get(1).getValue(), pocketHand.get(0).getPlayerHand().get(1).getSuit()));
-        this.pocketHand.get(0).getPlayerHand().remove(1);
-        this.pocketHand.get(0).hitCard(deck);
+        this.pocketHands.add(new PocketHand(deck, pocketHands.get(0).getPlayerHand().get(1).getValue(), pocketHands.get(0).getPlayerHand().get(1).getSuit()));
+        this.pocketHands.get(0).getPlayerHand().remove(1);
+        this.pocketHands.get(0).hitCard(deck);
     }
 
-    public void setPocketHand(Deck deck) {
-        this.pocketHand.clear();
-        this.pocketHand.add(new PocketHand(deck));
+    public void setPocketHands(Deck deck) {
+        this.pocketHands.clear();
+        this.pocketHands.add(new PocketHand(deck));
+    }
+    
+    public void setPocketHand(PocketHand pocketHand) {
+        this.pocketHand=pocketHand;
     }
 
-    public ArrayList<PocketHand> getPocketHand() {
+    public ArrayList<PocketHand> getPocketHands() {
+        return pocketHands;
+    }
+    
+    public PocketHand getPocketHand() {
         return pocketHand;
     }
 
@@ -134,6 +149,25 @@ public class Player {
     public int getPlayerNum() {
         return playerNum;
     }
+
+    public Blind getBlind() {
+        return blind;
+    }
+
+    public int getChipsInCurrent() {
+        return chipsInCurrent;
+    }
+
+    public void setChipsInCurrent(int chipsInCurrent) {
+        this.chipsInCurrent = chipsInCurrent;
+    }
+    
+
+    public void setBlind(Blind blind) {
+        this.blind = blind;
+    }
+    
+    
 
     public void setName(String name) {
         this.name = name;
@@ -161,5 +195,15 @@ public class Player {
 
     public void setNumsBetOn(ArrayList<Integer> numsBetOn) {
         this.numsBetOn = numsBetOn;
+    }
+    @Override
+    public int compareTo(Object t) {
+        Player player = (Player)t;
+        if(playerNum>player.getPlayerNum()){
+            return 1;
+        }
+        else{
+            return -1;
+        }
     }
 }

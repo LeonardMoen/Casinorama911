@@ -89,10 +89,10 @@ public class BlackjackJAVA {
             numOfPlayers.get(i).setNaturalBlackJack(false);
             numOfPlayers.get(i).setInsurance(false);
             numOfPlayers.get(i).setInsuranceAmount(0);
-            for (int s = 0; s < numOfPlayers.get(i).getPocketHand().size(); s++) {
-                numOfPlayers.get(i).getPocketHand().remove(s);
+            for (int s = 0; s < numOfPlayers.get(i).getPocketHands().size(); s++) {
+                numOfPlayers.get(i).getPocketHands().remove(s);
             }
-            numOfPlayers.get(i).getPocketHand().add(new PocketHand(deck));
+            numOfPlayers.get(i).getPocketHands().add(new PocketHand(deck));
         }
     }
 
@@ -119,12 +119,12 @@ public class BlackjackJAVA {
             System.out.println("~HAND~");
             if (numOfPlayers.get(i).setTotal(0) != 0) {
                 if (numOfPlayers.get(i).setTotal(0) != numOfPlayers.get(i).getTotal(0)) {
-                    System.out.println(numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(0) + "\t\t" + numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal(0) + " or " + numOfPlayers.get(i).setTotal(0));
+                    System.out.println(numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(0) + "\t\t" + numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal(0) + " or " + numOfPlayers.get(i).setTotal(0));
                 } else {
-                    System.out.println(numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(0) + "\t\t" + numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal(0));
+                    System.out.println(numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(0) + "\t\t" + numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal(0));
                 }
             } else {
-                System.out.println(numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(0) + "\t\t" + numOfPlayers.get(i).getPocketHand().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal(0));
+                System.out.println(numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(0) + "\t\t" + numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal(0));
             }
             playRound(i, 0);
         }
@@ -137,7 +137,7 @@ public class BlackjackJAVA {
         checkInsuranceWin();
         if (dealer.isBust()) {
             for (int i = 0; i < numOfPlayers.size(); i++) {
-                for (int s = 0; s < numOfPlayers.get(i).getPocketHand().size(); s++) {
+                for (int s = 0; s < numOfPlayers.get(i).getPocketHands().size(); s++) {
                     if (numOfPlayers.get(i).getTotal(s) <= 21 && !numOfPlayers.get(i).isNaturalBlackJack()) {
                         numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet() * 2);
                         System.out.println("Player " + numOfPlayers.get(i).getName() + " won due to dealer BUST!");
@@ -146,7 +146,7 @@ public class BlackjackJAVA {
             }
         } else {
             for (int i = 0; i < numOfPlayers.size(); i++) {
-                for (int s = 0; s < numOfPlayers.get(i).getPocketHand().size(); s++) {
+                for (int s = 0; s < numOfPlayers.get(i).getPocketHands().size(); s++) {
                     if (numOfPlayers.get(i).setTotal(s) > numOfPlayers.get(i).getTotal(s) && numOfPlayers.get(i).setTotal(s) <= 21) {
                         numOfPlayers.get(i).setObTotal(numOfPlayers.get(i).setTotal(s));
                     } else {
@@ -212,8 +212,8 @@ public class BlackjackJAVA {
     }
 
     public static void printCards(int i, int handNum) throws IOException {
-        for (int c = 0; c < numOfPlayers.get(i).getPocketHand().get(handNum).getPlayerHand().size(); c++) {
-            System.out.print(numOfPlayers.get(i).getPocketHand().get(handNum).getPlayerHand().get(c) + "\t\t");
+        for (int c = 0; c < numOfPlayers.get(i).getPocketHands().get(handNum).getPlayerHand().size(); c++) {
+            System.out.print(numOfPlayers.get(i).getPocketHands().get(handNum).getPlayerHand().get(c) + "\t\t");
         }
         if (numOfPlayers.get(i).setTotal(handNum) != 0) {
             if (numOfPlayers.get(i).setTotal(handNum) != numOfPlayers.get(i).getTotal(handNum)) {
@@ -233,16 +233,16 @@ public class BlackjackJAVA {
     }
 
     public static void playerHit(int i, int handNum) throws IOException {
-        numOfPlayers.get(i).getPocketHand().get(handNum).hitCard(deck);
+        numOfPlayers.get(i).getPocketHands().get(handNum).hitCard(deck);
         printCards(i, handNum);
     }
 
     public static void playerSplit(int i, int handNum) throws IOException {
         if (numOfPlayers.get(i).getChips() >= numOfPlayers.get(i).getBet()) {
             numOfPlayers.get(i).ifSplit(deck);
-            numOfPlayers.get(i).getPocketHand().get(1).setSplitBet(numOfPlayers.get(i).getBet());
-            numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() - numOfPlayers.get(i).getPocketHand().get(1).getSplitBet());
-            for (int d = handNum; d < numOfPlayers.get(i).getPocketHand().size(); d++) {
+            numOfPlayers.get(i).getPocketHands().get(1).setSplitBet(numOfPlayers.get(i).getBet());
+            numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() - numOfPlayers.get(i).getPocketHands().get(1).getSplitBet());
+            for (int d = handNum; d < numOfPlayers.get(i).getPocketHands().size(); d++) {
                 System.out.println("\nDeck " + (d + 1) + ":\t");
                 printCards(i, d);
                 playRound(i, d);
@@ -256,7 +256,7 @@ public class BlackjackJAVA {
         if (numOfPlayers.get(i).getChips() >= numOfPlayers.get(i).getBet()) {
             numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet());
             numOfPlayers.get(i).setBet(numOfPlayers.get(i).getBet() * 2);
-            numOfPlayers.get(i).getPocketHand().get(handNum).hitCard(deck);
+            numOfPlayers.get(i).getPocketHands().get(handNum).hitCard(deck);
             printCards(i, handNum);
             numOfPlayers.get(i).setStay(true);
         } else {
@@ -273,14 +273,14 @@ public class BlackjackJAVA {
         }
         while (!numOfPlayers.get(i).isStay()) {
             if (round == 1) {
-                if (numOfPlayers.get(i).getPocketHand().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
+                if (numOfPlayers.get(i).getPocketHands().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
                     System.out.println("NATURAL BLACKJACK!");
                     numOfPlayers.get(i).setNaturalBlackJack(true);
                     numOfPlayers.get(i).setStay(true);
                     numOfPlayers.get(i).setChips((int) (numOfPlayers.get(i).getBet() * 1.5 + numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet()));
                     break;
                 } else if (numOfPlayers.get(i).getTotal(handNum) >= 9 && numOfPlayers.get(i).getTotal(handNum) <= 11) {
-                    if (numOfPlayers.get(i).getPocketHand().get(0).checkSplit()) {
+                    if (numOfPlayers.get(i).getPocketHands().get(0).checkSplit()) {
                         System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split\n4) Double Down");
                         response = Integer.parseInt(stdin.readLine());
                         switch (response) {
@@ -301,7 +301,7 @@ public class BlackjackJAVA {
                         }
                     }
                 } else {
-                    if (numOfPlayers.get(i).getPocketHand().get(0).checkSplit()) {
+                    if (numOfPlayers.get(i).getPocketHands().get(0).checkSplit()) {
                         System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
                         response = Integer.parseInt(stdin.readLine());
                         if (response == 3) {
@@ -313,7 +313,7 @@ public class BlackjackJAVA {
                     }
                 }
             } else {
-                if (numOfPlayers.get(i).getPocketHand().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
+                if (numOfPlayers.get(i).getPocketHands().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
                     System.out.println("BLACKJACK!");
                     numOfPlayers.get(i).setStay(true);
                     break;
