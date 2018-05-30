@@ -2,8 +2,8 @@ package casino;
 
 public class Card implements Comparable {
 
-    int value, worth;
-    String suit;
+    private int value, worth;
+    private String suit;
 
     public Card(int value, String suit) {
         this.value = value;
