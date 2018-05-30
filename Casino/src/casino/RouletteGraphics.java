@@ -29,25 +29,49 @@ import javafx.stage.Stage;
  * @author laua8572
  */
 public class RouletteGraphics extends Application {
-
+  
     @Override
     public void start(Stage primaryStage) {
 
         Group root = new Group();
-        Scene scene = new Scene(root, 1000, 700, new Color(0.5, 0.3, 0.6, 0.5));
+        Scene scene = new Scene(root, 1500, 1000, Color.BISQUE);
 
-        Rectangle rect = new Rectangle(5, 5, 10, 10);
-        root.getChildren().add(rect);
-        
-        Polygon [] col1 = new Polygon[12];
-        Polygon [] col2 = new Polygon[12];
-        Polygon [] col3 = new Polygon[12];
+        int col1YPos = 10;
+        int col2YPos = 60;
+        int col3YPos = 110;
 
         for (int i = 0; i < 12; i++) {
-            col1[i] = new Rectangle(5, 5, 10, 10);
+
+            Rectangle a = new Rectangle(50, col1YPos, 50, 50);
+            a.setOnMousePressed(rectOnClickAction);
+
+            Rectangle b = new Rectangle(110, col2YPos, 50, 50);
+            b.setOnMousePressed(rectOnClickAction);
+
+            Rectangle c = new Rectangle(170, col3YPos, 50, 50);
+            c.setOnMousePressed(rectOnClickAction);
+
+            root.getChildren().add(a);
+            root.getChildren().add(b);
+            root.getChildren().add(c);
+
+            col1YPos += 60;
+            col2YPos += 60;
+            col3YPos += 60;
+
         }
 
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+
+    EventHandler<Event> rectOnClickAction = new EventHandler<Event>() {
+        @Override
+        public void handle(Event event) {
+            Rectangle temp = (Rectangle) event.getSource();
+            temp.setFill(Color.CORAL);
+
+        }
+
+    };
 }
