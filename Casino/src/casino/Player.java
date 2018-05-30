@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 public class Player {
 
-    String name;
-    int chips;
-    ArrayList<PocketHand> pocketHand = new ArrayList<>();
-    ArrayList<Integer> numsBetOn = new ArrayList<Integer>();
-    Hand hand;
-    int playerNum, total, bet, insuranceAmount;
-    boolean insurance = false, stay = false, naturalBlackJack;
+    private String name;
+    private int chips;
+    private ArrayList<PocketHand> pocketHand = new ArrayList<>();
+    private ArrayList<Integer> numsBetOn = new ArrayList<>();
+    private Hand hand;
+    private int playerNum, total, bet, insuranceAmount;
+    private boolean insurance = false, stay = false, naturalBlackJack;
 
     public Player(String name) {
         this.name = name;
