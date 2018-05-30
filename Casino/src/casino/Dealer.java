@@ -47,6 +47,9 @@ public class Dealer {
 
     public int getTotal() {
         setTotal();
+        if (total < getOptionalTotal() && getOptionalTotal() <= 21) {
+            total = getOptionalTotal();
+        }
         return total;
     }
 
