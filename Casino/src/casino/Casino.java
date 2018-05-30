@@ -8,18 +8,23 @@ import java.util.Collections;
 import java.util.Scanner;
 
 public class Casino {
-
+    
     static Scanner sc = new Scanner(System.in);
     static int pot = 0;
-
+    
     public static InputStreamReader inStream = new InputStreamReader(System.in);
     public static BufferedReader stdin = new BufferedReader(inStream);
-
+    
     public static void main(String[] args) throws IOException, InterruptedException {
-        int response;
+        int response, menuChoice;
         ArrayList<Card> communityCards = new ArrayList<Card>();
         ArrayList<Card> possibleCard = new ArrayList<Card>();
         ArrayList<Player> players = new ArrayList<Player>();
+        System.out.println("Welcome to CASINO\nWould you like to play:\n1) Black Jack");
+        menuChoice = Integer.parseInt(stdin.readLine());
+        if (menuChoice == 1) {
+            BlackjackJAVA.main(args);
+        }
         for (int i = 1; i <= 8; i++) {
             String name = "Player " + i;
             players.add(new Player(name, i));
@@ -51,9 +56,9 @@ public class Casino {
                 player.setPocketHand(new PocketHand());
             }
             dealPlayers(playersInRound, deck);
-
+            
             int smallBlindNum = setBlinds(playersInRound);
-
+            
             for (Player player : playersInRound) {
                 System.out.println(player.getName() + " " + player.getBlind().getTypeBlind() + " Chips: " + player.getChips());
                 for (Card card7 : player.getPocketHand().getPocketHand()) {
@@ -77,7 +82,7 @@ public class Casino {
                         deck.getDeck().remove(0);
                     }
                 } else if (i == 3) {
-
+                    
                 } else {
                     deck.getDeck().remove(0);
                     communityCards.add(deck.getDeck().get(0));
@@ -105,7 +110,7 @@ public class Casino {
 //        }
 //        System.out.println(hand.handValue());
     }
-
+    
     public static Hand determineHand(PocketHand pocketHand, ArrayList<Card> communityCards) {
         ArrayList<Card> possibleCard = new ArrayList<Card>();
         for (Card communityCard : communityCards) {
@@ -133,11 +138,11 @@ public class Casino {
                 numHand += 1;
                 numCard = 0;
             }
-
+            
         }
         return highestHand;
     }
-
+    
     public static void dealPlayers(ArrayList<Player> players, Deck deck) {
         for (int i = 0; i < 2; i++) {
             for (Player player : players) {
@@ -146,7 +151,7 @@ public class Casino {
             }
         }
     }
-
+    
     public static int setBlinds(ArrayList<Player> players) {
         int smallBlindNum = 0;
         boolean firstTurn = true;
@@ -182,9 +187,9 @@ public class Casino {
                     smallBlindNum = players.get(0).getPlayerNum();
                     pot += players.get(0).getBlind().getBlindAmount();
                     pot += players.get(1).getBlind().getBlindAmount();
-
+                    
                 }
-
+                
                 firstTurn = false;
                 break;
             }
@@ -200,7 +205,7 @@ public class Casino {
         }
         return smallBlindNum;
     }
-
+    
     public static ArrayList<Player> roundOfBetting(int round, ArrayList<Player> players, int smallBlindNum) {
         boolean action = true;
         int requiredChips = 0;
@@ -286,7 +291,7 @@ public class Casino {
         } while (raised == true);
         return players;
     }
-
+    
     public static int raise(Player player, int requiredChips) {
         int raise;
         if (player.getChipsInCurrent() < requiredChips) {
@@ -302,10 +307,10 @@ public class Casino {
         pot += raise;
         player.setChips(player.getChips() - raise);
         player.setChipsInCurrent(player.getChipsInCurrent() + raise);
-
+        
         return raise;
     }
-
+    
     public static void call(Player player, int requiredChips) {
         int callAmount;
         callAmount = requiredChips - player.getChipsInCurrent();
@@ -313,7 +318,7 @@ public class Casino {
         player.setChips(player.getChips() - callAmount);
         player.setChipsInCurrent(player.getChipsInCurrent() + callAmount);
     }
-
+    
     public static ArrayList<Player> sortPlayers(ArrayList<Player> players, int startPlayer) {
         ArrayList<Player> sortedPlayers = new ArrayList<Player>();
         for (int i = 0; i < players.size(); i++) {
@@ -321,7 +326,7 @@ public class Casino {
                 if (i == 0) {
                     for (int j = 1; j <= players.size(); j++) {
                         sortedPlayers.add(players.get(players.size() - j));
-
+                        
                     }
                 } else {
                     for (int j = 1; j <= players.size(); j++) {
@@ -332,14 +337,14 @@ public class Casino {
                         }
                     }
                 }
-
+                
                 break;
             }
-
+            
         }
         return sortedPlayers;
     }
-
+    
     public static void distributeWin(ArrayList<Player> players) {
         Hand winningHand = new Hand();
         Player winningPlayer = null;
