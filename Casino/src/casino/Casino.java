@@ -20,7 +20,7 @@ public class Casino {
         ArrayList<Card> communityCards = new ArrayList<Card>();
         ArrayList<Card> possibleCard = new ArrayList<Card>();
         ArrayList<Player> players = new ArrayList<Player>();
-        System.out.println("Welcome to CASINO\nWould you like to play:\n1) Black Jack");
+        System.out.print("Welcome to CASINO\nWould you like to play:\n1) Black Jack\nEnter your choice: ");
         menuChoice = Integer.parseInt(stdin.readLine());
         if (menuChoice == 1) {
             BlackjackJAVA.main(args);
