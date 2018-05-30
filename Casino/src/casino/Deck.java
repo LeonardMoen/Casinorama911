@@ -1,43 +1,62 @@
-
 package casino;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-
 public class Deck implements Comparable {
-    ArrayList <Card> deck = new ArrayList<Card>();
+
+    ArrayList<Card> deck = new ArrayList<Card>();
 
     public Deck() {
-        for(int i = 1;i<=13;i++){
-            Card card = new Card(i,"Heart");
+        for (int i = 1; i <= 13; i++) {
+            Card card = new Card(i, "Heart");
             deck.add(card);
         }
-        for(int i = 1;i<=13;i++){
-            Card card = new Card(i,"Diamond");
+        for (int i = 1; i <= 13; i++) {
+            Card card = new Card(i, "Diamond");
             deck.add(card);
         }
-        for(int i = 1;i<=13;i++){
-            Card card = new Card(i,"Club");
+        for (int i = 1; i <= 13; i++) {
+            Card card = new Card(i, "Club");
             deck.add(card);
         }
-        for(int i = 1;i<=13;i++){
-            Card card = new Card(i,"Spade");
+        for (int i = 1; i <= 13; i++) {
+            Card card = new Card(i, "Spade");
             deck.add(card);
         }
-        
     }
- 
-    public void shuffle(){
+
+    public Deck(int n) {
+        for (int x = 0; x < n; x++){
+            for (int i = 1; i <= 13; i++) {
+                Card card = new Card(i, "Heart");
+                deck.add(card);
+            }
+            for (int i = 1; i <= 13; i++) {
+                Card card = new Card(i, "Diamond");
+                deck.add(card);
+            }
+            for (int i = 1; i <= 13; i++) {
+                Card card = new Card(i, "Club");
+                deck.add(card);
+            }
+            for (int i = 1; i <= 13; i++) {
+                Card card = new Card(i, "Spade");
+                deck.add(card);
+            }
+        }
+    }
+
+    public void shuffle() {
         Collections.shuffle(deck);
     }
-    
+
     public ArrayList<Card> getDeck() {
         return deck;
     }
 
     @Override
     public int compareTo(Object t) {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
