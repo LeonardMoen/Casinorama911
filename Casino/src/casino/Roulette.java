@@ -18,6 +18,8 @@ import java.util.Random;
  */
 public class Roulette {
 
+    RouletteGraphics graphics = new RouletteGraphics();
+    
     static InputStreamReader inStream = new InputStreamReader(System.in);
     static BufferedReader stdin = new BufferedReader(inStream);
     static Random rand = new Random();
