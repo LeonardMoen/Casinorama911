@@ -31,22 +31,28 @@ import javafx.stage.Stage;
 public class RouletteGraphics extends Application {
 
     private Roulette roulette = new Roulette();
-    ArrayList<Rectangle> rects = new ArrayList<Rectangle>();
+    private ArrayList<Rectangle> rects = new ArrayList<Rectangle>();
+    private ArrayList<Player> players = new ArrayList<Player>();
+    private ArrayList<Rectangle> outsideBets = new ArrayList<Rectangle>();
+    
 
-    public RouletteGraphics() {
-
+    public RouletteGraphics(ArrayList<Player> players) {
+        this.players = players;
     }
 
     @Override
     public void start(Stage primaryStage) throws IOException {
 
         Group root = new Group();
-        Scene scene = new Scene(root, 1500, 1000, Color.BISQUE);
-        
+        Scene scene = new Scene(root, 1500, 1000, Color.GREEN);
+
         drawBoard(root);
 
-       //put game logic here, roulette class cant be called?
-        
+        for (int i = 0; i < players.size(); i++) {
+            System.out.println("Pick an a type of bet");
+            
+        }
+
         setMousePress(rects);
 
         primaryStage.setScene(scene);
@@ -66,18 +72,18 @@ public class RouletteGraphics extends Application {
 
         for (int i = 0; i < 12; i++) {
 
-            Rectangle zero = new Rectangle(110, 10, 50, 50);
-
+            Rectangle zero = new Rectangle(210, 10, 50, 50);
+            zero.setFill(Color.GREENYELLOW);
             rects.add(zero);
             root.getChildren().add(zero);
 
-            Rectangle a = new Rectangle(50, col1YPos, 50, 50);
+            Rectangle a = new Rectangle(150, col1YPos, 50, 50);
             rects.add(a);
 
-            Rectangle b = new Rectangle(110, col2YPos, 50, 50);
+            Rectangle b = new Rectangle(210, col2YPos, 50, 50);
             rects.add(b);
 
-            Rectangle c = new Rectangle(170, col3YPos, 50, 50);
+            Rectangle c = new Rectangle(270, col3YPos, 50, 50);
             rects.add(c);
 
             root.getChildren().add(a);
@@ -100,4 +106,22 @@ public class RouletteGraphics extends Application {
         }
 
     };
+    
+    public void colourBlack(){
+        int [] blackNums = roulette.getBlackNums();
+        for (int i = 1; i <= 36; i++) {
+            if(blackNums.contains(rects.get(i))){
+                rects.get(i).setFill(Color.GRAY);
+            }
+            else{
+                rects.get(i).setFill(Color.RED);
+            }
+        }
+    }
+    
+    public void drawOutsideeBets(){
+        for (int i = 0; i < 3; i++) {
+            Rectangle twelve1 = new Rectangle(90, , , i)
+        }
+    }
 }
