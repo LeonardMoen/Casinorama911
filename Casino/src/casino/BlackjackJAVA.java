@@ -24,8 +24,6 @@ public class BlackjackJAVA {
                     System.out.println("Running: " + ai.getRunningCount());
                     System.out.println("True: " + ai.getTrueCount());
                     System.out.println("Decks: " + ai.getNumDecks());
-                    System.out.println("Bet unit: " + ai.getBettingUnit());
-                    System.out.println("Bet: " + ai.getRealBet());
                 }
             }
             System.out.println("");
@@ -62,8 +60,8 @@ public class BlackjackJAVA {
         for (int i = 0; i < numOfPlayers.size(); i++) {
             if (numOfPlayers.get(i).isAi()) {
                 ai = (BlackjackAI) (numOfPlayers.get(i));
-                ai.set(deck, numOfPlayers, dealer);
                 System.out.println(ai.getName().toUpperCase() + "\t\tChips: $" + ai.getChips());
+                ai.setRealBet();
                 ai.setBet(ai.getRealBet());
                 System.out.println("How much would you like to bet: $" + ai.getBet());
             } else {
@@ -113,6 +111,10 @@ public class BlackjackJAVA {
             numOfPlayers.get(i).setNaturalBlackJack(false);
             numOfPlayers.get(i).setInsurance(false);
             numOfPlayers.get(i).setInsuranceAmount(0);
+            if (numOfPlayers.get(i).isAi()) {
+                BlackjackAI ai = (BlackjackAI) (numOfPlayers.get(i));
+                ai.set(deck, numOfPlayers, dealer);
+            }
             for (int s = 0; s < numOfPlayers.get(i).getPocketHands().size(); s++) {
                 numOfPlayers.get(i).getPocketHands().remove(s);
             }
@@ -133,7 +135,6 @@ public class BlackjackJAVA {
                 System.out.print(numOfPlayers.get(i).getName().toUpperCase() + " ~ Would you like insurance?");
                 if (numOfPlayers.get(i).isAi()) {
                     ai = (BlackjackAI) (numOfPlayers.get(i));
-                    ai.set(deck, numOfPlayers, dealer);
                     if (ai.isInsurance()) {
                         System.out.print(" yes");
                         getInsurance(i);
