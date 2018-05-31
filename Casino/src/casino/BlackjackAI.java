@@ -12,13 +12,8 @@ public class BlackjackAI extends Player {
     private boolean hit, split, stay, dDown, insurance;
     private Random r = new Random();
 
-    public BlackjackAI(Deck deck, ArrayList<Player> players, Dealer dealer) {
+    public BlackjackAI(Deck deck) {
         super("John", deck);
-        setRunningCount(players, dealer);
-        setNumDecks(deck);
-        setTrueCount();
-        setBettingUnit();
-        setRealBet();
         setAi();
     }
 
@@ -35,7 +30,7 @@ public class BlackjackAI extends Player {
             for (int h = 0; h < players.get(i).getPocketHands().size(); h++) {
                 for (int c = 0; c < players.get(i).getPocketHands().get(h).getPlayerHand().size(); c++) {
                     if (players.get(i).getPocketHands().get(h).getPlayerHand().get(c).getWorth() == 10 || players.get(i).getPocketHands().get(h).getPlayerHand().get(c).getWorth() == 1) {
-                        this.runningCount += -1;
+                        this.runningCount += (-1);
                     } else if (players.get(i).getPocketHands().get(h).getPlayerHand().get(c).getWorth() >= 2 && players.get(i).getPocketHands().get(h).getPlayerHand().get(c).getWorth() <= 6) {
                         this.runningCount += 1;
                     }
@@ -44,7 +39,7 @@ public class BlackjackAI extends Player {
         }
         for (int d = 0; d < dealer.getDealerHand().getPlayerHand().size(); d++) {
             if (dealer.getDealerHand().getPlayerHand().get(d).getWorth() == 10 || dealer.getDealerHand().getPlayerHand().get(d).getWorth() == 1) {
-                this.runningCount += -1;
+                this.runningCount += (-1);
             } else if (dealer.getDealerHand().getPlayerHand().get(d).getWorth() >= 2 && dealer.getDealerHand().getPlayerHand().get(d).getWorth() <= 6) {
                 this.runningCount += 1;
             }
@@ -72,6 +67,7 @@ public class BlackjackAI extends Player {
     }
 
     public void setNumDecks(Deck deck) {
+        numDecks = 0;
         int cards = 0;
         double remainder;
         for (int i = 0; i < deck.getDeck().size(); i++) {
@@ -140,7 +136,7 @@ public class BlackjackAI extends Player {
         if (this.trueCount - 1 <= 0) {
             this.realBet = super.getChips() / r.nextInt(((25 - 10) + 1) + 10);
         } else {
-            this.realBet = (int)((this.trueCount - 1) * this.bettingUnit);
+            this.realBet = (int) ((this.trueCount - 1) * this.bettingUnit);
         }
     }
 
