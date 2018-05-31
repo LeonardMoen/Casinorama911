@@ -82,7 +82,7 @@ public class BlackjackAI extends Player {
     }
 
     public void setHit(Deck deck, int n) {
-        if (super.getRealTotal(n) <= 15) {
+        if (super.getRealTotal(n) <= 17) {
             this.hit = true;
         } else if (super.getRealTotal(n) + deck.getDeck().get(0).getWorth() > 21) {
             this.hit = false;
@@ -136,7 +136,7 @@ public class BlackjackAI extends Player {
             setBettingUnit();
             this.realBet = this.bettingUnit;
         } else if (this.trueCount - 1 < 0) {
-            this.realBet = super.getChips() / r.nextInt(((25 - 10) + 1) + 10);
+            this.realBet = super.getChips() / r.nextInt(((25 - 15) + 1) + 15);
         } else {
             this.realBet = (int) ((this.trueCount - 1) * this.bettingUnit);
         }
