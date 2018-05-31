@@ -18,6 +18,8 @@ public class BlackjackJAVA {
         addAI();
         int answer;
         do {
+            System.out.println("");
+            placeBets();
             for (int i = 0; i < numOfPlayers.size(); i++) {
                 if (numOfPlayers.get(i).isAi()) {
                     BlackjackAI ai = (BlackjackAI) (numOfPlayers.get(i));
@@ -28,13 +30,22 @@ public class BlackjackJAVA {
                     System.out.println("Bet: " + ai.getRealBet());
                 }
             }
-            System.out.println("");
-            placeBets();
             if (numOfPlayers.isEmpty()) {
                 break;
             }
             System.out.println("");
             printBoard();
+            for (int i = 0; i < numOfPlayers.size(); i++) {
+                if (numOfPlayers.get(i).isAi()) {
+                    BlackjackAI ai = (BlackjackAI) (numOfPlayers.get(i));
+                    ai.set(deck, numOfPlayers, dealer);
+                    System.out.println("Running: " + ai.getRunningCount());
+                    System.out.println("True: " + ai.getTrueCount());
+                    System.out.println("Decks: " + ai.getNumDecks());
+                    System.out.println("Bet unit: " + ai.getBettingUnit());
+                    System.out.println("Bet: " + ai.getRealBet());
+                }
+            }
             resetCharacteristics();
             for (int i = 0; i < numOfPlayers.size(); i++) {
                 System.out.print("\n" + numOfPlayers.get(i).getName().toUpperCase() + " would you like to:\n1) Play again\n2) Cash out\nEnter choice: ");
@@ -52,7 +63,7 @@ public class BlackjackJAVA {
     }
 
     public static void addAI() throws IOException {
-        numOfPlayers.add(new BlackjackAI(deck, numOfPlayers, dealer));
+        numOfPlayers.add(new BlackjackAI(deck));
     }
 
     public static void placeBets() throws IOException {
