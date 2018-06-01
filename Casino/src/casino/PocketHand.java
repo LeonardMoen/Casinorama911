@@ -25,13 +25,6 @@ public class PocketHand{
         this.pocketHand = pocketHand;
     }
     
-    
-    public boolean checkSuited(){
-        if(pocketHand.get(0).getSuit().equals(pocketHand.get(1).getSuit())){
-            return true;
-        }
-        return false;
-    }
 
     public void setSplitBet(int splitBet) {
         this.splitBet = splitBet;
@@ -77,6 +70,17 @@ public class PocketHand{
 
     public boolean pocketPair() {
         if (pocketHand.get(0).getValue() == pocketHand.get(1).getValue()) {
+            return true;
+        }
+        return false;
+    }
+    
+//    public int valueDifference(){
+//        
+//    }
+    
+     public boolean checkSuited(){
+        if(pocketHand.get(0).getSuit().equals(pocketHand.get(1).getSuit())){
             return true;
         }
         return false;
