@@ -15,21 +15,11 @@ public class BlackjackJAVA {
     public static void main(String[] args) throws IOException, InterruptedException {
         initializeGame();
         dealer = new Dealer(deck);
-        addAI();
+        //addAI();
         int answer;
         do {
             System.out.println("");
             placeBets();
-            for (int i = 0; i < numOfPlayers.size(); i++) {
-                if (numOfPlayers.get(i).isAi()) {
-                    BlackjackAI ai = (BlackjackAI) (numOfPlayers.get(i));
-                    System.out.println("Running: " + ai.getRunningCount());
-                    System.out.println("True: " + ai.getTrueCount());
-                    System.out.println("Decks: " + ai.getNumDecks());
-                    System.out.println("Bet unit: " + ai.getBettingUnit());
-                    System.out.println("Bet: " + ai.getRealBet());
-                }
-            }
             if (numOfPlayers.isEmpty()) {
                 break;
             }
