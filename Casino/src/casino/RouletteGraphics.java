@@ -44,7 +44,7 @@ public class RouletteGraphics extends Application {
         Polygon [] col3 = new Polygon[12];
 
         for (int i = 0; i < 12; i++) {
-            col1[i] = new Rectangle(5, 5, 10, 10);
+            //col1[i] = new Rectangle(5, 5, 10, 10);
         }
 
         primaryStage.setScene(scene);
