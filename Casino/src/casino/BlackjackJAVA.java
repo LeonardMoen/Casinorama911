@@ -18,14 +18,6 @@ public class BlackjackJAVA {
         addAI();
         int answer;
         do {
-            for (int i = 0; i < numOfPlayers.size(); i++) {
-                if (numOfPlayers.get(i).isAi()) {
-                    BlackjackAI ai = (BlackjackAI) (numOfPlayers.get(i));
-                    System.out.println("Running: " + ai.getRunningCount());
-                    System.out.println("True: " + ai.getTrueCount());
-                    System.out.println("Decks: " + ai.getNumDecks());
-                }
-            }
             System.out.println("");
             placeBets();
             if (numOfPlayers.isEmpty()) {
@@ -38,6 +30,7 @@ public class BlackjackJAVA {
                 System.out.print("\n" + numOfPlayers.get(i).getName().toUpperCase() + " would you like to:\n1) Play again\n2) Cash out\nEnter choice: ");
                 if (numOfPlayers.get(i).isAi()) {
                     BlackjackAI ai = (BlackjackAI) (numOfPlayers.get(i));
+                    Thread.sleep(1000);
                     if (ai.isLeave()) {
                         System.out.print("2");
                         answer = 2;
@@ -47,11 +40,12 @@ public class BlackjackJAVA {
                     }
                 } else {
                     answer = Integer.parseInt(stdin.readLine());
-                    if (answer == 2) {
-                        numOfPlayers.remove(i);
-                        i = i - 1;
-                    }
                 }
+                if (answer == 2) {
+                    numOfPlayers.remove(i);
+                    i = i - 1;
+                }
+
             }
             if (deck.getDeck().isEmpty()) {
                 deck = new Deck();
@@ -64,7 +58,7 @@ public class BlackjackJAVA {
         numOfPlayers.add(new BlackjackAI(deck));
     }
 
-    public static void placeBets() throws IOException {
+    public static void placeBets() throws IOException, InterruptedException {
         boolean repeat;
         int response;
         BlackjackAI ai;
@@ -74,7 +68,9 @@ public class BlackjackJAVA {
                 System.out.println(ai.getName().toUpperCase() + "\t\tChips: $" + ai.getChips());
                 ai.setRealBet();
                 ai.setBet(ai.getRealBet());
-                System.out.println("How much would you like to bet: $" + ai.getBet());
+                System.out.print("How much would you like to bet: $");
+                Thread.sleep(1200);
+                System.out.print(ai.getBet());
             } else {
                 response = 0;
                 if (numOfPlayers.get(i).getChips() == 0) {
@@ -345,7 +341,7 @@ public class BlackjackJAVA {
                     } else if (numOfPlayers.get(i).getPocketHands().get(handNum).checkSplit()) {
                         System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
                         if (ai.isSplit()) {
-
+                            Thread.sleep(2000);
                             System.out.println("3");
                             playerSplit(i, handNum);
                         }
