@@ -36,10 +36,21 @@ public class BlackjackJAVA {
             resetCharacteristics();
             for (int i = 0; i < numOfPlayers.size(); i++) {
                 System.out.print("\n" + numOfPlayers.get(i).getName().toUpperCase() + " would you like to:\n1) Play again\n2) Cash out\nEnter choice: ");
-                answer = Integer.parseInt(stdin.readLine());
-                if (answer == 2) {
-                    numOfPlayers.remove(i);
-                    i = i - 1;
+                if (numOfPlayers.get(i).isAi()) {
+                    BlackjackAI ai = (BlackjackAI) (numOfPlayers.get(i));
+                    if (ai.isLeave()) {
+                        System.out.print("2");
+                        answer = 2;
+                    } else {
+                        System.out.print("1");
+                        answer = 1;
+                    }
+                } else {
+                    answer = Integer.parseInt(stdin.readLine());
+                    if (answer == 2) {
+                        numOfPlayers.remove(i);
+                        i = i - 1;
+                    }
                 }
             }
             if (deck.getDeck().isEmpty()) {
@@ -273,7 +284,7 @@ public class BlackjackJAVA {
         printCards(i, handNum);
     }
 
-    public static void playerSplit(int i, int handNum) throws IOException {
+    public static void playerSplit(int i, int handNum) throws IOException, InterruptedException {
         if (numOfPlayers.get(i).getChips() >= numOfPlayers.get(i).getBet()) {
             numOfPlayers.get(i).ifSplit(deck);
             numOfPlayers.get(i).getPocketHands().get(1).setSplitBet(numOfPlayers.get(i).getBet());
@@ -301,7 +312,7 @@ public class BlackjackJAVA {
         System.out.println("");
     }
 
-    public static void playRound(int i, int handNum) throws IOException {
+    public static void playRound(int i, int handNum) throws IOException, InterruptedException {
         int response;
         round = 1;
         if (handNum > 0) {
@@ -320,12 +331,37 @@ public class BlackjackJAVA {
                         numOfPlayers.get(i).setStay(true);
                         numOfPlayers.get(i).setChips((int) (numOfPlayers.get(i).getBet() * 1.5 + numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet()));
                         break;
+                    } else if (numOfPlayers.get(i).getPocketHands().get(handNum).checkSplit() && ai.isdDown()) {
+                        System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Double down\n4) Split");
+                        if (ai.isSplit()) {
+                            Thread.sleep(2000);
+                            System.out.println("4");
+                            playerSplit(i, handNum);
+                        } else if (ai.isdDown()) {
+                            Thread.sleep(2000);
+                            System.out.println("3");
+                            playerDD(i, handNum);
+                        }
+                    } else if (numOfPlayers.get(i).getPocketHands().get(handNum).checkSplit()) {
+                        System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
+                        if (ai.isSplit()) {
+
+                            System.out.println("3");
+                            playerSplit(i, handNum);
+                        }
                     } else if (ai.isdDown()) {
+                        System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Double down");
+                        Thread.sleep(2000);
+                        System.out.println("3");
                         playerDD(i, handNum);
-                    } else if (ai.isSplit()) {
-                        playerSplit(i, handNum);
                     } else if (ai.isHit()) {
+                        System.out.println("Would you like to\n1) Hit\n2) Stay");
+                        Thread.sleep(2000);
+                        System.out.println("1");
                         playerHit(i, handNum);
+                    } else if (!ai.isHit()) {
+                        Thread.sleep(2000);
+                        System.out.println("2");
                     }
                 } else {
                     if (numOfPlayers.get(i).getPocketHands().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
@@ -333,7 +369,13 @@ public class BlackjackJAVA {
                         numOfPlayers.get(i).setStay(true);
                         break;
                     } else if (ai.isHit()) {
+                        System.out.println("Would you like to\n1) Hit\n2) Stay");
+                        Thread.sleep(2000);
+                        System.out.println("1");
                         playerHit(i, handNum);
+                    } else if (!ai.isHit()) {
+                        Thread.sleep(2000);
+                        System.out.println("2");
                     }
                 }
             } else {
