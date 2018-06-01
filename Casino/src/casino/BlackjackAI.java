@@ -93,6 +93,21 @@ public class BlackjackAI extends Player {
         }
     }
 
+    public boolean isLeave() {
+        if (super.getChips() > 2500) {
+            return true;
+        } else if (super.getChips() < 50) {
+            return true;
+        } else {
+            int n = r.nextInt(10);
+            if (n <= 8) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+
     public void setSplit() {
         if (super.getChips() >= this.realBet) {
             int eh = r.nextInt(2);
