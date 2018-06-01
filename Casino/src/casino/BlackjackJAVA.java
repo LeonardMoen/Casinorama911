@@ -15,7 +15,7 @@ public class BlackjackJAVA {
     public static void main(String[] args) throws IOException, InterruptedException {
         initializeGame();
         dealer = new Dealer(deck);
-        //addAI();
+        addAI();
         int answer;
         do {
             for (int i = 0; i < numOfPlayers.size(); i++) {
@@ -33,17 +33,6 @@ public class BlackjackJAVA {
             }
             System.out.println("");
             printBoard();
-            for (int i = 0; i < numOfPlayers.size(); i++) {
-                if (numOfPlayers.get(i).isAi()) {
-                    BlackjackAI ai = (BlackjackAI) (numOfPlayers.get(i));
-                    ai.set(deck, numOfPlayers, dealer);
-                    System.out.println("Running: " + ai.getRunningCount());
-                    System.out.println("True: " + ai.getTrueCount());
-                    System.out.println("Decks: " + ai.getNumDecks());
-                    System.out.println("Bet unit: " + ai.getBettingUnit());
-                    System.out.println("Bet: " + ai.getRealBet());
-                }
-            }
             resetCharacteristics();
             for (int i = 0; i < numOfPlayers.size(); i++) {
                 System.out.print("\n" + numOfPlayers.get(i).getName().toUpperCase() + " would you like to:\n1) Play again\n2) Cash out\nEnter choice: ");
@@ -314,67 +303,96 @@ public class BlackjackJAVA {
 
     public static void playRound(int i, int handNum) throws IOException {
         int response;
-        BlackjackAI ai;
         round = 1;
         if (handNum > 0) {
             numOfPlayers.get(i).setStay(false);
         }
         while (!numOfPlayers.get(i).isStay()) {
-            if (round == 1) {
-                if (numOfPlayers.get(i).getPocketHands().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
-                    System.out.println("NATURAL BLACKJACK!");
-                    numOfPlayers.get(i).setNaturalBlackJack(true);
-                    numOfPlayers.get(i).setStay(true);
-                    numOfPlayers.get(i).setChips((int) (numOfPlayers.get(i).getBet() * 1.5 + numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet()));
-                    break;
-                } else if (numOfPlayers.get(i).getTotal(handNum) >= 9 && numOfPlayers.get(i).getTotal(handNum) <= 11) {
-                    if (numOfPlayers.get(i).getPocketHands().get(0).checkSplit()) {
-                        System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split\n4) Double Down");
-                        response = Integer.parseInt(stdin.readLine());
-                        switch (response) {
-                            case 3:
-                                playerSplit(i, handNum);
-                                break;
-                            case 4:
+            if (numOfPlayers.get(i).isAi()) {
+                BlackjackAI ai = (BlackjackAI) (numOfPlayers.get(i));
+                ai.setdDown(deck, handNum);
+                ai.setSplit();
+                ai.setHit(deck, handNum);
+                if (round == 1) {
+                    if (numOfPlayers.get(i).getPocketHands().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
+                        System.out.println("NATURAL BLACKJACK!");
+                        numOfPlayers.get(i).setNaturalBlackJack(true);
+                        numOfPlayers.get(i).setStay(true);
+                        numOfPlayers.get(i).setChips((int) (numOfPlayers.get(i).getBet() * 1.5 + numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet()));
+                        break;
+                    } else if (ai.isdDown()) {
+                        playerDD(i, handNum);
+                    } else if (ai.isSplit()) {
+                        playerSplit(i, handNum);
+                    } else if (ai.isHit()) {
+                        playerHit(i, handNum);
+                    }
+                } else {
+                    if (numOfPlayers.get(i).getPocketHands().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
+                        System.out.println("BLACKJACK!");
+                        numOfPlayers.get(i).setStay(true);
+                        break;
+                    } else if (ai.isHit()) {
+                        playerHit(i, handNum);
+                    }
+                }
+            } else {
+                if (round == 1) {
+                    if (numOfPlayers.get(i).getPocketHands().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
+                        System.out.println("NATURAL BLACKJACK!");
+                        numOfPlayers.get(i).setNaturalBlackJack(true);
+                        numOfPlayers.get(i).setStay(true);
+                        numOfPlayers.get(i).setChips((int) (numOfPlayers.get(i).getBet() * 1.5 + numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet()));
+                        break;
+                    } else if (numOfPlayers.get(i).getTotal(handNum) >= 9 && numOfPlayers.get(i).getTotal(handNum) <= 11) {
+                        if (numOfPlayers.get(i).getPocketHands().get(0).checkSplit()) {
+                            System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split\n4) Double Down");
+                            response = Integer.parseInt(stdin.readLine());
+                            switch (response) {
+                                case 3:
+                                    playerSplit(i, handNum);
+                                    break;
+                                case 4:
+                                    playerDD(i, handNum);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        } else {
+                            System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Double down");
+                            response = Integer.parseInt(stdin.readLine());
+                            if (response == 3) {
                                 playerDD(i, handNum);
-                                break;
-                            default:
-                                break;
+                            }
                         }
                     } else {
-                        System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Double down");
-                        response = Integer.parseInt(stdin.readLine());
-                        if (response == 3) {
-                            playerDD(i, handNum);
+                        if (numOfPlayers.get(i).getPocketHands().get(0).checkSplit()) {
+                            System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
+                            response = Integer.parseInt(stdin.readLine());
+                            if (response == 3) {
+                                playerSplit(i, handNum);
+                            }
+                        } else {
+                            System.out.println("Would you like to\n1) Hit\n2) Stay");
+                            response = Integer.parseInt(stdin.readLine());
                         }
                     }
                 } else {
-                    if (numOfPlayers.get(i).getPocketHands().get(0).checkSplit()) {
-                        System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
-                        response = Integer.parseInt(stdin.readLine());
-                        if (response == 3) {
-                            playerSplit(i, handNum);
-                        }
+                    if (numOfPlayers.get(i).getPocketHands().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
+                        System.out.println("BLACKJACK!");
+                        numOfPlayers.get(i).setStay(true);
+                        break;
                     } else {
                         System.out.println("Would you like to\n1) Hit\n2) Stay");
                         response = Integer.parseInt(stdin.readLine());
                     }
                 }
-            } else {
-                if (numOfPlayers.get(i).getPocketHands().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
-                    System.out.println("BLACKJACK!");
+                if (response == 1) {
+                    playerHit(i, handNum);
+                } else if (response == 2) {
                     numOfPlayers.get(i).setStay(true);
                     break;
-                } else {
-                    System.out.println("Would you like to\n1) Hit\n2) Stay");
-                    response = Integer.parseInt(stdin.readLine());
                 }
-            }
-            if (response == 1) {
-                playerHit(i, handNum);
-            } else if (response == 2) {
-                numOfPlayers.get(i).setStay(true);
-                break;
             }
             round++;
         }
