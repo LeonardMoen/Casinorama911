@@ -11,31 +11,30 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Random;
 
-
 /**
  *
  * @author laua8572
  */
 public class Roulette {
 
-    
     static InputStreamReader inStream = new InputStreamReader(System.in);
     static BufferedReader stdin = new BufferedReader(inStream);
     static Random rand = new Random();
 
-    static ArrayList<Integer> blackNums = new ArrayList<Integer>();
+    static int [] blackNums = {2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35};
     static ArrayList<Bet> bets = new ArrayList<Bet>();
 
-
     public Roulette() {
-       
-        
-        
+
+    }
+
+
+
+    public int[] getBlackNums() {
+        return blackNums;
     }
 
     public void playRoulette(ArrayList<Player> players) throws IOException {
-
-        fillBlackNums();
 
         for (int i = 0; i < players.size(); i++) {
 
@@ -196,15 +195,15 @@ public class Roulette {
             int amountBet = Integer.parseInt(stdin.readLine());
 
             players.get(i).setBet(amountBet);
-            bets.add(new Bet(amountBet, 9, i, blackNums));
+        //    bets.add(new Bet(amountBet, 9, i, blackNums));
         }
         if (choice == 10) {
             ArrayList<Integer> numsBetOn = new ArrayList<Integer>();
 
             for (int j = 1; j <= 36; j++) {
-                if (!(blackNums.contains(j))) {//if black nums doesnt contain j, add it to numsBetOn
-                    numsBetOn.add(j);
-                }
+//                if (!(blackNums.contains(j))) {//if black nums doesnt contain j, add it to numsBetOn
+//                    numsBetOn.add(j);
+//                }
             }
 
             System.out.println("How much do you want to bet?");
@@ -288,22 +287,7 @@ public class Roulette {
         }
     }
 
-    public void fillBlackNums() {
 
-        for (int j = 2; j <= 10; j += 2) {
-            blackNums.add(j);
-        }
-        for (int j = 20; j <= 28; j += 2) {
-            blackNums.add(j);
-
-        }
-        for (int j = 11; j <= 18; j += 2) {
-            blackNums.add(j);
-        }
-        for (int j = 29; j <= 36; j += 2) {
-            blackNums.add(j);
-        }
-    }
 
     public int num2Split(int betNum1) throws IOException {
         int betNum2 = -1;
