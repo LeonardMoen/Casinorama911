@@ -14,10 +14,19 @@ public class BlackjackJAVA {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         initializeGame();
+        dealer = new Dealer(deck);
+        addAI();
         int answer;
         do {
+            for (int i = 0; i < numOfPlayers.size(); i++) {
+                if (numOfPlayers.get(i).isAi()) {
+                    BlackjackAI ai = (BlackjackAI) (numOfPlayers.get(i));
+                    System.out.println("Running: " + ai.getRunningCount());
+                    System.out.println("True: " + ai.getTrueCount());
+                    System.out.println("Decks: " + ai.getNumDecks());
+                }
+            }
             System.out.println("");
-            dealer = new Dealer(deck);
             placeBets();
             if (numOfPlayers.isEmpty()) {
                 break;
@@ -40,44 +49,57 @@ public class BlackjackJAVA {
         System.out.println("\nThank god youre gone!");
     }
 
+    public static void addAI() throws IOException {
+        numOfPlayers.add(new BlackjackAI(deck, numOfPlayers, dealer));
+    }
+
     public static void placeBets() throws IOException {
         boolean repeat;
         int response;
+        BlackjackAI ai;
         for (int i = 0; i < numOfPlayers.size(); i++) {
-            response = 0;
-            if (numOfPlayers.get(i).getChips() == 0) {
-                System.out.println(numOfPlayers.get(i).getName().toUpperCase() + ", you have no more CHIPS!\n");
-                System.out.print("Would you like to:\n1) Buy more chips\n2) Leave table\nEnter your choice: ");
-                response = Integer.parseInt(stdin.readLine());
-                switch (response) {
-                    case 1:
-                        System.out.print("How many chips would you like to buy? ");
-                        int buy = Integer.parseInt(stdin.readLine());
-                        numOfPlayers.get(i).setChips(buy);
-                        break;
-                    case 2:
-                        numOfPlayers.remove(i);
-                        i = i - 1;
-                        break;
-                    default:
-                        System.out.println("That was not one of the options!");
-                        break;
-                }
-            }
-            System.out.println("");
-            if (response != 2) {
-                System.out.println(numOfPlayers.get(i).getName().toUpperCase() + "\t\tChips: $" + numOfPlayers.get(i).getChips());
-                do {
-                    System.out.print("How much would you like to bet: $");
-                    int bet = Integer.parseInt(stdin.readLine());
-                    if (bet > numOfPlayers.get(i).getChips()) {
-                        System.out.println("\nYou only have $" + numOfPlayers.get(i).getChips() + "\n");
-                        repeat = true;
-                    } else {
-                        numOfPlayers.get(i).setBet(bet);
-                        repeat = false;
+            if (numOfPlayers.get(i).isAi()) {
+                ai = (BlackjackAI) (numOfPlayers.get(i));
+                System.out.println(ai.getName().toUpperCase() + "\t\tChips: $" + ai.getChips());
+                ai.setRealBet();
+                ai.setBet(ai.getRealBet());
+                System.out.println("How much would you like to bet: $" + ai.getBet());
+            } else {
+                response = 0;
+                if (numOfPlayers.get(i).getChips() == 0) {
+                    System.out.println(numOfPlayers.get(i).getName().toUpperCase() + ", you have no more CHIPS!\n");
+                    System.out.print("Would you like to:\n1) Buy more chips\n2) Leave table\nEnter your choice: ");
+                    response = Integer.parseInt(stdin.readLine());
+                    switch (response) {
+                        case 1:
+                            System.out.print("How many chips would you like to buy? ");
+                            int buy = Integer.parseInt(stdin.readLine());
+                            numOfPlayers.get(i).setChips(buy);
+                            break;
+                        case 2:
+                            numOfPlayers.remove(i);
+                            i = i - 1;
+                            break;
+                        default:
+                            System.out.println("That was not one of the options!");
+                            break;
                     }
-                } while (repeat);
+                }
+                System.out.println("");
+                if (response != 2) {
+                    System.out.println(numOfPlayers.get(i).getName().toUpperCase() + "\t\tChips: $" + numOfPlayers.get(i).getChips());
+                    do {
+                        System.out.print("How much would you like to bet: $");
+                        int bet = Integer.parseInt(stdin.readLine());
+                        if (bet > numOfPlayers.get(i).getChips()) {
+                            System.out.println("\nYou only have $" + numOfPlayers.get(i).getChips() + "\n");
+                            repeat = true;
+                        } else {
+                            numOfPlayers.get(i).setBet(bet);
+                            repeat = false;
+                        }
+                    } while (repeat);
+                }
             }
         }
     }
@@ -89,14 +111,20 @@ public class BlackjackJAVA {
             numOfPlayers.get(i).setNaturalBlackJack(false);
             numOfPlayers.get(i).setInsurance(false);
             numOfPlayers.get(i).setInsuranceAmount(0);
+            if (numOfPlayers.get(i).isAi()) {
+                BlackjackAI ai = (BlackjackAI) (numOfPlayers.get(i));
+                ai.set(deck, numOfPlayers, dealer);
+            }
             for (int s = 0; s < numOfPlayers.get(i).getPocketHands().size(); s++) {
                 numOfPlayers.get(i).getPocketHands().remove(s);
             }
             numOfPlayers.get(i).getPocketHands().add(new PocketHand(deck));
+            dealer = new Dealer(deck);
         }
     }
 
     public static void printBoard() throws IOException, InterruptedException {
+        BlackjackAI ai;
         System.out.println("\nDEALER ~ HAND");
         System.out.println(dealer.getDealerHand().getPlayerHand().get(0) + "\t*********");
         if (dealer.checkInsured()) {
@@ -105,7 +133,15 @@ public class BlackjackJAVA {
         for (int i = 0; i < numOfPlayers.size(); i++) {
             if (dealer.getDealerHand().getPlayerHand().get(0).getValue() == 1) {
                 System.out.print(numOfPlayers.get(i).getName().toUpperCase() + " ~ Would you like insurance?");
-                if (stdin.readLine().equalsIgnoreCase("yes")) {
+                if (numOfPlayers.get(i).isAi()) {
+                    ai = (BlackjackAI) (numOfPlayers.get(i));
+                    if (ai.isInsurance()) {
+                        System.out.print(" yes");
+                        getInsurance(i);
+                    } else {
+                        System.out.print(" no");
+                    }
+                } else if (stdin.readLine().equalsIgnoreCase("yes")) {
                     getInsurance(i);
                 }
             }
@@ -267,6 +303,7 @@ public class BlackjackJAVA {
 
     public static void playRound(int i, int handNum) throws IOException {
         int response;
+        BlackjackAI ai;
         round = 1;
         if (handNum > 0) {
             numOfPlayers.get(i).setStay(false);

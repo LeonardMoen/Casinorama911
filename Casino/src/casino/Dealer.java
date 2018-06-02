@@ -14,6 +14,16 @@ public class Dealer {
         return dealerHand;
     }
 
+    public void removeHand() {
+        for (int i = 0; i < dealerHand.getPlayerHand().size(); i++) {
+            this.dealerHand.getPlayerHand().remove(i);
+        }
+    }
+
+    public void addHand(Deck deck) {
+        this.dealerHand = new PocketHand(deck);
+    }
+
     public void setOptionalTotal(int optionalTotal) {
         this.optionalTotal = optionalTotal;
     }
