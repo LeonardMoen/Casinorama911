@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import javafx.application.Application;
+import static javafx.application.Application.STYLESHEET_CASPIAN;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -22,6 +23,8 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
@@ -34,7 +37,6 @@ public class RouletteGraphics extends Application {
     private ArrayList<Rectangle> rects = new ArrayList<Rectangle>();
     private ArrayList<Player> players = new ArrayList<Player>();
     private ArrayList<Rectangle> outsideBets = new ArrayList<Rectangle>();
-    
 
     public RouletteGraphics(ArrayList<Player> players) {
         this.players = players;
@@ -48,13 +50,6 @@ public class RouletteGraphics extends Application {
 
         drawBoard(root);
 
-        for (int i = 0; i < players.size(); i++) {
-            System.out.println("Pick an a type of bet");
-            
-        }
-
-        setMousePress(rects);
-
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -66,35 +61,67 @@ public class RouletteGraphics extends Application {
     }
 
     public void drawBoard(Group root) {
-        int col1YPos = 70;
-        int col2YPos = 70;
-        int col3YPos = 70;
+
+        int counter = 1;
+        int colxPos = 180;
+
+        Rectangle outline = new Rectangle(175, 145, 905, 170);
+        outline.setFill(Color.WHITE);
+        root.getChildren().add(outline);
+        Rectangle outline2 = new Rectangle(100, 200, 75, 60);
+        outline2.setFill(Color.WHITE);
+        root.getChildren().add(outline2);
+
+        Font f = new Font(STYLESHEET_CASPIAN, 35);
 
         for (int i = 0; i < 12; i++) {
 
-            Rectangle zero = new Rectangle(210, 10, 50, 50);
-            zero.setFill(Color.GREENYELLOW);
-            rects.add(zero);
+            Rectangle zero = new Rectangle(105, 205, 70, 50);
+            zero.setFill(Color.GREEN);
             root.getChildren().add(zero);
 
-            Rectangle a = new Rectangle(150, col1YPos, 50, 50);
+            Text t0 = new Text(125, 240, "0");
+            t0.setFill(Color.WHITE);
+            t0.setFont(f);
+
+            Rectangle a = new Rectangle(colxPos, 150, 70, 50);
+            a.setFill(Color.RED);
             rects.add(a);
 
-            Rectangle b = new Rectangle(210, col2YPos, 50, 50);
+            Text t1 = new Text(colxPos + 15, 185, Integer.toString(counter));
+            t1.setFill(Color.WHITE);
+            t1.setFont(f);
+
+            Rectangle b = new Rectangle(colxPos, 205, 70, 50);
+            b.setFill(Color.RED);
             rects.add(b);
 
-            Rectangle c = new Rectangle(270, col3YPos, 50, 50);
+            Text t2 = new Text(colxPos + 15, 240, Integer.toString(counter + 1));
+            t2.setFill(Color.WHITE);
+            t2.setFont(f);
+
+            Rectangle c = new Rectangle(colxPos, 260, 70, 50);
+            c.setFill(Color.RED);
             rects.add(c);
+
+            Text t3 = new Text(colxPos + 15, 295, Integer.toString(counter + 2));
+            t3.setFill(Color.WHITE);
+            t3.setFont(f);
 
             root.getChildren().add(a);
             root.getChildren().add(b);
             root.getChildren().add(c);
 
-            col1YPos += 60;
-            col2YPos += 60;
-            col3YPos += 60;
+            root.getChildren().add(t0);
+            root.getChildren().add(t1);
+            root.getChildren().add(t2);
+            root.getChildren().add(t3);
+
+            colxPos += 75;
+            counter += 3;
 
         }
+        fillBlackNums();
     }
 
     EventHandler<Event> rectOnClickAction = new EventHandler<Event>() {
@@ -106,22 +133,24 @@ public class RouletteGraphics extends Application {
         }
 
     };
-    
-    public void colourBlack(){
-        int [] blackNums = roulette.getBlackNums();
-        for (int i = 1; i <= 36; i++) {
-            if(blackNums.contains(rects.get(i))){
-                rects.get(i).setFill(Color.GRAY);
+
+    public void fillBlackNums() {
+        int[] blackNums = {2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35};
+
+        for (int i = 0; i < rects.size(); i++) {
+            for (int j = 0; j < blackNums.length; j++) {
+
+                if (i == blackNums[j] - 1) {
+                    rects.get(i).setFill(Color.BLACK);
+                }
+
             }
-            else{
-                rects.get(i).setFill(Color.RED);
-            }
+
         }
+
     }
-    
-    public void drawOutsideeBets(){
-        for (int i = 0; i < 3; i++) {
-            Rectangle twelve1 = new Rectangle(90, , , i)
-        }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
