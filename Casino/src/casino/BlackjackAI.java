@@ -13,8 +13,8 @@ public class BlackjackAI extends Player {
     // private ArrayList<Card> counted = new ArrayList<>();
     private Random r = new Random();
 
-    public BlackjackAI(Deck deck) {
-        super("John", deck);
+    public BlackjackAI(String name, Deck deck) {
+        super(name, deck);
         setNumDecks(deck);
         setAi();
     }
