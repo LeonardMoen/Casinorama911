@@ -6,6 +6,7 @@
 package casino;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import javafx.application.Application;
@@ -19,6 +20,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -238,10 +240,29 @@ public class RouletteGraphics extends Application {
         root.getChildren().add(t6);
 
     }
-    
-    
-    public void drawInsideBets(Group root){
+
+    public void drawInsideBets(Group root) throws FileNotFoundException {
+
+        Button button = new Button();
+        Font f = new Font(20);
+        button.setFont(f);
+        button.setMinSize(70, 50);
+        button.setTranslateX(200);
+        button.setTranslateY(150);
+        //button.setPadding(Insets.EMPTY);
         
+        
+        Image image = new Image(new FileInputStream("H:\\Documents\\NetBeansProjects\\Casinorama911cpt\\Casino\\src\\Resources\\single.jpg"), 2000, 2000, true, true);
+
+        ImageView imageView = new ImageView(image);
+
+        imageView.setFitWidth(70);
+
+        imageView.setFitHeight(50);
+
+        button.setGraphic(imageView);
+        
+        root.getChildren().add(button);
     }
 
     public void fillBlackNums() {
@@ -262,5 +283,6 @@ public class RouletteGraphics extends Application {
 
     public static void main(String[] args) {
         launch(args);
+
     }
 }
