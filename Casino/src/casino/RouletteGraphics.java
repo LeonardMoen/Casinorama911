@@ -242,18 +242,6 @@ public class RouletteGraphics extends Application {
     public void drawInsideBets(Group root) {
         for (int i = 0; i < 10; i++) {
 
-    
-    
-
-    public void colourBlack() {
-        int[] blackNums = roulette.getBlackNums();
-        for (int i = 1; i <= 36; i++) {
-//            if(blackNums.contains(rects.get(i))){
-//                rects.get(i).setFill(Color.GRAY);
-//            }
-//            else{
-//                rects.get(i).setFill(Color.RED);
-//            }
         }
     }
 
