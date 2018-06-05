@@ -55,7 +55,9 @@ public class BlackjackJAVA {
     }
 
     public static void addAI() throws IOException {
-        numOfPlayers.add(new BlackjackAI(deck));
+        numOfPlayers.add(new BlackjackAI("John",deck));
+        numOfPlayers.add(new BlackjackAI("Bob",deck));
+        numOfPlayers.add(new BlackjackAI("Carina",deck));
     }
 
     public static void placeBets() throws IOException, InterruptedException {
@@ -71,6 +73,7 @@ public class BlackjackJAVA {
                 System.out.print("How much would you like to bet: $");
                 Thread.sleep(1200);
                 System.out.print(ai.getBet());
+                System.out.println("");
             } else {
                 response = 0;
                 if (numOfPlayers.get(i).getChips() == 0) {
