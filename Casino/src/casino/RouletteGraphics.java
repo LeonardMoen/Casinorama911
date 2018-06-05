@@ -238,17 +238,10 @@ public class RouletteGraphics extends Application {
         root.getChildren().add(t6);
 
     }
-
-    public void drawInsideBets(Group root) {
-        for (int i = 0; i < 10; i++) {
-
-        }
-    }
-
-    public void drawOutsideeBets() {
-        for (int i = 0; i < 3; i++) {
-            //      Rectangle twelve1 = new Rectangle(90, , , i)
-        }
+    
+    
+    public void drawInsideBets(Group root){
+        
     }
 
     public void fillBlackNums() {
