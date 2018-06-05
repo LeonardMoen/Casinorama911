@@ -10,7 +10,7 @@ public class Player implements Comparable {
     private Hand hand;
     private int playerNum, total, bet, insuranceAmount;
     private Blind blind;
-    private int chipsInCurrent;
+    private int chipsInCurrent, totalChipsInPot;
     private ArrayList<PocketHand> pocketHands = new ArrayList<>();
     private ArrayList<Integer> numsBetOn = new ArrayList<Integer>();
     private boolean insurance = false, stay = false, naturalBlackJack, ai = false;
@@ -173,6 +173,15 @@ public class Player implements Comparable {
         return chipsInCurrent;
     }
 
+    public int getTotalChipsInPot() {
+        return totalChipsInPot;
+    }
+
+    
+    public void setTotalChipsInPot(int totalChipsInPot) {
+        this.totalChipsInPot = totalChipsInPot;
+    }
+
     public void setChipsInCurrent(int chipsInCurrent) {
         this.chipsInCurrent = chipsInCurrent;
     }
@@ -218,4 +227,15 @@ public class Player implements Comparable {
             return -1;
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        Player player= (Player)o;
+        if(playerNum==player.getPlayerNum()){
+            return true;
+        }
+        return false;
+    }
+    
+    
 }

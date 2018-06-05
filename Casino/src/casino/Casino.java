@@ -10,24 +10,15 @@ import java.util.Scanner;
 public class Casino {
     
     static Scanner sc = new Scanner(System.in);
-    static int pot = 0;
-    
-    public static InputStreamReader inStream = new InputStreamReader(System.in);
-    public static BufferedReader stdin = new BufferedReader(inStream);
-    
-    public static void main(String[] args) throws IOException, InterruptedException {
-        int response, menuChoice;
-        ArrayList<Card> communityCards = new ArrayList<Card>();
-        ArrayList<Card> possibleCard = new ArrayList<Card>();
-        ArrayList<Player> players = new ArrayList<Player>();
-        System.out.print("Welcome to CASINO\nWould you like to play:\n1) Black Jack\nEnter your choice: ");
-        menuChoice = Integer.parseInt(stdin.readLine());
-        if (menuChoice == 1) {
-            BlackjackJAVA.main(args);
-        }
-        for (int i = 1; i <= 8; i++) {
-            String name = "Player " + i;
-            players.add(new Player(name, i));
+    static int pot=0;
+    public static void main(String[] args){
+        int response;
+        ArrayList<Card>communityCards=new ArrayList<Card>();
+        ArrayList<Card>possibleCard= new ArrayList<Card>();
+        ArrayList<Player>players = new ArrayList<Player>();
+        for(int i =1;i<=4;i++){
+            String name = "Player "+i;
+            players.add(new Player(name,i));
         }
 
         //Hands that have broke code
@@ -47,12 +38,15 @@ public class Casino {
             deck.shuffle();
             ArrayList<Player> playersInRound = new ArrayList<Player>();
             for (Player player : players) {
-                playersInRound.add(player);
+                if(player.getChips()!=0){
+                    playersInRound.add(player);
+                }
             }
-            for (int i = communityCards.size() - 1; i > 0; i--) {
+            for(int i = communityCards.size()-1;i>=0;i--){
                 communityCards.remove(communityCards.get(i));
             }
             for (Player player : playersInRound) {
+                player.setTotalChipsInPot(0);
                 player.setPocketHand(new PocketHand());
             }
             dealPlayers(playersInRound, deck);
@@ -74,16 +68,20 @@ public class Casino {
                 }
                 for (Player player : playersInRound) {
                     player.setChipsInCurrent(0);
-                }
-                if (i == 0) {
+               }
+                if(i==0){
+                    System.out.println("Round 1");
                     deck.getDeck().remove(0);
                     for (int j = 0; j < 3; j++) {
                         communityCards.add(deck.getDeck().get(0));
                         deck.getDeck().remove(0);
                     }
-                } else if (i == 3) {
-                    
-                } else {
+                }
+                else if(i==3){
+                    System.out.println("Round 4");
+                }
+                else{
+                    System.out.println("Round 2");
                     deck.getDeck().remove(0);
                     communityCards.add(deck.getDeck().get(0));
                     deck.getDeck().remove(0);
@@ -92,19 +90,14 @@ public class Casino {
                 for (Card card7 : communityCards) {
                     System.out.println(card7);
                 }
-                for (Player player : playersInRound) {
-                    System.out.println(player.getName() + " " + player.getBlind().getTypeBlind() + " Chips: " + player.getChips());
-                    for (Card card7 : player.getPocketHand().getPocketHand()) {
-                        System.out.println(card7);
-                    }
-                    System.out.println("");
-                }
             }
             for (Player player : playersInRound) {
                 player.setHand(determineHand(player.getPocketHand(), communityCards));
             }
-            distributeWin(playersInRound);
-        } while (true);
+            do{
+                distributeWin(playersInRound);
+            }while(pot>0);
+        }while(true); 
 //        for(Card card7: hand.getHand()){
 //            System.out.println(card7);
 //        }
@@ -218,16 +211,21 @@ public class Casino {
                     requiredChips = players.get(i).getBlind().getBlindAmount();
                     players.get(i).setChips(players.get(i).getChips() - players.get(i).getBlind().getBlindAmount());
                     players.get(i).setChipsInCurrent(requiredChips);
-                    if (i == players.size() - 1) {
+                    players.get(i).setTotalChipsInPot(requiredChips);
+                    if(i==players.size()-1){
                         startPlayer = players.get(0).getPlayerNum();
-                    } else if (i == 0) {
-                        players.get(players.size() - 1).setChips(players.get(players.size() - 1).getChips() - players.get(players.size() - 1).getBlind().getBlindAmount());
-                        players.get(players.size() - 1).setChipsInCurrent(players.get(players.size() - 1).getBlind().getBlindAmount());
-                        startPlayer = players.get(i + 1).getPlayerNum();
-                    } else {
-                        players.get(i - 1).setChips(players.get(i - 1).getChips() - players.get(i - 1).getBlind().getBlindAmount());
-                        players.get(i - 1).setChipsInCurrent(players.get(i - 1).getBlind().getBlindAmount());
-                        startPlayer = players.get(i + 1).getPlayerNum();
+                    }
+                    else if (i==0){
+                        players.get(players.size()-1).setChips(players.get(players.size()-1).getChips()-players.get(players.size()-1).getBlind().getBlindAmount());
+                        players.get(players.size()-1).setChipsInCurrent(players.get(players.size()-1).getBlind().getBlindAmount());
+                        players.get(players.size()-1).setTotalChipsInPot(players.get(players.size()-1).getBlind().getBlindAmount());
+                        startPlayer = players.get(i+1).getPlayerNum();
+                    }
+                    else{
+                        players.get(i-1).setChips(players.get(i-1).getChips()-players.get(i-1).getBlind().getBlindAmount());
+                        players.get(i-1).setChipsInCurrent(players.get(i-1).getBlind().getBlindAmount());
+                        players.get(i-1).setTotalChipsInPot(players.get(i-1).getBlind().getBlindAmount());
+                        startPlayer = players.get(i+1).getPlayerNum();
                     }
                     break;
                 }
@@ -257,35 +255,40 @@ public class Casino {
                         raised = false;
                         break;
                     }
-                    do {
-                        action = true;
-                        System.out.println(players.get(i).getName() + " is acting");
-                        System.out.println("1. Raise");
-                        System.out.println("2. Check");
-                        System.out.println("3. Call");
-                        System.out.println("4. Fold");
-                        System.out.print("Enter the Value You would like to do: ");
-                        response = sc.nextInt();
-                        if (response == 2 && requiredChips != players.get(i).getChipsInCurrent()) {
-                            System.out.println("You cannot check");
-                            action = false;
-                        } else if (players.get(i).getChipsInCurrent() == requiredChips && response == 3) {
-                            System.out.println("You already have enough chips in you cannot call");
-                            action = false;
+                    if(players.get(i).getChips()!=0){
+                        do{
+                            action=true;
+                            System.out.println(players.get(i).getName()+" is acting");
+                            System.out.println("1. Raise");
+                            System.out.println("2. Check");
+                            System.out.println("3. Call");
+                            System.out.println("4. Fold");
+                            System.out.print("Enter the Value You would like to do: ");
+                            response = sc.nextInt();
+                            if(response==2&&requiredChips!=players.get(i).getChipsInCurrent()){
+                                System.out.println("You cannot check");
+                                action=false;
+                            }
+                            else if(players.get(i).getChipsInCurrent()==requiredChips&&response==3){
+                                System.out.println("You already have enough chips in you cannot call");
+                                action=false;
+                            }
+                        }while(response<1||response>4||action==false);
+                        if(response==1){
+                            int raise  = raise(players.get(i), requiredChips);
+                            raised=true;
+                            startPlayer=players.get(i).getPlayerNum();
+                            requiredChips+=raise;
+                            break;
                         }
-                    } while (response < 1 || response > 4 || action == false);
-                    if (response == 1) {
-                        int raise = raise(players.get(i), requiredChips);
-                        raised = true;
-                        startPlayer = players.get(i).getPlayerNum();
-                        requiredChips += raise;
-                        break;
-                    } else if (response == 3) {
-                        call(players.get(i), requiredChips);
-                    } else if (response == 4) {
-                        players.remove(i);
+                        else if (response ==3){
+                            call(players.get(i),requiredChips);
+                        }
+                        else if(response==4){
+                            players.remove(i);
+                        }
+                        raised=false;
                     }
-                    raised = false;
                 }
             }
         } while (raised == true);
@@ -297,26 +300,44 @@ public class Casino {
         if (player.getChipsInCurrent() < requiredChips) {
             call(player, requiredChips);
         }
-        do {
+        do{
+            System.out.println("Chips: "+ player.getChips());
             System.out.print("Enter the amount you would like to raise: ");
             raise = sc.nextInt();
             if (raise > player.getChips()) {
                 System.out.println("You don't have enough chips");
             }
-        } while (raise > player.getChips());
-        pot += raise;
-        player.setChips(player.getChips() - raise);
-        player.setChipsInCurrent(player.getChipsInCurrent() + raise);
-        
+        }while(raise>player.getChips());
+        pot+=raise;
+        player.setChips(player.getChips()-raise);
+        player.setChipsInCurrent(player.getChipsInCurrent()+raise);
+        player.setTotalChipsInPot(player.getTotalChipsInPot()+raise);
+        if(raise==player.getChips()){
+            System.out.println("All In");
+        }
         return raise;
     }
     
     public static void call(Player player, int requiredChips) {
         int callAmount;
         callAmount = requiredChips - player.getChipsInCurrent();
-        pot += callAmount;
-        player.setChips(player.getChips() - callAmount);
-        player.setChipsInCurrent(player.getChipsInCurrent() + callAmount);
+        if(callAmount<=player.getChips()){
+            pot+=callAmount;
+            if(callAmount==player.getChips()){
+                System.out.println("All In");
+            }
+            player.setChips(player.getChips()-callAmount);
+            player.setChipsInCurrent(player.getChipsInCurrent()+callAmount);
+            player.setTotalChipsInPot(player.getTotalChipsInPot()+callAmount);
+            
+        }
+        else{
+            pot+=player.getChips();
+            player.setChipsInCurrent(player.getChipsInCurrent()+player.getChips());
+            player.setTotalChipsInPot(player.getTotalChipsInPot()+player.getChips());
+            player.setChips(0);
+            System.out.println("All In");
+        }
     }
     
     public static ArrayList<Player> sortPlayers(ArrayList<Player> players, int startPlayer) {
@@ -347,19 +368,30 @@ public class Casino {
     
     public static void distributeWin(ArrayList<Player> players) {
         Hand winningHand = new Hand();
-        Player winningPlayer = null;
-        if (players.size() == 1) {
-            players.get(0).setChips(players.get(0).getChips() + pot);
-        } else {
+        Player winningPlayer=null;
+        if(players.size()==1){
+            winningPlayer = players.get(0);
+            players.get(0).setChips(players.get(0).getChips()+pot);
+            pot=0;
+        }
+        else{
             for (Player player : players) {
                 if (player.getHand().compareTo(winningHand) < 0) {
                     winningPlayer = player;
                     winningHand = player.getHand();
                 }
             }
-            winningPlayer.setChips(winningPlayer.getChips() + pot);
+            int remainingPot=0;
+            for (Player player : players) {
+                if(player.getTotalChipsInPot()>winningPlayer.getTotalChipsInPot()){
+                    pot-=player.getTotalChipsInPot()-winningPlayer.getTotalChipsInPot();
+                    remainingPot+=player.getTotalChipsInPot()-winningPlayer.getTotalChipsInPot();
+                }
+            }
+            winningPlayer.setChips(winningPlayer.getChips()+pot);
+            players.remove(winningPlayer);
+            pot=0+remainingPot;
         }
-        System.out.println(winningPlayer.getName() + " won with " + winningPlayer.getHand().handValue() + " Chips: " + winningPlayer.getChips());
-        pot = 0;
+        System.out.println(winningPlayer.getName()+" won with "+ winningPlayer.getHand().handValue()+ " Chips: "+ winningPlayer.getChips());
     }
 }
