@@ -13,7 +13,7 @@ public class Player implements Comparable {
     private int chipsInCurrent, totalChipsInPot;
     private ArrayList<PocketHand> pocketHands = new ArrayList<>();
     private ArrayList<Integer> numsBetOn = new ArrayList<Integer>();
-    private boolean insurance = false, stay = false, naturalBlackJack, ai = false;
+    private boolean insurance = false, stay = false, naturalBlackJack, ai = false, split;
 
     public Player(String name, int playerNum) {
         this.name = name;
@@ -22,6 +22,14 @@ public class Player implements Comparable {
         blind = new Blind();
         pocketHand = new PocketHand();
         this.chipsInCurrent = 0;
+    }
+
+    public boolean isSplit() {
+        return split;
+    }
+
+    public void setSplit(boolean split) {
+        this.split = split;
     }
 
     public void setAi(boolean ai) {
