@@ -13,6 +13,7 @@ public class Casino {
     static int pot=0;
     public static void main(String[] args){
         int response;
+        System.out.println("");
         ArrayList<Card>communityCards=new ArrayList<Card>();
         ArrayList<Card>possibleCard= new ArrayList<Card>();
         ArrayList<Player>players = new ArrayList<Player>();

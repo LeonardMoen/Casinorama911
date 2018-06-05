@@ -38,6 +38,7 @@ public class BlackjackJAVA {
                         System.out.print("1");
                         answer = 1;
                     }
+                    System.out.println("");
                 } else {
                     answer = Integer.parseInt(stdin.readLine());
                 }
@@ -55,9 +56,9 @@ public class BlackjackJAVA {
     }
 
     public static void addAI() throws IOException {
-        numOfPlayers.add(new BlackjackAI("John",deck));
-        numOfPlayers.add(new BlackjackAI("Bob",deck));
-        numOfPlayers.add(new BlackjackAI("Carina",deck));
+        numOfPlayers.add(new BlackjackAI("John", deck));
+        numOfPlayers.add(new BlackjackAI("Bob", deck));
+        numOfPlayers.add(new BlackjackAI("Harry", deck));
     }
 
     public static void placeBets() throws IOException, InterruptedException {
@@ -151,6 +152,7 @@ public class BlackjackJAVA {
                     } else {
                         System.out.print(" no");
                     }
+                    System.out.println("");
                 } else if (stdin.readLine().equalsIgnoreCase("yes")) {
                     getInsurance(i);
                 }
@@ -293,6 +295,7 @@ public class BlackjackJAVA {
                 printCards(i, d);
                 playRound(i, d);
             }
+            numOfPlayers.get(i).setSplit(true);
         } else {
             System.out.println("You do not have enough chips to split!");
         }
@@ -359,6 +362,7 @@ public class BlackjackJAVA {
                         System.out.println("1");
                         playerHit(i, handNum);
                     } else if (!ai.isHit()) {
+                        System.out.println("Would you like to\n1) Hit\n2) Stay");
                         Thread.sleep(2000);
                         System.out.println("2");
                     }
@@ -373,6 +377,7 @@ public class BlackjackJAVA {
                         System.out.println("1");
                         playerHit(i, handNum);
                     } else if (!ai.isHit()) {
+                        System.out.println("Would you like to\n1) Hit\n2) Stay");
                         Thread.sleep(2000);
                         System.out.println("2");
                     }
