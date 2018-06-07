@@ -1,6 +1,7 @@
 package casino;
 
 import java.util.ArrayList;
+import java.util.Collections;
     
 public class PocketHand{
     private ArrayList<Card>pocketHand;
@@ -75,9 +76,16 @@ public class PocketHand{
         return false;
     }
     
-//    public int valueDifference(){
-//        
-//    }
+    public int cardSeperation(){
+        Collections.sort(pocketHand);
+        if(pocketHand.get(0).getValue()==1){
+            int cardValue=14;
+            return cardValue-pocketHand.get(1).getValue();
+        }
+        else{
+            return pocketHand.get(0).getValue()-pocketHand.get(1).getValue();
+        }
+    }
     
      public boolean checkSuited(){
         if(pocketHand.get(0).getSuit().equals(pocketHand.get(1).getSuit())){
