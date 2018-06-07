@@ -9,6 +9,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.animation.RotateTransition;
 import javafx.application.Application;
 import static javafx.application.Application.STYLESHEET_CASPIAN;
 import static javafx.application.Application.launch;
@@ -30,6 +33,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  *
@@ -40,6 +44,7 @@ public class RouletteGraphics extends Application {
     private ArrayList<Rectangle> rects = new ArrayList<Rectangle>();
     private ArrayList<Player> players = new ArrayList<Player>();
     private ArrayList<Rectangle> outsideBets = new ArrayList<Rectangle>();
+    Circle wheel = new Circle(400, 500, 100);
 
     public void RouletteTest(ArrayList<Player> players) {
         this.players = players;
@@ -47,16 +52,16 @@ public class RouletteGraphics extends Application {
 
     @Override
 
-    public void start(Stage primaryStage) throws IOException {
+    public void start(Stage primaryStage) throws IOException, FileNotFoundException, InterruptedException {
 
         Group root = new Group();
         Scene scene = new Scene(root, 1700, 1000, Color.GREEN);
+        drawWheel(root, 2000);
+        rotateWheel(root, 2000);
 
         drawBoard(root);
-        setClickNums(rects);
 
         drawOutsideeBets(root);
-        setClickOutside(rects);
 
         drawInsideBets(root);
 
@@ -246,12 +251,10 @@ public class RouletteGraphics extends Application {
         Button button = new Button();
         Font f = new Font(20);
         button.setFont(f);
-        button.setMinSize(70, 50);
         button.setTranslateX(200);
-        button.setTranslateY(150);
+        button.setTranslateY(500);
         //button.setPadding(Insets.EMPTY);
-        
-        
+
         Image image = new Image(new FileInputStream("H:\\Documents\\NetBeansProjects\\Casinorama911cpt\\Casino\\src\\Resources\\single.jpg"), 2000, 2000, true, true);
 
         ImageView imageView = new ImageView(image);
@@ -261,7 +264,7 @@ public class RouletteGraphics extends Application {
         imageView.setFitHeight(50);
 
         button.setGraphic(imageView);
-        
+
         root.getChildren().add(button);
     }
 
@@ -285,4 +288,44 @@ public class RouletteGraphics extends Application {
         launch(args);
 
     }
+
+    public void drawWheel(Group root, int angle) throws FileNotFoundException, InterruptedException {
+        Image image = new Image(new FileInputStream("H:\\Documents\\NetBeansProjects\\Casinorama911cpt\\Casino\\src\\Resources\\RouletteWheel.png"), 2000, 2000, true, true);
+        ImagePattern ip = new ImagePattern(image);
+        wheel = new Circle(400, 500, 100);
+        wheel.setFill(ip);
+        root.getChildren().add(wheel);
+        rotateWheel(root, angle);
+
+    }
+
+    public void rotateWheel(Group root, int angle) {
+        RotateTransition rt = new RotateTransition(Duration.millis(5000), wheel);
+        rt.setByAngle(angle);
+        rt.setCycleCount(1);
+        rt.setAutoReverse(false);
+        rt.play();
+
+        int resetAng = 360 - angle % 360;
+        RotateTransition reset = new RotateTransition(Duration.millis(1000), wheel);
+        reset.setByAngle(resetAng);
+        reset.setCycleCount(1);
+        reset.setAutoReverse(false);
+
+        rt.setOnFinished(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(RouletteGraphics.class.getName()).log(Level.SEVERE, null, ex);
+                    System.out.println("That sucks");
+                }
+                reset.play();
+            }
+        });
+    }
+
+
 }
