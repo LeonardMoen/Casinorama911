@@ -16,7 +16,7 @@ public class Player implements Comparable {
     private ArrayList<Integer> numsBetOn = new ArrayList<Integer>();
     private boolean insurance = false, stay = false, naturalBlackJack, ai = false, split;
     private double x, y;
-    private Pane pane;
+    private Pane playerPane;
     
     public Player(String name, int playerNum, double x, double y) {
         this.name = name;
@@ -27,8 +27,8 @@ public class Player implements Comparable {
         this.chipsInCurrent = 0;
         this.x = x;
         this.y = y;
-        pane.setTranslateX(x);
-        pane.setTranslateY(y);
+        playerPane.setTranslateX(x);
+        playerPane.setTranslateY(y);
     }
     
     public double getX() {
@@ -40,7 +40,7 @@ public class Player implements Comparable {
     }
     
     public Pane getPane() {
-        return pane;
+        return playerPane;
     }
     
     public Player(String name, int playerNum) {
