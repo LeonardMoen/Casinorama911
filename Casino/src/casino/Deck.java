@@ -2,9 +2,12 @@ package casino;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import javafx.scene.layout.Pane;
 
 public class Deck implements Comparable {
 
+    Pane dPane = new Pane();
+    
     private ArrayList<Card> deck = new ArrayList<Card>();
 
     public Deck() {
@@ -24,6 +27,8 @@ public class Deck implements Comparable {
             Card card = new Card(i, "Spade");
             deck.add(card);
         }
+        dPane.setTranslateX(797);
+        dPane.setTranslateY(295);
     }
 
     public Deck(int n) {
@@ -49,6 +54,10 @@ public class Deck implements Comparable {
 
     public void shuffle() {
         Collections.shuffle(deck);
+    }
+
+    public Pane getdPane() {
+        return dPane;
     }
 
     public ArrayList<Card> getDeck() {

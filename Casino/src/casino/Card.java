@@ -1,14 +1,41 @@
 package casino;
 
-public class Card implements Comparable {
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Rectangle;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import javafx.scene.image.Image;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Rectangle;
+
+public class Card extends Rectangle implements Comparable {
 
     private int value, worth;
     private String suit;
+    double x, y;
+    boolean faceUp;
+    ImagePattern ip;
 
     public Card(int value, String suit) {
         this.value = value;
         this.suit = suit;
         setWorth();
+    }
+
+    public Card(int value, String suit, ImagePattern ip) {
+        super(63, 88, ip);
+        this.value = value;
+        this.suit = suit;
+        this.faceUp = false;
+        this.ip = ip;
+    }
+
+    public boolean isFaceUp() {
+        return faceUp;
+    }
+
+    public void setFaceUp(boolean faceUp) {
+        this.faceUp = faceUp;
     }
 
     public int getWorth() {
