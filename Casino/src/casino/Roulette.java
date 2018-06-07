@@ -195,15 +195,15 @@ public class Roulette {
             int amountBet = Integer.parseInt(stdin.readLine());
 
             players.get(i).setBet(amountBet);
-            bets.add(new Bet(amountBet, 9, i, blackNums));
+        //    bets.add(new Bet(amountBet, 9, i, blackNums));
         }
         if (choice == 10) {
             ArrayList<Integer> numsBetOn = new ArrayList<Integer>();
 
             for (int j = 1; j <= 36; j++) {
-                if (!(blackNums.contains(j))) {//if black nums doesnt contain j, add it to numsBetOn
-                    numsBetOn.add(j);
-                }
+//                if (!(blackNums.contains(j))) {//if black nums doesnt contain j, add it to numsBetOn
+//                    numsBetOn.add(j);
+//                }
             }
 
             System.out.println("How much do you want to bet?");
