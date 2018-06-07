@@ -13,8 +13,8 @@ public class BlackjackAI extends Player {
     // private ArrayList<Card> counted = new ArrayList<>();
     private Random r = new Random();
 
-    public BlackjackAI(Deck deck, ArrayList<Player> players, Dealer dealer) {
-        super("John", deck);
+    public BlackjackAI(String name, Deck deck) {
+        super(name, deck);
         setNumDecks(deck);
         setAi();
     }
@@ -42,6 +42,7 @@ public class BlackjackAI extends Player {
         for (int d = 0; d < dealer.getDealerHand().getPlayerHand().size(); d++) {
             if (dealer.getDealerHand().getPlayerHand().get(d).getWorth() == 10 || dealer.getDealerHand().getPlayerHand().get(d).getWorth() == 1) {
                 this.runningCount -= 1;
+
             } else if (dealer.getDealerHand().getPlayerHand().get(d).getWorth() >= 2 && dealer.getDealerHand().getPlayerHand().get(d).getWorth() <= 6) {
                 this.runningCount += 1;
             }
@@ -92,6 +93,21 @@ public class BlackjackAI extends Player {
         }
     }
 
+    public boolean isLeave() {
+        if (super.getChips() > 2500) {
+            return true;
+        } else if (super.getChips() < 50) {
+            return true;
+        } else {
+            int n = r.nextInt(10);
+            if (n <= 8) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+
     public void setSplit() {
         if (super.getChips() >= this.realBet) {
             int eh = r.nextInt(2);
@@ -128,7 +144,7 @@ public class BlackjackAI extends Player {
     }
 
     public void setBettingUnit() {
-        this.bettingUnit = super.getChips() / 10;
+        this.bettingUnit = super.getChips() / r.nextInt(((11-9)+1) + 9);
     }
 
     public void setRealBet() {
