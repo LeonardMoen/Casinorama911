@@ -18,14 +18,6 @@ public class BlackjackJAVA {
         addAI();
         int answer;
         do {
-            for (int i = 0; i < numOfPlayers.size(); i++) {
-                if (numOfPlayers.get(i).isAi()) {
-                    BlackjackAI ai = (BlackjackAI) (numOfPlayers.get(i));
-                    System.out.println("Running: " + ai.getRunningCount());
-                    System.out.println("True: " + ai.getTrueCount());
-                    System.out.println("Decks: " + ai.getNumDecks());
-                }
-            }
             System.out.println("");
             placeBets();
             if (numOfPlayers.isEmpty()) {
@@ -36,11 +28,25 @@ public class BlackjackJAVA {
             resetCharacteristics();
             for (int i = 0; i < numOfPlayers.size(); i++) {
                 System.out.print("\n" + numOfPlayers.get(i).getName().toUpperCase() + " would you like to:\n1) Play again\n2) Cash out\nEnter choice: ");
-                answer = Integer.parseInt(stdin.readLine());
+                if (numOfPlayers.get(i).isAi()) {
+                    BlackjackAI ai = (BlackjackAI) (numOfPlayers.get(i));
+                    Thread.sleep(1000);
+                    if (ai.isLeave()) {
+                        System.out.print("2");
+                        answer = 2;
+                    } else {
+                        System.out.print("1");
+                        answer = 1;
+                    }
+                    System.out.println("");
+                } else {
+                    answer = Integer.parseInt(stdin.readLine());
+                }
                 if (answer == 2) {
                     numOfPlayers.remove(i);
                     i = i - 1;
                 }
+
             }
             if (deck.getDeck().isEmpty()) {
                 deck = new Deck();
@@ -50,10 +56,12 @@ public class BlackjackJAVA {
     }
 
     public static void addAI() throws IOException {
-        numOfPlayers.add(new BlackjackAI(deck, numOfPlayers, dealer));
+        numOfPlayers.add(new BlackjackAI("John", deck));
+        numOfPlayers.add(new BlackjackAI("Bob", deck));
+        numOfPlayers.add(new BlackjackAI("Harry", deck));
     }
 
-    public static void placeBets() throws IOException {
+    public static void placeBets() throws IOException, InterruptedException {
         boolean repeat;
         int response;
         BlackjackAI ai;
@@ -63,7 +71,10 @@ public class BlackjackJAVA {
                 System.out.println(ai.getName().toUpperCase() + "\t\tChips: $" + ai.getChips());
                 ai.setRealBet();
                 ai.setBet(ai.getRealBet());
-                System.out.println("How much would you like to bet: $" + ai.getBet());
+                System.out.print("How much would you like to bet: $");
+                Thread.sleep(1200);
+                System.out.print(ai.getBet());
+                System.out.println("");
             } else {
                 response = 0;
                 if (numOfPlayers.get(i).getChips() == 0) {
@@ -141,6 +152,7 @@ public class BlackjackJAVA {
                     } else {
                         System.out.print(" no");
                     }
+                    System.out.println("");
                 } else if (stdin.readLine().equalsIgnoreCase("yes")) {
                     getInsurance(i);
                 }
@@ -273,7 +285,7 @@ public class BlackjackJAVA {
         printCards(i, handNum);
     }
 
-    public static void playerSplit(int i, int handNum) throws IOException {
+    public static void playerSplit(int i, int handNum) throws IOException, InterruptedException {
         if (numOfPlayers.get(i).getChips() >= numOfPlayers.get(i).getBet()) {
             numOfPlayers.get(i).ifSplit(deck);
             numOfPlayers.get(i).getPocketHands().get(1).setSplitBet(numOfPlayers.get(i).getBet());
@@ -283,6 +295,7 @@ public class BlackjackJAVA {
                 printCards(i, d);
                 playRound(i, d);
             }
+            numOfPlayers.get(i).setSplit(true);
         } else {
             System.out.println("You do not have enough chips to split!");
         }
@@ -301,69 +314,131 @@ public class BlackjackJAVA {
         System.out.println("");
     }
 
-    public static void playRound(int i, int handNum) throws IOException {
+    public static void playRound(int i, int handNum) throws IOException, InterruptedException {
         int response;
-        BlackjackAI ai;
         round = 1;
         if (handNum > 0) {
             numOfPlayers.get(i).setStay(false);
         }
         while (!numOfPlayers.get(i).isStay()) {
-            if (round == 1) {
-                if (numOfPlayers.get(i).getPocketHands().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
-                    System.out.println("NATURAL BLACKJACK!");
-                    numOfPlayers.get(i).setNaturalBlackJack(true);
-                    numOfPlayers.get(i).setStay(true);
-                    numOfPlayers.get(i).setChips((int) (numOfPlayers.get(i).getBet() * 1.5 + numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet()));
-                    break;
-                } else if (numOfPlayers.get(i).getTotal(handNum) >= 9 && numOfPlayers.get(i).getTotal(handNum) <= 11) {
-                    if (numOfPlayers.get(i).getPocketHands().get(0).checkSplit()) {
-                        System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split\n4) Double Down");
-                        response = Integer.parseInt(stdin.readLine());
-                        switch (response) {
-                            case 3:
-                                playerSplit(i, handNum);
-                                break;
-                            case 4:
+            if (numOfPlayers.get(i).isAi()) {
+                BlackjackAI ai = (BlackjackAI) (numOfPlayers.get(i));
+                ai.setdDown(deck, handNum);
+                ai.setSplit();
+                ai.setHit(deck, handNum);
+                if (round == 1) {
+                    if (numOfPlayers.get(i).getPocketHands().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
+                        System.out.println("NATURAL BLACKJACK!");
+                        numOfPlayers.get(i).setNaturalBlackJack(true);
+                        numOfPlayers.get(i).setStay(true);
+                        numOfPlayers.get(i).setChips((int) (numOfPlayers.get(i).getBet() * 1.5 + numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet()));
+                        break;
+                    } else if (numOfPlayers.get(i).getPocketHands().get(handNum).checkSplit() && ai.isdDown()) {
+                        System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Double down\n4) Split");
+                        if (ai.isSplit()) {
+                            Thread.sleep(2000);
+                            System.out.println("4");
+                            playerSplit(i, handNum);
+                        } else if (ai.isdDown()) {
+                            Thread.sleep(2000);
+                            System.out.println("3");
+                            playerDD(i, handNum);
+                        }
+                    } else if (numOfPlayers.get(i).getPocketHands().get(handNum).checkSplit()) {
+                        System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
+                        if (ai.isSplit()) {
+                            Thread.sleep(2000);
+                            System.out.println("3");
+                            playerSplit(i, handNum);
+                        }
+                    } else if (ai.isdDown()) {
+                        System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Double down");
+                        Thread.sleep(2000);
+                        System.out.println("3");
+                        playerDD(i, handNum);
+                    } else if (ai.isHit()) {
+                        System.out.println("Would you like to\n1) Hit\n2) Stay");
+                        Thread.sleep(2000);
+                        System.out.println("1");
+                        playerHit(i, handNum);
+                    } else if (!ai.isHit()) {
+                        System.out.println("Would you like to\n1) Hit\n2) Stay");
+                        Thread.sleep(2000);
+                        System.out.println("2");
+                    }
+                } else {
+                    if (numOfPlayers.get(i).getPocketHands().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
+                        System.out.println("BLACKJACK!");
+                        numOfPlayers.get(i).setStay(true);
+                        break;
+                    } else if (ai.isHit()) {
+                        System.out.println("Would you like to\n1) Hit\n2) Stay");
+                        Thread.sleep(2000);
+                        System.out.println("1");
+                        playerHit(i, handNum);
+                    } else if (!ai.isHit()) {
+                        System.out.println("Would you like to\n1) Hit\n2) Stay");
+                        Thread.sleep(2000);
+                        System.out.println("2");
+                    }
+                }
+            } else {
+                if (round == 1) {
+                    if (numOfPlayers.get(i).getPocketHands().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
+                        System.out.println("NATURAL BLACKJACK!");
+                        numOfPlayers.get(i).setNaturalBlackJack(true);
+                        numOfPlayers.get(i).setStay(true);
+                        numOfPlayers.get(i).setChips((int) (numOfPlayers.get(i).getBet() * 1.5 + numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet()));
+                        break;
+                    } else if (numOfPlayers.get(i).getTotal(handNum) >= 9 && numOfPlayers.get(i).getTotal(handNum) <= 11) {
+                        if (numOfPlayers.get(i).getPocketHands().get(0).checkSplit()) {
+                            System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split\n4) Double Down");
+                            response = Integer.parseInt(stdin.readLine());
+                            switch (response) {
+                                case 3:
+                                    playerSplit(i, handNum);
+                                    break;
+                                case 4:
+                                    playerDD(i, handNum);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        } else {
+                            System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Double down");
+                            response = Integer.parseInt(stdin.readLine());
+                            if (response == 3) {
                                 playerDD(i, handNum);
-                                break;
-                            default:
-                                break;
+                            }
                         }
                     } else {
-                        System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Double down");
-                        response = Integer.parseInt(stdin.readLine());
-                        if (response == 3) {
-                            playerDD(i, handNum);
+                        if (numOfPlayers.get(i).getPocketHands().get(0).checkSplit()) {
+                            System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
+                            response = Integer.parseInt(stdin.readLine());
+                            if (response == 3) {
+                                playerSplit(i, handNum);
+                            }
+                        } else {
+                            System.out.println("Would you like to\n1) Hit\n2) Stay");
+                            response = Integer.parseInt(stdin.readLine());
                         }
                     }
                 } else {
-                    if (numOfPlayers.get(i).getPocketHands().get(0).checkSplit()) {
-                        System.out.println("Would you like to\n1) Hit\n2) Stay\n3) Split");
-                        response = Integer.parseInt(stdin.readLine());
-                        if (response == 3) {
-                            playerSplit(i, handNum);
-                        }
+                    if (numOfPlayers.get(i).getPocketHands().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
+                        System.out.println("BLACKJACK!");
+                        numOfPlayers.get(i).setStay(true);
+                        break;
                     } else {
                         System.out.println("Would you like to\n1) Hit\n2) Stay");
                         response = Integer.parseInt(stdin.readLine());
                     }
                 }
-            } else {
-                if (numOfPlayers.get(i).getPocketHands().get(handNum).checkBlackJack() || numOfPlayers.get(i).setTotal(handNum) == 21) {
-                    System.out.println("BLACKJACK!");
+                if (response == 1) {
+                    playerHit(i, handNum);
+                } else if (response == 2) {
                     numOfPlayers.get(i).setStay(true);
                     break;
-                } else {
-                    System.out.println("Would you like to\n1) Hit\n2) Stay");
-                    response = Integer.parseInt(stdin.readLine());
                 }
-            }
-            if (response == 1) {
-                playerHit(i, handNum);
-            } else if (response == 2) {
-                numOfPlayers.get(i).setStay(true);
-                break;
             }
             round++;
         }
