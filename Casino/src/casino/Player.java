@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import javafx.scene.layout.Pane;
 
 public class Player implements Comparable {
-    
+
     private String name;
     private int chips;
     private PocketHand pocketHand;
@@ -17,32 +17,15 @@ public class Player implements Comparable {
     private boolean insurance = false, stay = false, naturalBlackJack, ai = false, split;
     private double x, y;
     private Pane playerPane;
-    
-    public Player(String name, int playerNum, double x, double y) {
-        this.name = name;
-        this.playerNum = playerNum;
-        this.chips = 500;
-        blind = new Blind();
-        pocketHand = new PocketHand();
-        this.chipsInCurrent = 0;
-        this.x = x;
-        this.y = y;
-        playerPane.setTranslateX(x);
-        playerPane.setTranslateY(y);
-    }
-    
-    public double getX() {
-        return x;
-    }
-    
-    public double getY() {
-        return y;
-    }
-    
-    public Pane getPane() {
-        return playerPane;
-    }
-    
+    private static double p1x = 580, p1y = 450,
+            p2x = 330, p2y = 450,
+            p3x = 150, p3y = 295,
+            p4x = 330, p4y = 140,
+            p5x = 580, p5y = 140,
+            p6x = 830, p6y = 140,
+            p7x = 830 + 180, p7y = 295,
+            p8x = 830, p8y = 450;
+
     public Player(String name, int playerNum) {
         this.name = name;
         this.playerNum = playerNum;
@@ -51,71 +34,123 @@ public class Player implements Comparable {
         pocketHand = new PocketHand();
         this.chipsInCurrent = 0;
     }
-    
+
+    public void setPlayerPosition() {
+        switch (this.playerNum) {
+            case 1:
+                playerPane.setTranslateX(p1x);
+                playerPane.setTranslateY(p1y);
+                break;
+            case 2:
+                playerPane.setTranslateX(p2x);
+                playerPane.setTranslateY(p2y);
+                break;
+            case 3:
+                playerPane.setTranslateX(p3x);
+                playerPane.setTranslateY(p3y);
+                break;
+            case 4:
+                playerPane.setTranslateX(p4x);
+                playerPane.setTranslateY(p4y);
+                break;
+            case 5:
+                playerPane.setTranslateX(p5x);
+                playerPane.setTranslateY(p5y);
+                break;
+            case 6:
+                playerPane.setTranslateX(p6x);
+                playerPane.setTranslateY(p6y);
+                break;
+            case 7:
+                playerPane.setTranslateX(p7x);
+                playerPane.setTranslateY(p7y);
+                break;
+            case 8:
+                playerPane.setTranslateX(p8x);
+                playerPane.setTranslateY(p8y);
+                break;
+            default:
+                System.out.println("error");
+                break;
+        }
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public Pane getPane() {
+        return playerPane;
+    }
+
     public boolean isSplit() {
         return split;
     }
-    
+
     public void setSplit(boolean split) {
         this.split = split;
     }
-    
+
     public void setAi(boolean ai) {
         this.ai = ai;
     }
-    
+
     public boolean isAi() {
         return ai;
     }
-    
+
     public void setInsuranceAmount(int insuranceAmount) {
         this.insuranceAmount = insuranceAmount;
     }
-    
+
     public boolean isNaturalBlackJack() {
         return naturalBlackJack;
     }
-    
+
     public void setNaturalBlackJack(boolean naturalBlackJack) {
         this.naturalBlackJack = naturalBlackJack;
     }
-    
+
     public int getInsuranceAmount() {
         return insuranceAmount;
     }
-    
+
     public void setInsuranceAmount() {
         this.insuranceAmount = bet / 2;
         chips = chips - insuranceAmount;
     }
-    
+
     public void setStay(boolean stay) {
         this.stay = stay;
     }
-    
+
     public boolean isStay() {
         return stay;
     }
-    
+
     public Player(String name, Deck deck) {
         this.name = name;
         this.chips = 500;
         this.pocketHands.add(new PocketHand(deck));
     }
-    
+
     public void setInsurance(boolean insurance) {
         this.insurance = insurance;
     }
-    
+
     public boolean isInsurance() {
         return insurance;
     }
-    
+
     public void setBet(int bet) {
         this.bet = bet;
         chips = chips - bet;
     }
-    
+
     public int setTotal(int n) {
         this.total = 0;
         int optionalTotal = 0;
@@ -134,11 +169,11 @@ public class Player implements Comparable {
             return 0;
         }
     }
-    
+
     public void setObTotal(int n) {
         this.total = n;
     }
-    
+
     public int getTotal(int n) {
         total = 0;
         for (int i = 0; i < pocketHands.get(n).getPlayerHand().size(); i++) {
@@ -146,113 +181,113 @@ public class Player implements Comparable {
         }
         return total;
     }
-    
+
     public int getRealTotal(int n) {
         if (setTotal(n) > getTotal(n)) {
             this.total = setTotal(n);
         }
         return this.total;
     }
-    
+
     public int getTotal() {
         return total;
     }
-    
+
     public int getBet() {
         return bet;
     }
-    
+
     public void ifSplit(Deck deck) {
         this.pocketHands.add(new PocketHand(deck, pocketHands.get(0).getPlayerHand().get(1).getValue(), pocketHands.get(0).getPlayerHand().get(1).getSuit()));
         this.pocketHands.get(0).getPlayerHand().remove(1);
         this.pocketHands.get(0).hitCard(deck);
     }
-    
+
     public void setPocketHands(Deck deck) {
         this.pocketHands.clear();
         this.pocketHands.add(new PocketHand(deck));
     }
-    
+
     public void setPocketHand(PocketHand pocketHand) {
         this.pocketHand = pocketHand;
     }
-    
+
     public ArrayList<PocketHand> getPocketHands() {
         return pocketHands;
     }
-    
+
     public PocketHand getPocketHand() {
         return pocketHand;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public int getChips() {
         return chips;
     }
-    
+
     public Hand getHand() {
         return hand;
     }
-    
+
     public int getPlayerNum() {
         return playerNum;
     }
-    
+
     public Blind getBlind() {
         return blind;
     }
-    
+
     public int getChipsInCurrent() {
         return chipsInCurrent;
     }
-    
+
     public int getTotalChipsInPot() {
         return totalChipsInPot;
     }
-    
+
     public void setTotalChipsInPot(int totalChipsInPot) {
         this.totalChipsInPot = totalChipsInPot;
     }
-    
+
     public void setChipsInCurrent(int chipsInCurrent) {
         this.chipsInCurrent = chipsInCurrent;
     }
-    
+
     public void setBlind(Blind blind) {
         this.blind = blind;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public void setChips(int chips) {
         this.chips = chips;
     }
-    
+
     public void payout(int amount) {
         this.setChips(chips + amount);
     }
-    
+
     public void setHand(Hand hand) {
         this.hand = hand;
     }
-    
+
     public void setPlayerNum(int playerNum) {
         this.playerNum = playerNum;
     }
-    
+
     public ArrayList<Integer> getNumsBetOn() {
         return numsBetOn;
     }
-    
+
     public void setNumsBetOn(ArrayList<Integer> numsBetOn) {
         this.numsBetOn = numsBetOn;
     }
-    
+
     @Override
     public int compareTo(Object t) {
         Player player = (Player) t;
@@ -262,7 +297,7 @@ public class Player implements Comparable {
             return -1;
         }
     }
-    
+
     @Override
     public boolean equals(Object o) {
         Player player = (Player) o;
@@ -271,5 +306,5 @@ public class Player implements Comparable {
         }
         return false;
     }
-    
+
 }
