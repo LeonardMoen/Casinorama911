@@ -70,8 +70,6 @@ public class PokerGraphics {
         Scene pokerScene = new Scene(rootPane, 1920, 1080);
         rootPane.getChildren().add(pTable);
         Casino.primaryStage.setScene(pokerScene);
-        
-        
         ArrayList<Player> players = new ArrayList<Player>();
         for (int i = 1; i <= 8; i++) {
             String name = "Player " + i;

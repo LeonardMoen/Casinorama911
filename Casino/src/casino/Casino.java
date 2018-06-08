@@ -24,7 +24,7 @@ import javafx.stage.Stage;
 
 public class Casino extends Application { //<--- extends Application for javaFX
 
-    static Stage primaryStage;
+     static Stage primaryStage;
     //Pane rootPane = new Pane();
     Pane roop = new Pane();
 
