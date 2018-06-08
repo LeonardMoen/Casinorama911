@@ -32,26 +32,12 @@ public class PokerGraphics {
     static Pane root = new Pane();
     static Pane rootPane = new Pane();
 
-    //player pane
-    static Pane pane1 = new Pane();
-    static Pane pane2 = new Pane();
-    static Pane pane3 = new Pane();
-    static Pane pane4 = new Pane();
-    static Pane pane5 = new Pane();
-    static Pane pane6 = new Pane();
-    static Pane pane7 = new Pane();
-    static Pane pane8 = new Pane();
     //etc on table
     static Pane btns = new Pane();
     static Pane burnPile = new Pane();
     static HBox commCards = new HBox();
-    static Pane dPane = new Pane();
 
     static Random rand = new Random();
-
-    public static Player player1 = new Player("potato farmer", 1);
-    public static Player player2 = new Player("Easy-E", 2);
-    public static Player player3 = new Player("Big Bick Billy", 3);
 
     static ArrayList<Card> communityCards = new ArrayList<Card>();
 
@@ -73,22 +59,6 @@ public class PokerGraphics {
     public PokerGraphics() {
 
         //setting up position of players
-        pane1.setTranslateX(p1x);
-        pane1.setTranslateY(p1y);
-        pane2.setTranslateX(p2x);
-        pane2.setTranslateY(p2y);
-        pane3.setTranslateX(p3x);
-        pane3.setTranslateY(p3y);
-        pane4.setTranslateX(p4x);
-        pane4.setTranslateY(p4y);
-        pane5.setTranslateX(p5x);
-        pane5.setTranslateY(p5y);
-        pane6.setTranslateX(p6x);
-        pane6.setTranslateY(p6y);
-        pane7.setTranslateX(p7x);
-        pane7.setTranslateY(p7y);
-        pane8.setTranslateX(p8x);
-        pane8.setTranslateY(p8y);
 
         ip = new ImagePattern(ImageBuffer.pokerTable);
         ImageView pTable = new ImageView();
@@ -107,7 +77,7 @@ public class PokerGraphics {
             String name = "Player " + i;
             players.add(new Player(name, i));
         }
-
+        
         for (int i = 0; i < 8; i++) {
             if (i == 0) {
                 players.get(i).setAi(false);
@@ -123,10 +93,14 @@ public class PokerGraphics {
         for (Player player : players) {
             addPlayerInfo(player);
         }
+        for (Player player : players) {
+            rootPane.getChildren().add(player.getPane());
+        }
+        
+        
         Deck deck = new Deck();
         displayDeck(deck);
         deck.shuffle();
-        //displayShuffle();
         dealPlayers(players, deck);
         displayDealPlayers(players);
         displayAllCards(players);
@@ -135,34 +109,30 @@ public class PokerGraphics {
         displayFlop(communityCards);
         displayTurn(communityCards);
         displayRiver(communityCards);
-        displayShuffle(deck);
+        //displayShuffle(deck);
 
-//        player1.setBlind(new Blind(25, "Big"));
-//        player2.setBlind(new Blind(50, "small"));
-//        player3.setBlind(new Blind(0, ""));
 
         Scene menu = new Scene(roop, 1920, 1080);
-
-        rootPane.getChildren().addAll(pane1, pane2, pane3, pane4, pane5, pane6, pane7, pane8, btns);
+        rootPane.getChildren().add(btns);
 
         Font game = new Font("Times New Roman", 35);
         Font f = new Font("Times New Roman", 16);
 
         VBox pokerBtns = new VBox();
-
-        //poker scene
+//
+//        //poker scene
         Button backBtn = new Button();
         backBtn.setText("Back");
         backBtn.setOnAction(e -> Casino.primaryStage.setScene(menu));
         rootPane.getChildren().add(backBtn);
-
-        dPane.setTranslateX(deckX);
-        dPane.setTranslateY(deckY1);
+//
+        deck.getdPane().setTranslateX(deckX);
+        deck.getdPane().setTranslateY(deckY1);
         commCards.setTranslateX(flopX);
         commCards.setTranslateY(flopY);
         burnPile.setTranslateX(burnX);
         burnPile.setTranslateY(deckY1);
-        rootPane.getChildren().addAll(burnPile, commCards, dPane);
+        rootPane.getChildren().addAll(burnPile, commCards, deck.getdPane());
         //<editor-fold defaultstate="collapsed" desc="displaying all cards and buttons">
 
         //button call
@@ -219,141 +189,6 @@ public class PokerGraphics {
         });
         pokerBtns.setTranslateY(370);
         pokerBtns.getChildren().add(btnCheck);
-
-//        ip = new ImagePattern(ImageBuffer.heartA);
-//        Card burn = new Card(1, "Heart", ip);
-//        burn.setX(870);
-//        burn.setY(deckY1);
-//        rootPane.getChildren().add(burn);
-//
-//        //p1
-//        for (int i = 0; i < 2; i++) {
-//            ip = new ImagePattern(ImageBuffer.heartA);
-//            Card card = new Card(1, "Heart", ip);
-//
-//            card.setX(0 + (i * 63));
-//            card.setY(0);
-//            pane1.getChildren().add(card);
-//            pane1.setTranslateX(p1x);
-//            pane1.setTranslateY(p1y);
-//            addPlayerInfo(player1);
-//        }
-//        //p2
-//        for (int i = 0; i < 2; i++) {
-//            ip = new ImagePattern(ImageBuffer.back1);
-//            Card card = new Card(1, "Heart", ip);
-//            card.setY(0);
-//            card.setX(0 + (i * (63 * cardScale)));
-//            card.setScaleX(cardScale);
-//            card.setScaleY(cardScale);
-//            pane2.getChildren().add(card);
-//            pane2.setTranslateX(p2x);
-//            pane2.setTranslateY(p2y);
-//            addPlayerInfo(player2);
-//        }
-//        //p3
-//        for (int i = 0; i < 2; i++) {
-//            ip = new ImagePattern(ImageBuffer.back1);
-//            Card card = new Card(1, "Heart", ip);
-//            card.setY(0);
-//            card.setX(0 + (i * (63 * cardScale)));
-//            card.setScaleX(cardScale);
-//            card.setScaleY(cardScale);
-//            pane3.getChildren().add(card);
-//            pane3.setTranslateX(p3x);
-//            pane3.setTranslateY(p3y);
-//            addPlayerInfo(player3);
-//        }
-//        //p4
-//        HBox pocketCards = new HBox();
-//        for (int i = 0; i < 2; i++) {
-//            ip = new ImagePattern(ImageBuffer.back1);
-//            Card card = new Card(1, "Heart", ip);
-//            card.setScaleX(cardScale);
-//            card.setScaleY(cardScale);
-//            pocketCards.getChildren().add(card);
-//        }
-//        pane4.getChildren().add(pocketCards);
-//
-//        //p5
-//        for (int i = 0; i < 2; i++) {
-//            ip = new ImagePattern(ImageBuffer.back1);
-//            Card card = new Card(1, "Heart", ip);
-//            card.setX(0 + (i * (63 * cardScale)));
-//            card.setScaleX(cardScale);
-//            card.setScaleY(cardScale);
-//            pane5.getChildren().add(card);
-//        }
-//        //p6
-//        for (int i = 0; i < 2; i++) {
-//            ip = new ImagePattern(ImageBuffer.back1);
-//            Card card = new Card(1, "Heart", ip);
-//            card.setX(0 + (i * (63 * cardScale)));
-//            card.setScaleX(cardScale);
-//            card.setScaleY(cardScale);
-//            pane6.getChildren().add(card);
-//        }
-//        //p7
-//        for (int i = 0; i < 2; i++) {
-//            ip = new ImagePattern(ImageBuffer.back1);
-//            Card card = new Card(1, "Heart", ip);
-//            card.setX(0 + (i * (63 * cardScale)));
-//            card.setScaleX(cardScale);
-//            card.setScaleY(cardScale);
-//            pane7.getChildren().add(card);
-//        }
-//        //p8
-//        for (int i = 0; i < 2; i++) {
-//            ip = new ImagePattern(ImageBuffer.back1);
-//            Card card = new Card(1, "Heart", ip);
-//            card.setX(0 + (i * (63 * cardScale)));
-//            card.setScaleX(cardScale);
-//            card.setScaleY(cardScale);
-//            pane8.getChildren().add(card);
-//        }
-//
-//        // deck
-//        for (int i = 0; i < 15; i++) {
-//            ip = new ImagePattern(ImageBuffer.back1);
-//            Card card = new Card(1, "Heart", ip);
-//            card.setX(deckX);
-//            card.setY(deckY1 - (i * 0.5));
-//            root.getChildren().add(card);
-//        }
-//
-//        //flop 
-//        for (int i = 0; i < 5; i++) {
-//            switch (i) {
-//                case 0:
-//                    ip = new ImagePattern(ImageBuffer.spade2);
-//                    break;
-//                case 1:
-//                    ip = new ImagePattern(ImageBuffer.spadeK);
-//                    break;
-//                case 2:
-//                    ip = new ImagePattern(ImageBuffer.heartK);
-//                    break;
-//                default:
-//                    ip = new ImagePattern(ImageBuffer.blank);
-//                    break;
-//            }
-//            Rectangle commCards = new Rectangle(flopX + (i * 63), flopY, 63, 88);
-//            commCards.setFill(ip);
-//            root.getChildren().add(commCards);
-//        }
-//
-//        HBox hBox = new HBox();
-//        for (int i = 0; i < 2; i++) {
-//            Card card = new Card(i, "heart");
-//            ip = new ImagePattern(ImageBuffer.clubsQ);
-//            card.setFill(ip);
-//            hBox.getChildren().add(card);
-//        }
-//        hBox.setTranslateX(100);
-//        rootPane.getChildren().add(hBox);
-//</editor-fold>
-        Casino.primaryStage.setScene(menu);
-        Casino.primaryStage.show();
     }
 
     public static void addPlayerInfo(Player player) {
@@ -408,7 +243,7 @@ public class PokerGraphics {
             vbox.getChildren().add(options[i]);
         }
         playerInfo.getChildren().addAll(infoBck, vbox);
-        usePlayerPane(player).getChildren().add(playerInfo);
+        player.getPane().getChildren().add(playerInfo);
     }
 
     public static Card displayCard(Card card) {
@@ -629,12 +464,12 @@ public class PokerGraphics {
         pt.setDuration(Duration.seconds(1));
         pt.play();
 
-        usePlayerPane(player).getChildren().add(pane);
+        player.getPane().getChildren().add(pane);
     }
 
     public static void displayShuffle(Deck deck) {
         ImagePattern ip = new ImagePattern(ImageBuffer.back1);
-        dPane.getChildren().clear();
+        deck.getdPane().getChildren().clear();
         for (int i = 0; i < deck.getDeck().size() - 1; i++) {
             Card card = deck.getDeck().get(i);
             card.setFill(ip);
@@ -649,21 +484,21 @@ public class PokerGraphics {
             cPT.setPath(cpath);
             cPT.setDuration(Duration.seconds(2));
             cPT.play();
-            dPane.getChildren().add(card);
+            deck.getdPane().getChildren().add(card);
             cPT.setDelay(Duration.seconds(2));
         }
         displayDeck(deck);
     }
 
     public static void displayDeck(Deck deck) {
-        dPane.getChildren().clear();
+        deck.getdPane().getChildren().clear();
         ImagePattern ip = new ImagePattern(ImageBuffer.back1);
         for (int i = 0; i < deck.getDeck().size() - 1; i++) {
             Card card = deck.getDeck().get(i);
             card.setX(0);
             card.setY(0 - (i * 0.25));
             deckY2 = deckY1 - (i * 0.25);
-            dPane.getChildren().add(displayCard(card));
+            deck.getdPane().getChildren().add(displayCard(card));
         }
     }
 
@@ -696,7 +531,7 @@ public class PokerGraphics {
     public static void displayAllCards(ArrayList<Player> playersInRound) {
         for (Player player : playersInRound) {
             HBox pocketCards = new HBox();
-            usePlayerPane(player).getChildren().clear();
+            player.getPane().getChildren().clear();
             addPlayerInfo(player);
             for (int i = 0; i < 2; i++) {
                 Card card = player.getPocketHand().getPocketHand().get(i);
@@ -705,7 +540,7 @@ public class PokerGraphics {
                 }
                 pocketCards.getChildren().add(displayCard(card));
             }
-            usePlayerPane(player).getChildren().add(pocketCards);
+            player.getPane().getChildren().add(pocketCards);
         }
     }
 
@@ -718,7 +553,7 @@ public class PokerGraphics {
     }
 
     public static void displayFold(Player player) {
-        usePlayerPane(player).getChildren().clear();
+        player.getPane().getChildren().clear();
         addPlayerInfo(player);
 
 //            Path path = new Path();
@@ -731,31 +566,6 @@ public class PokerGraphics {
 //            pt.setDuration(Duration.seconds(1));
 //            pt.play();
 //            root.getChildren().add(card);
-    }
-
-    public static Pane usePlayerPane(Player player) {
-        int playerNum = player.getPlayerNum();
-        switch (playerNum) {
-            case 1:
-                return pane1;
-            case 2:
-                return pane2;
-            case 3:
-                return pane3;
-            case 4:
-                return pane4;
-            case 5:
-                return pane5;
-            case 6:
-                return pane6;
-            case 7:
-                return pane7;
-            case 8:
-                return pane8;
-            default:
-                return rootPane;
-
-        }
     }
 
     public static void displayDealPlayers(ArrayList<Player> players) {
@@ -779,7 +589,7 @@ public class PokerGraphics {
                 }
                 pocketCards.getChildren().add(displayCard(card));
             }
-            usePlayerPane(player).getChildren().add(pocketCards);
+            player.getPane().getChildren().add(pocketCards);
         }
     }
 

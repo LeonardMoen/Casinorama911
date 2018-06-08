@@ -17,6 +17,7 @@ public class Card extends Rectangle implements Comparable {
     ImagePattern ip;
 
     public Card(int value, String suit) {
+        super(63, 88);
         this.value = value;
         this.suit = suit;
         setWorth();

@@ -36,6 +36,15 @@ public class Poker {
     public Poker() {
         playPoker();
     }
+    
+//    public static void createPlayers(){
+//        ArrayList<Player> players = new ArrayList<Player>();
+//        String name = "Player 1";
+//        players.add(new Player(name, 1));
+//        for (int i = 2; i < 5; i++) {
+//            players.add(new AI("Player " + i, i));
+//        }
+//    }
 
     public static void playPoker() {
         int response;

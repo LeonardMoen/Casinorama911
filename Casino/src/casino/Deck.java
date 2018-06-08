@@ -6,11 +6,12 @@ import javafx.scene.layout.Pane;
 
 public class Deck implements Comparable {
 
-    Pane dPane = new Pane();
+    Pane dPane;
     
     private ArrayList<Card> deck = new ArrayList<Card>();
 
     public Deck() {
+        dPane = new Pane();
         for (int i = 1; i <= 13; i++) {
             Card card = new Card(i, "Heart");
             deck.add(card);

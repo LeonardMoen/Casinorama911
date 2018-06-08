@@ -15,7 +15,7 @@ public class Player implements Comparable {
     private ArrayList<PocketHand> pocketHands = new ArrayList<>();
     private ArrayList<Integer> numsBetOn = new ArrayList<Integer>();
     private boolean insurance = false, stay = false, naturalBlackJack, ai = false, split;
-    private double x, y;
+    private double x=0, y=0;
     private Pane playerPane;
     private static double p1x = 580, p1y = 450,
             p2x = 330, p2y = 450,
@@ -33,10 +33,12 @@ public class Player implements Comparable {
         blind = new Blind();
         pocketHand = new PocketHand();
         this.chipsInCurrent = 0;
+        playerPane = new Pane();
+        setPlayerPosition();
     }
 
     public void setPlayerPosition() {
-        switch (this.playerNum) {
+        switch (playerNum) {
             case 1:
                 playerPane.setTranslateX(p1x);
                 playerPane.setTranslateY(p1y);
