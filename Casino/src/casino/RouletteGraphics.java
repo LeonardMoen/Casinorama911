@@ -12,26 +12,36 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.RotateTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import static javafx.application.Application.STYLESHEET_CASPIAN;
+import static javafx.application.Application.STYLESHEET_MODENA;
 import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
+import javafx.geometry.Insets;
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -41,9 +51,13 @@ import javafx.util.Duration;
  */
 public class RouletteGraphics extends Application {
 
-    private ArrayList<Rectangle> rects = new ArrayList<Rectangle>();
-    private ArrayList<Player> players = new ArrayList<Player>();
-    private ArrayList<Rectangle> outsideBets = new ArrayList<Rectangle>();
+    private ArrayList<Rectangle> rects = new ArrayList<>();
+    private ArrayList<Rectangle> outsideBets = new ArrayList<>();
+    private ArrayList<Player> players = new ArrayList<>();
+    private ArrayList<Object> playerSquares = new ArrayList<>();
+    private ArrayList<Rectangle> playerSquareCovers = new ArrayList<>();
+    private ArrayList<Bet> bets = new ArrayList<Bet>();
+
     Circle wheel = new Circle(400, 500, 100);
 
     public void RouletteTest(ArrayList<Player> players) {
@@ -53,17 +67,40 @@ public class RouletteGraphics extends Application {
     @Override
 
     public void start(Stage primaryStage) throws IOException, FileNotFoundException, InterruptedException {
+        int xLoc = -325;
+
+        players.add(new Player("ASDHGJSKSDJKLS", 0));
+        players.add(new Player("dsfhek", 1));
+        players.add(new Player("djwkalsdj", 2));
+        players.add(new Player("JKKJS", 3));
+        players.add(new Player("SHJKE", 4));
+        players.add(new Player("Bob", 5));
+        players.add(new Player("SJHKM<D", 6));
+        players.add(new Player("ASLJDHJSSKJDA", 7));
+        players.get(0).setChips(123456);
+
+        Label label1 = new Label("Name:");
 
         Group root = new Group();
         Scene scene = new Scene(root, 1700, 1000, Color.GREEN);
+
+        drawBoard(root);
+        setClickNums(rects);
+
+        drawOutsideeBets(root);
+        setClickOutside(rects);
+
+        drawInsideBets(root);
+
         drawWheel(root, 2000);
         rotateWheel(root, 2000);
 
-        drawBoard(root);
-
-        drawOutsideeBets(root);
-
-        drawInsideBets(root);
+        drawPlayers(root);   //moves player squares
+        for (int i = 0; i < players.size() - 4; i++) {
+            movePlayers(root, xLoc);
+            xLoc -= 325;
+        }
+        flyingChip(root, primaryStage, scene);
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -248,24 +285,123 @@ public class RouletteGraphics extends Application {
 
     public void drawInsideBets(Group root) throws FileNotFoundException {
 
+        Rectangle outline = new Rectangle(175, 500, 610, 200);
+        outline.setFill(Color.WHITE);
+        outline.setArcWidth(30);
+        outline.setArcHeight(30);
+        root.getChildren().add(outline);
+
+        Rectangle green = new Rectangle(180, 505, 600, 190);
+        green.setFill(Color.GREEN);
+        green.setArcWidth(20);
+        green.setArcHeight(20);
+        root.getChildren().add(green);
+
+        Font f = new Font(STYLESHEET_MODENA, 50);
+        Text t = new Text(355, 570, "Inside Bets");
+        t.setFill(Color.WHITE);
+        t.setFont(f);
+        root.getChildren().add(t);
+
+        singleButton(root);
+
+        streetButton(root);
+
+        cornerButton(root);
+
+        splitButton(root);
+    }
+
+    public void singleButton(Group root) throws FileNotFoundException {
         Button button = new Button();
-        Font f = new Font(20);
-        button.setFont(f);
         button.setTranslateX(200);
-        button.setTranslateY(500);
-        //button.setPadding(Insets.EMPTY);
+        button.setTranslateY(625);
+        button.setPadding(Insets.EMPTY);
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Rectangle r = new Rectangle(200, 625, 100, 40);
+                r.setOpacity(0.5);
+                root.getChildren().add(r);
+            }
+        });
 
-        Image image = new Image(new FileInputStream("H:\\Documents\\NetBeansProjects\\Casinorama911cpt\\Casino\\src\\Resources\\single.jpg"), 2000, 2000, true, true);
-
+        Image image = new Image(new FileInputStream("src/Resources/Single.png"), 2000, 2000, true, true);
         ImageView imageView = new ImageView(image);
-
-        imageView.setFitWidth(70);
-
-        imageView.setFitHeight(50);
-
+        imageView.setFitWidth(100);
+        imageView.setFitHeight(40);
         button.setGraphic(imageView);
 
         root.getChildren().add(button);
+    }
+
+    public void cornerButton(Group root) throws FileNotFoundException {
+        Button button2 = new Button();
+        button2.setTranslateX(350);
+        button2.setTranslateY(625);
+        button2.setPadding(Insets.EMPTY);
+        button2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Rectangle r = new Rectangle(350, 625, 100, 40);
+                r.setOpacity(0.5);
+                root.getChildren().add(r);
+            }
+        });
+
+        Image image2 = new Image(new FileInputStream("src/Resources/Corner.png"), 2000, 2000, true, true);
+        ImageView imageView2 = new ImageView(image2);
+        imageView2.setFitWidth(100);
+        imageView2.setFitHeight(40);
+        button2.setGraphic(imageView2);
+
+        root.getChildren().add(button2);
+    }
+
+    public void streetButton(Group root) throws FileNotFoundException {
+        Button button2 = new Button();
+        button2.setTranslateX(500);
+        button2.setTranslateY(625);
+        button2.setPadding(Insets.EMPTY);
+        button2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Rectangle r = new Rectangle(500, 625, 100, 40);
+                r.setOpacity(0.5);
+                root.getChildren().add(r);
+            }
+        });
+
+        Image image2 = new Image(new FileInputStream("src/Resources/Street.png"), 2000, 2000, true, true);
+        ImageView imageView2 = new ImageView(image2);
+        imageView2.setFitWidth(100);
+        imageView2.setFitHeight(40);
+        button2.setGraphic(imageView2);
+
+        root.getChildren().add(button2);
+    }
+
+    public void splitButton(Group root) throws FileNotFoundException {
+        Button button2 = new Button();
+        button2.setTranslateX(650);
+        button2.setTranslateY(625);
+        button2.setPadding(Insets.EMPTY);
+        button2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Rectangle r = new Rectangle(650, 625, 100, 40);
+                r.setOpacity(0.5);
+                root.getChildren().add(r);
+            }
+        });
+
+        Image image2 = new Image(new FileInputStream("src/Resources/Split.png"), 2000, 2000, true, true);
+        ImageView imageView2 = new ImageView(image2);
+        imageView2.setFitWidth(100);
+        imageView2.setFitHeight(40);
+        button2.setGraphic(imageView2);
+
+        root.getChildren().add(button2);
     }
 
     public void fillBlackNums() {
@@ -290,12 +426,12 @@ public class RouletteGraphics extends Application {
     }
 
     public void drawWheel(Group root, int angle) throws FileNotFoundException, InterruptedException {
-        Image image = new Image(new FileInputStream("H:\\Documents\\NetBeansProjects\\Casinorama911cpt\\Casino\\src\\Resources\\RouletteWheel.png"), 2000, 2000, true, true);
+        Image image = new Image(new FileInputStream("src/Resources/Wheel.png"), 2000, 2000, true, true);
         ImagePattern ip = new ImagePattern(image);
-        wheel = new Circle(400, 500, 100);
+        wheel = new Circle(1425, 275, 200);
+        wheel.setFill(Color.GREY);
         wheel.setFill(ip);
         root.getChildren().add(wheel);
-        rotateWheel(root, angle);
 
     }
 
@@ -319,12 +455,98 @@ public class RouletteGraphics extends Application {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(RouletteGraphics.class.getName()).log(Level.SEVERE, null, ex);
                     System.out.println("That sucks");
                 }
                 reset.play();
             }
         });
+    }
+
+    public void drawPlayers(Group root) throws FileNotFoundException {
+        int xPos = 150;
+        for (int i = 0; i < players.size(); i++) {
+            Rectangle r = new Rectangle(xPos, 750, 300, 220);
+            r.setFill(Color.WHITE);
+            r.setOpacity(0.5);
+            r.setArcWidth(20);
+            r.setArcHeight(20);
+            root.getChildren().add(r);
+            playerSquares.add(r);
+
+            Font f = new Font(30);
+            Text t = new Text(xPos + 15, 800, players.get(i).getName());
+            t.setFill(Color.WHITE);
+            t.setFont(f);
+            root.getChildren().add(t);
+            playerSquares.add(t);
+
+            Image image = new Image(new FileInputStream("src/Resources/Chip1.png"), 2000, 2000, true, true);
+            ImagePattern ip = new ImagePattern(image);
+            Circle c = new Circle(xPos + 75, 890, 60);
+            c.setFill(ip);
+            root.getChildren().add(c);
+            playerSquares.add(c);
+
+            Font f2 = new Font(45);
+            Text chips = new Text(xPos + 145, 900, Integer.toString(players.get(i).getChips()));
+            chips.setFill(Color.WHITE);
+            chips.setFont(f2);
+            root.getChildren().add(chips);
+            playerSquares.add(chips);
+
+            Rectangle cover = new Rectangle(xPos, 750, 300, 220);
+            cover.setFill(Color.GREY);
+            cover.setOpacity(0.5);
+            cover.setArcWidth(20);
+            cover.setArcHeight(20);
+            root.getChildren().add(cover);
+            playerSquares.add(cover);
+            playerSquareCovers.add(cover);
+
+            xPos += 350;
+        }
+        playerSquareCovers.get(0).setOpacity(0);
+    }
+
+    public void movePlayers(Group root, int xLoc) {
+        for (int i = 0; i < playerSquares.size(); i++) {
+            TranslateTransition t = new TranslateTransition(new Duration(3000), (Node) playerSquares.get(i));
+            t.setToX(xLoc);
+            t.play();
+        }
+    }
+
+    public void flyingChip(Group root, Stage primaryStage, Scene scene) throws FileNotFoundException {
+        Cylinder cl = new Cylinder(100, 15);
+        cl.setTranslateX(500);
+        cl.setTranslateY(500);
+        cl.setTranslateZ(5000);
+
+        PerspectiveCamera camera = new PerspectiveCamera(false);
+        scene.setCamera(camera);
+
+        cl.setRotationAxis(Rotate.X_AXIS);
+        cl.setRotate(90);
+
+        root.getChildren().add(cl);
+
+        PhongMaterial m = new PhongMaterial();
+        Image image = new Image(new FileInputStream("src/Resources/Chip1.png"), 5000, 5000, true, true);
+
+        m.setDiffuseMap(image);
+        cl.setMaterial(m);
+
+        TranslateTransition t = new TranslateTransition(new Duration(3500), cl);
+        t.setToZ(-5000);
+        t.play();
+        TranslateTransition t2 = new TranslateTransition(new Duration(3500), cl);
+        t2.setToX(1000);
+        t2.play();
+
+        RotateTransition r = new RotateTransition(new Duration(3000), cl);
+        r.setByAngle(3000);
+        r.setAxis(new Point3D(20, 20, 20));
+        r.play();
     }
 
 
