@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
@@ -34,6 +35,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Paint;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Cylinder;
@@ -57,6 +59,9 @@ public class RouletteGraphics extends Application {
     private ArrayList<Object> playerSquares = new ArrayList<>();
     private ArrayList<Rectangle> playerSquareCovers = new ArrayList<>();
     private ArrayList<Bet> bets = new ArrayList<Bet>();
+    private boolean clickedSingleBetButton = false;
+    private boolean clickedDoneBotton = false;
+    private Button next = new Button();
 
     Circle wheel = new Circle(400, 500, 100);
 
@@ -85,10 +90,10 @@ public class RouletteGraphics extends Application {
         Scene scene = new Scene(root, 1700, 1000, Color.GREEN);
 
         drawBoard(root);
-        setClickNums(rects);
+        setClickNums();
 
         drawOutsideeBets(root);
-        setClickOutside(rects);
+        setClickOutside();
 
         drawInsideBets(root);
 
@@ -106,27 +111,28 @@ public class RouletteGraphics extends Application {
         primaryStage.show();
     }
 
-    public void setClickNums(ArrayList<Rectangle> rects) {
+    public void setClickNums() {
         for (int i = 0; i < rects.size(); i++) {
             rects.get(i).setOnMousePressed(rectOnClickAction);
         }
     }
 
-    public void removeClickNums(ArrayList<Rectangle> rects) {
+    public void removeClickNums() {
         for (int i = 0; i < rects.size(); i++) {
             rects.get(i).removeEventHandler(EventType.ROOT, rectOnClickAction);
         }
     }
 
-    public void setClickOutside(ArrayList<Rectangle> rects) {
-        for (int i = 0; i < rects.size(); i++) {
-            rects.get(i).setOnMousePressed(rectOnClickAction);
+    public void setClickOutside() {
+        for (int i = 0; i < outsideBets.size(); i++) {
+            outsideBets.get(i).setOnMousePressed(outsideOnClickAction);
+
         }
     }
 
-    public void removeClickOutside(ArrayList<Rectangle> rects) {
-        for (int i = 0; i < rects.size(); i++) {
-            rects.get(i).removeEventHandler(EventType.ROOT, rectOnClickAction);
+    public void removeClickOutside() {
+        for (int i = 0; i < outsideBets.size(); i++) {
+            outsideBets.get(i).removeEventHandler(EventType.ROOT, outsideOnClickAction);
         }
     }
 
@@ -134,9 +140,40 @@ public class RouletteGraphics extends Application {
         @Override
         public void handle(Event event) {
             Rectangle temp = (Rectangle) event.getSource();
+            Paint p = temp.getFill();
             temp.setFill(Color.BLUEVIOLET);
             System.out.println(rects.indexOf(temp));
 
+            new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
+                @Override
+                public void run() {
+                    temp.setFill(p);
+                }
+            },
+                    300
+            );
+        }
+
+    };
+
+    EventHandler<Event> outsideOnClickAction = new EventHandler<Event>() {
+        @Override
+        public void handle(Event event) {
+            Rectangle temp = (Rectangle) event.getSource();
+            Paint p = temp.getFill();
+            temp.setFill(Color.BLUEVIOLET);
+            System.out.println(rects.indexOf(temp));
+
+            new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
+                @Override
+                public void run() {
+                    temp.setFill(p);
+                }
+            },
+                    300
+            );
         }
 
     };
@@ -285,12 +322,6 @@ public class RouletteGraphics extends Application {
 
     public void drawInsideBets(Group root) throws FileNotFoundException {
 
-        Rectangle outline = new Rectangle(175, 500, 610, 200);
-        outline.setFill(Color.WHITE);
-        outline.setArcWidth(30);
-        outline.setArcHeight(30);
-        root.getChildren().add(outline);
-
         Rectangle green = new Rectangle(180, 505, 600, 190);
         green.setFill(Color.GREEN);
         green.setArcWidth(20);
@@ -303,6 +334,8 @@ public class RouletteGraphics extends Application {
         t.setFont(f);
         root.getChildren().add(t);
 
+        clickedSingleBetButton = false;
+
         singleButton(root);
 
         streetButton(root);
@@ -313,95 +346,179 @@ public class RouletteGraphics extends Application {
     }
 
     public void singleButton(Group root) throws FileNotFoundException {
-        Button button = new Button();
-        button.setTranslateX(200);
-        button.setTranslateY(625);
-        button.setPadding(Insets.EMPTY);
-        button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Rectangle r = new Rectangle(200, 625, 100, 40);
-                r.setOpacity(0.5);
-                root.getChildren().add(r);
-            }
-        });
+        if (!clickedSingleBetButton) {
+            Button button = new Button();
+            button.setTranslateX(200);
+            button.setTranslateY(625);
+            button.setPadding(Insets.EMPTY);
 
-        Image image = new Image(new FileInputStream("src/Resources/Single.png"), 2000, 2000, true, true);
-        ImageView imageView = new ImageView(image);
-        imageView.setFitWidth(100);
-        imageView.setFitHeight(40);
-        button.setGraphic(imageView);
+            button.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    Rectangle r = new Rectangle(200, 625, 100, 40);
+                    r.setOpacity(0.5);
+                    r.setArcHeight(10);
+                    r.setArcWidth(10);
+                    root.getChildren().add(r);
+                    buttonClickColor(root, r);
 
-        root.getChildren().add(button);
+                    IntStream.range(0, 1).forEach(//automatically clicks button "next"
+                            i -> next.fire()
+                    );
+                }
+            });
+
+            Image image = new Image(new FileInputStream("src/Resources/Single.png"), 2000, 2000, true, true);
+            ImageView imageView = new ImageView(image);
+            imageView.setFitWidth(100);
+            imageView.setFitHeight(40);
+            button.setGraphic(imageView);
+
+            root.getChildren().add(button);
+        }
     }
 
     public void cornerButton(Group root) throws FileNotFoundException {
-        Button button2 = new Button();
-        button2.setTranslateX(350);
-        button2.setTranslateY(625);
-        button2.setPadding(Insets.EMPTY);
-        button2.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Rectangle r = new Rectangle(350, 625, 100, 40);
-                r.setOpacity(0.5);
-                root.getChildren().add(r);
-            }
-        });
+        if (!clickedSingleBetButton) {
+            Button button2 = new Button();
+            button2.setTranslateX(350);
+            button2.setTranslateY(625);
+            button2.setPadding(Insets.EMPTY);
 
-        Image image2 = new Image(new FileInputStream("src/Resources/Corner.png"), 2000, 2000, true, true);
-        ImageView imageView2 = new ImageView(image2);
-        imageView2.setFitWidth(100);
-        imageView2.setFitHeight(40);
-        button2.setGraphic(imageView2);
+            button2.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    Rectangle r = new Rectangle(350, 625, 100, 40);
+                    r.setOpacity(0.5);
+                    r.setArcHeight(10);
+                    r.setArcWidth(10);
+                    root.getChildren().add(r);
+                    buttonClickColor(root, r);
 
-        root.getChildren().add(button2);
+                    IntStream.range(0, 1).forEach(//automatically clicks button "next"
+                            i -> next.fire()
+                    );
+                }
+            });
+
+            Image image2 = new Image(new FileInputStream("src/Resources/Corner.png"), 2000, 2000, true, true);
+            ImageView imageView2 = new ImageView(image2);
+            imageView2.setFitWidth(100);
+            imageView2.setFitHeight(40);
+            button2.setGraphic(imageView2);
+
+            root.getChildren().add(button2);
+        }
     }
 
     public void streetButton(Group root) throws FileNotFoundException {
+        if (!clickedSingleBetButton) {
+            Button button2 = new Button();
+            button2.setTranslateX(500);
+            button2.setTranslateY(625);
+            button2.setPadding(Insets.EMPTY);
+
+            button2.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    Rectangle r = new Rectangle(500, 625, 100, 40);
+                    r.setOpacity(0.5);
+                    r.setArcHeight(10);
+                    r.setArcWidth(10);
+                    root.getChildren().add(r);
+                    buttonClickColor(root, r);
+
+                    IntStream.range(0, 1).forEach(//automatically clicks button "next"
+                            i -> next.fire()
+                    );
+                }
+            });
+
+            Image image2 = new Image(new FileInputStream("src/Resources/Street.png"), 2000, 2000, true, true);
+            ImageView imageView2 = new ImageView(image2);
+            imageView2.setFitWidth(100);
+            imageView2.setFitHeight(40);
+            button2.setGraphic(imageView2);
+
+            root.getChildren().add(button2);
+        }
+    }
+
+    public void splitButton(Group root) throws FileNotFoundException {
+        if (!clickedSingleBetButton) {
+            Button button2 = new Button();
+            button2.setTranslateX(650);
+            button2.setTranslateY(625);
+            button2.setPadding(Insets.EMPTY);
+
+            button2.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    Rectangle r = new Rectangle(650, 625, 100, 40);
+                    r.setOpacity(0.5);
+                    r.setArcHeight(10);
+                    r.setArcWidth(10);
+                    root.getChildren().add(r);
+                    buttonClickColor(root, r);
+
+                    IntStream.range(0, 1).forEach(//automatically clicks button "next"
+                            i -> next.fire()
+                    );
+                }
+            });
+
+            Image image2 = new Image(new FileInputStream("src/Resources/Split.png"), 2000, 2000, true, true);
+            ImageView imageView2 = new ImageView(image2);
+            imageView2.setFitWidth(100);
+            imageView2.setFitHeight(40);
+            button2.setGraphic(imageView2);
+
+            root.getChildren().add(button2);
+        }
+    }
+
+    public void doneButton(Group root) throws FileNotFoundException {
         Button button2 = new Button();
-        button2.setTranslateX(500);
+        button2.setTranslateX(1000);
         button2.setTranslateY(625);
         button2.setPadding(Insets.EMPTY);
+
         button2.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Rectangle r = new Rectangle(500, 625, 100, 40);
+                Rectangle r = new Rectangle(1000, 625, 200, 50);
+                r.setArcHeight(10);
+                r.setArcWidth(10);
                 r.setOpacity(0.5);
                 root.getChildren().add(r);
+                buttonClickColor(root, r);
+                clickedDoneBotton = true;
+
+                IntStream.range(0, 1).forEach(//automatically clicks button "next"
+                        i -> next.fire()
+                );
             }
         });
 
-        Image image2 = new Image(new FileInputStream("src/Resources/Street.png"), 2000, 2000, true, true);
+        Image image2 = new Image(new FileInputStream("src/Resources/DoneButton.png"), 2000, 2000, true, true);
         ImageView imageView2 = new ImageView(image2);
-        imageView2.setFitWidth(100);
-        imageView2.setFitHeight(40);
+        imageView2.setFitWidth(200);
+        imageView2.setFitHeight(50);
         button2.setGraphic(imageView2);
 
         root.getChildren().add(button2);
     }
 
-    public void splitButton(Group root) throws FileNotFoundException {
-        Button button2 = new Button();
-        button2.setTranslateX(650);
-        button2.setTranslateY(625);
-        button2.setPadding(Insets.EMPTY);
-        button2.setOnAction(new EventHandler<ActionEvent>() {
+    public void buttonClickColor(Group root, Rectangle r) {
+        new java.util.Timer().schedule(
+                new java.util.TimerTask() {
             @Override
-            public void handle(ActionEvent event) {
-                Rectangle r = new Rectangle(650, 625, 100, 40);
-                r.setOpacity(0.5);
-                root.getChildren().add(r);
+            public void run() {
+                r.setOpacity(0);
             }
-        });
-
-        Image image2 = new Image(new FileInputStream("src/Resources/Split.png"), 2000, 2000, true, true);
-        ImageView imageView2 = new ImageView(image2);
-        imageView2.setFitWidth(100);
-        imageView2.setFitHeight(40);
-        button2.setGraphic(imageView2);
-
-        root.getChildren().add(button2);
+        },
+                300
+        );
     }
 
     public void fillBlackNums() {
