@@ -65,6 +65,15 @@ public class ImageBuffer {
     public static Image diamondJ = null;
     public static Image diamondQ = null;
     public static Image diamondK = null;
+    //chips
+    public static Image chip1 = null;
+    public static Image chip5 = null;
+    public static Image chip10 = null;
+    public static Image chip25 = null;
+    public static Image chip50 = null;
+    public static Image chip100 = null;
+    public static Image chip500 = null;
+    public static Image chip1000 = null;
 
     //etc
     public static Image back1 = null;
@@ -134,13 +143,23 @@ public class ImageBuffer {
             diamondJ = new Image(new FileInputStream("src/Resource/jd.png"), 1203, 1803, true, true);
             diamondQ = new Image(new FileInputStream("src/Resource/qd.png"), 1203, 1803, true, true);
             diamondK = new Image(new FileInputStream("src/Resource/kd.png"), 1203, 1803, true, true);
+            //chips
+            chip1 = new Image(new FileInputStream("src/Resource/chip1.png"), 180, 180, true, true);
+            chip5 = new Image(new FileInputStream("src/Resource/chip5.png"), 180, 180, true, true);
+            chip10 = new Image(new FileInputStream("src/Resource/chip10.png"), 180, 180, true, true);
+            chip25 = new Image(new FileInputStream("src/Resource/chip25.png"), 180, 180, true, true);
+            chip50 = new Image(new FileInputStream("src/Resource/chip50.png"), 180, 180, true, true);
+            chip100 = new Image(new FileInputStream("src/Resource/chip100.png"), 180, 180, true, true);
+            chip500 = new Image(new FileInputStream("src/Resource/chip500.png"), 180, 180, true, true);
+            chip1000 = new Image(new FileInputStream("src/Resource/chip1000.png"), 180, 180, true, true);
+
             //etc
             back1 = new Image(new FileInputStream("src/Resource/back.png"), 1203, 1803, true, true);
             back2 = new Image(new FileInputStream("src/Resource/back2.png"), 1203, 1803, true, true);
             back3 = new Image(new FileInputStream("src/Resource/back3.png"), 1203, 1803, true, true);
             blank = new Image(new FileInputStream("src/Resource/blank.png"), 1203, 1803, true, true);
             pokerTable = new Image(new FileInputStream("src/Resource/table.png"), 1920, 1080, true, true);
-            menu = new Image(new FileInputStream("src/Resource/menubackground.png"), 1920, 1080, true, true); 
+            menu = new Image(new FileInputStream("src/Resource/menubackground.png"), 1920, 1080, true, true);
         } catch (Exception e) {
             System.out.println("Error!");
         }
