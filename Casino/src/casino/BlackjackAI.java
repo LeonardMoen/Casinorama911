@@ -100,33 +100,20 @@ public class BlackjackAI extends Player {
             return true;
         } else {
             int n = r.nextInt(10);
-            if (n <= 8) {
-                return false;
-            } else {
-                return true;
-            }
+            return n > 8;
         }
     }
 
     public void setSplit() {
         if (super.getChips() >= this.realBet) {
-            int eh = r.nextInt(2);
-            if (eh == 0) {
-                this.split = true;
-            } else if (eh == 1) {
-                this.split = false;
-            }
+            split = super.getPocketHands().get(0).getPlayerHand().get(0).getWorth() == 1 && super.getPocketHands().get(0).getPlayerHand().get(1).getWorth() == 1;
         }
     }
 
-    public void setdDown(Deck deck, int n) {
+    public void setdDown(int n) {
         if (super.getChips() >= this.realBet) {
             if (super.getRealTotal(n) >= 9 && super.getRealTotal(n) <= 11) {
-                if (super.getRealTotal(n) + deck.getDeck().get(0).getWorth() >= 16) {
-                    dDown = true;
-                } else {
-                    dDown = false;
-                }
+                dDown = this.runningCount > 0;
             }
         }
     }
@@ -144,7 +131,7 @@ public class BlackjackAI extends Player {
     }
 
     public void setBettingUnit() {
-        this.bettingUnit = super.getChips() / r.nextInt(((11-9)+1) + 9);
+        this.bettingUnit = super.getChips() / r.nextInt(((11 - 9) + 1) + 9);
     }
 
     public void setRealBet() {
