@@ -323,7 +323,7 @@ public class BlackjackJAVA {
         while (!numOfPlayers.get(i).isStay()) {
             if (numOfPlayers.get(i).isAi()) {
                 BlackjackAI ai = (BlackjackAI) (numOfPlayers.get(i));
-                ai.setdDown(deck, handNum);
+                ai.setdDown(handNum);
                 ai.setSplit();
                 ai.setHit(deck, handNum);
                 if (round == 1) {
