@@ -23,8 +23,6 @@ public class BlackjackAI extends Player {
         setRunningCount(players, dealer);
         setNumDecks(deck);
         setTrueCount();
-        setBettingUnit();
-        setRealBet();
     }
 
     public void setRunningCount(ArrayList<Player> players, Dealer dealer) {
@@ -63,11 +61,12 @@ public class BlackjackAI extends Player {
     }
 
     public void setTrueCount() {
+        this.trueCount = 0;
         this.trueCount = this.runningCount / this.numDecks;
     }
 
     public void setNumDecks(Deck deck) {
-        numDecks = 0;
+        this.numDecks = 0;
         int cards = 0;
         double remainder;
         for (int i = 0; i < deck.getDeck().size(); i++) {
@@ -100,13 +99,13 @@ public class BlackjackAI extends Player {
             return true;
         } else {
             int n = r.nextInt(10);
-            return n > 8;
+            return n > 9;
         }
     }
 
     public void setSplit() {
         if (super.getChips() >= this.realBet) {
-            split = super.getPocketHands().get(0).getPlayerHand().get(0).getWorth() == 1 && super.getPocketHands().get(0).getPlayerHand().get(1).getWorth() == 1;
+            this.split = super.getPocketHands().get(0).getPlayerHand().get(0).getWorth() == 1 && super.getPocketHands().get(0).getPlayerHand().get(1).getWorth() == 1;
         }
     }
 
@@ -122,6 +121,7 @@ public class BlackjackAI extends Player {
         return hit;
     }
 
+    @Override
     public boolean isSplit() {
         return split;
     }
@@ -131,17 +131,20 @@ public class BlackjackAI extends Player {
     }
 
     public void setBettingUnit() {
-        this.bettingUnit = super.getChips() / r.nextInt(((11 - 9) + 1) + 9);
+        this.bettingUnit = 0;
+        int rando = r.nextInt((11 - 9) + 1) + 9;
+        System.out.println(rando);
+        this.bettingUnit = super.getChips() / rando;
     }
 
     public void setRealBet() {
+        this.realBet = 0;
+        setBettingUnit();
         if (this.trueCount == 0) {
             setBettingUnit();
             this.realBet = this.bettingUnit;
         } else if (this.trueCount - 1 < 0) {
-            this.realBet = super.getChips() / r.nextInt(((25 - 15) + 1) + 15);
-        } else {
-            this.realBet = (int) ((this.trueCount - 1) * this.bettingUnit);
+            this.realBet = super.getChips() / r.nextInt((20 - 15) + 1) + 15;
         }
     }
 
