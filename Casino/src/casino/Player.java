@@ -151,7 +151,7 @@ public class Player implements Comparable {
 
     public void setBet(int bet) {
         this.bet = bet;
-        chips = chips - bet;
+        this.chips = chips - bet;
     }
 
     public int setTotal(int n) {
