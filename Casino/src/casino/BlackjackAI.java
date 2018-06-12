@@ -134,7 +134,7 @@ public class BlackjackAI extends Player {
 
     public void setBettingUnit() {
         this.bettingUnit = 0;
-        double rand = ThreadLocalRandom.current().nextDouble(9,11);
+        double rand = ThreadLocalRandom.current().nextDouble(8,11);
         this.bettingUnit = (int) (super.getChips() / rand);
     }
 
