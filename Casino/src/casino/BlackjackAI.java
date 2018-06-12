@@ -55,7 +55,7 @@ public class BlackjackAI extends Player {
     }
 
     public void setInsurance() {
-        this.insurance = this.runningCount >= 5;
+        this.insurance = this.runningCount >= 3;
     }
 
     public void setAi() {
