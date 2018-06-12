@@ -4,14 +4,14 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class BlackjackJAVA {
-
+    
     public static InputStreamReader inStream = new InputStreamReader(System.in);
     public static BufferedReader stdin = new BufferedReader(inStream);
     public static ArrayList<Player> numOfPlayers = new ArrayList<>();
     public static Deck deck;
     public static Dealer dealer;
     public static int round = 1;
-
+    
     public static void main(String[] args) throws IOException, InterruptedException {
         initializeGame();
         dealer = new Dealer(deck);
@@ -46,7 +46,7 @@ public class BlackjackJAVA {
                     numOfPlayers.remove(i);
                     i = i - 1;
                 }
-
+                
             }
             if (deck.getDeck().isEmpty()) {
                 deck = new Deck();
@@ -54,13 +54,13 @@ public class BlackjackJAVA {
         } while (!numOfPlayers.isEmpty());
         System.out.println("\nThank god youre gone!");
     }
-
+    
     public static void addAI() throws IOException {
         numOfPlayers.add(new BlackjackAI("John", deck));
         numOfPlayers.add(new BlackjackAI("Bob", deck));
         numOfPlayers.add(new BlackjackAI("Harry", deck));
     }
-
+    
     public static void placeBets() throws IOException, InterruptedException {
         boolean repeat;
         int response;
@@ -72,7 +72,7 @@ public class BlackjackJAVA {
                 ai.setBet(ai.getRealBet());
                 System.out.print("How much would you like to bet: $");
                 Thread.sleep(1200);
-                System.out.print(ai.getRealBet());
+                System.out.print(ai.getBet());
                 System.out.println("");
             } else {
                 response = 0;
@@ -113,7 +113,7 @@ public class BlackjackJAVA {
             }
         }
     }
-
+    
     public static void resetCharacteristics() {
         for (int i = 0; i < numOfPlayers.size(); i++) {
             numOfPlayers.get(i).setBet(0);
@@ -132,7 +132,7 @@ public class BlackjackJAVA {
         }
         dealer = new Dealer(deck);
     }
-
+    
     public static void printBoard() throws IOException, InterruptedException {
         BlackjackAI ai;
         System.out.println("\nDEALER ~ HAND");
@@ -179,7 +179,7 @@ public class BlackjackJAVA {
         System.out.println("");
         checkWin();
     }
-
+    
     public static void checkWin() throws IOException {
         checkInsuranceWin();
         if (dealer.isBust()) {
@@ -215,7 +215,7 @@ public class BlackjackJAVA {
             }
         }
     }
-
+    
     public static void checkInsuranceWin() {
         if (dealer.getDealerHand().getPlayerHand().get(0).getWorth() == 1 && dealer.getDealerHand().getPlayerHand().get(1).getWorth() == 10) {
             for (int i = 0; i < numOfPlayers.size(); i++) {
@@ -226,7 +226,7 @@ public class BlackjackJAVA {
             }
         }
     }
-
+    
     public static void getInsurance(int i) throws IOException {
         numOfPlayers.get(i).setInsurance(true);
         if (numOfPlayers.get(i).getChips() >= numOfPlayers.get(i).getBet() / 2) {
@@ -235,7 +235,7 @@ public class BlackjackJAVA {
             System.out.println("You do not have enough chips");
         }
     }
-
+    
     public static void playDealer() throws InterruptedException {
         System.out.println("\n~ DEALER ~ ");
         printDealer();
@@ -250,14 +250,14 @@ public class BlackjackJAVA {
             dealer.setBust(true);
         }
     }
-
+    
     public static void printDealer() {
         for (int i = 0; i < dealer.getDealerHand().getPlayerHand().size(); i++) {
             System.out.print(dealer.getDealerHand().getPlayerHand().get(i) + "\t\t");
         }
         System.out.print("Total: " + dealer.getTotal());
     }
-
+    
     public static void printCards(int i, int handNum) throws IOException {
         for (int c = 0; c < numOfPlayers.get(i).getPocketHands().get(handNum).getPlayerHand().size(); c++) {
             System.out.print(numOfPlayers.get(i).getPocketHands().get(handNum).getPlayerHand().get(c) + "\t\t");
@@ -278,12 +278,12 @@ public class BlackjackJAVA {
         }
         System.out.println("");
     }
-
+    
     public static void playerHit(int i, int handNum) throws IOException {
         numOfPlayers.get(i).getPocketHands().get(handNum).hitCard(deck);
         printCards(i, handNum);
     }
-
+    
     public static void playerSplit(int i, int handNum) throws IOException, InterruptedException {
         if (numOfPlayers.get(i).getChips() >= numOfPlayers.get(i).getBet()) {
             numOfPlayers.get(i).ifSplit(deck);
@@ -299,7 +299,7 @@ public class BlackjackJAVA {
             System.out.println("You do not have enough chips to split!");
         }
     }
-
+    
     public static void playerDD(int i, int handNum) throws IOException {
         if (numOfPlayers.get(i).getChips() >= numOfPlayers.get(i).getBet()) {
             numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet());
@@ -312,7 +312,7 @@ public class BlackjackJAVA {
         }
         System.out.println("");
     }
-
+    
     public static void playRound(int i, int handNum) throws IOException, InterruptedException {
         int response;
         round = 1;
@@ -456,7 +456,7 @@ public class BlackjackJAVA {
             round++;
         }
     }
-
+    
     public static void initializeGame() throws IOException {
         System.out.println("Welcome to Blackjack!");
         System.out.print("\nEnter number of players: ");
@@ -472,5 +472,5 @@ public class BlackjackJAVA {
             numOfPlayers.add(new Player(name, deck));
         }
     }
-
+    
 }
