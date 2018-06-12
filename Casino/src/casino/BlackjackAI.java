@@ -3,6 +3,7 @@ package casino;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
 
 public class BlackjackAI extends Player {
@@ -16,6 +17,7 @@ public class BlackjackAI extends Player {
     public BlackjackAI(String name, Deck deck) {
         super(name, deck);
         setNumDecks(deck);
+        setBettingUnit();
         setAi();
     }
 
@@ -139,13 +141,16 @@ public class BlackjackAI extends Player {
 
     public void setRealBet() {
         this.realBet = 0;
-        setBettingUnit();
-        if (this.trueCount == 0) {
-            setBettingUnit();
-            this.realBet = this.bettingUnit;
-        } else if (this.trueCount - 1 < 0) {
-            this.realBet = super.getChips() / r.nextInt((20 - 15) + 1) + 15;
-        }
+        do {
+            if (this.trueCount == 0) {
+                this.realBet = this.bettingUnit;
+            } else if (this.trueCount - 1 < 0) {
+                double rand = ThreadLocalRandom.current().nextDouble(1, 1.5);
+                this.realBet = (int) (this.bettingUnit / rand);
+            } else if (this.trueCount > 1) {
+                this.realBet = (int) (this.trueCount - 1) * (this.bettingUnit);
+            }
+        } while (this.realBet > super.getChips());
     }
 
     public int getRealBet() {
