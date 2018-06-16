@@ -26,6 +26,7 @@ public class Player implements Comparable {
             p7x = 830 + 180, p7y = 295,
             p8x = 830, p8y = 450;
 
+    private int numTurn;
     public Player(String name, int playerNum) {
         this.name = name;
         this.playerNum = playerNum;
@@ -35,6 +36,7 @@ public class Player implements Comparable {
         this.chipsInCurrent = 0;
         playerPane = new Pane();
         setPlayerPosition();
+        this.numTurn=0;
     }
 
     public void setPlayerPosition() {
@@ -289,6 +291,16 @@ public class Player implements Comparable {
     public void setNumsBetOn(ArrayList<Integer> numsBetOn) {
         this.numsBetOn = numsBetOn;
     }
+
+    public int getNumTurn() {
+        return numTurn;
+    }
+
+    public void setNumTurn(int numTurn) {
+        this.numTurn = numTurn;
+    }
+    
+    
 
     @Override
     public int compareTo(Object t) {

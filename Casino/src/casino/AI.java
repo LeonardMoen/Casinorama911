@@ -164,7 +164,6 @@ public class AI extends Player{
             }
         }
         double handStrength = ((double)(numWin)/totalCombinations);
-        System.out.println(handStrength);
         return handStrength;
     }
     
@@ -187,6 +186,7 @@ public class AI extends Player{
         }
         deck.shuffle();
         double handStrength = handStrength(super.getPocketHand(),communityCards,totalCombination,deck.getDeck());
+        System.out.println(handStrength);
         try{
             handStrength = handStrength/(players.indexOf(this));
         }catch(Exception e){ 

@@ -96,7 +96,13 @@ public class Card extends Rectangle implements Comparable {
 
     @Override
     public boolean equals(Object o) {
-        Card card1 = (Card) o;
+        Card card1;
+        if(o instanceof Card){
+            card1 = (Card) o;
+        }
+        else{
+            return false;
+        }
         if (value == card1.getValue() && suit.equalsIgnoreCase(card1.getSuit())) {
             return true;
         }

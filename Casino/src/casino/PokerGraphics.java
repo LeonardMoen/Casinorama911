@@ -1,6 +1,7 @@
 package casino;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 import javafx.animation.PathTransition;
 import javafx.event.ActionEvent;
@@ -39,8 +40,6 @@ public class PokerGraphics {
 
     static Random rand = new Random();
 
-    static ArrayList<Card> communityCards = new ArrayList<Card>();
-
     //positions
     public static double deckX = 850 - 63, deckY1 = 295, deckY2 = 295 + 7,
             flopX = 430, flopY = 295, burnX = 860,
@@ -59,7 +58,6 @@ public class PokerGraphics {
     public PokerGraphics() {
 
         //setting up position of players
-
         ip = new ImagePattern(ImageBuffer.pokerTable);
         ImageView pTable = new ImageView();
         pTable.setImage(ImageBuffer.pokerTable);
@@ -67,49 +65,17 @@ public class PokerGraphics {
         pTable.setFitWidth(1366);
         pTable.setX(-40);
         pTable.setY(-80);
-        Scene pokerScene = new Scene(rootPane, 1920, 1080);
+        Scene pokerScene = new Scene(rootPane, 1366, 768);
         rootPane.getChildren().add(pTable);
         Casino.primaryStage.setScene(pokerScene);
-        ArrayList<Player> players = new ArrayList<Player>();
-        for (int i = 1; i <= 8; i++) {
-            String name = "Player " + i;
-            players.add(new Player(name, i));
-        }
-        
-        for (int i = 0; i < 8; i++) {
-            if (i == 0) {
-                players.get(i).setAi(false);
-                players.get(i).setBlind(new Blind(0, "small"));
-            } else if (i == 1) {
-                players.get(i).setBlind(new Blind(0, "big"));
-                players.get(i).setAi(true);
-            } else {
-                players.get(i).setAi(true);
-            }
-        }
-
-        for (Player player : players) {
+        Poker poker = new Poker();
+        ArrayList<Player> players = Poker.getPlayers();
+        for (Player player : Poker.getAllPlayers()) {
             addPlayerInfo(player);
-        }
-        for (Player player : players) {
             rootPane.getChildren().add(player.getPane());
         }
-        
-        
-        Deck deck = new Deck();
-        displayDeck(deck);
-        deck.shuffle();
-        dealPlayers(players, deck);
-        displayDealPlayers(players);
-        displayAllCards(players);
-        displayBurn(deck);
-        cCards(deck);
-        displayFlop(communityCards);
-        displayTurn(communityCards);
-        displayRiver(communityCards);
         //displayShuffle(deck);
-
-
+        Poker.playPoker();
         Scene menu = new Scene(roop, 1920, 1080);
         rootPane.getChildren().add(btns);
 
@@ -121,18 +87,16 @@ public class PokerGraphics {
 //        //poker scene
         Button backBtn = new Button();
         backBtn.setText("Back");
-        backBtn.setOnAction(e -> Casino.primaryStage.setScene(menu));
+        backBtn.setOnAction(e -> Casino.primaryStage.setScene(Casino.menu));
         rootPane.getChildren().add(backBtn);
-//
-        deck.getdPane().setTranslateX(deckX);
-        deck.getdPane().setTranslateY(deckY1);
-        commCards.setTranslateX(flopX);
-        commCards.setTranslateY(flopY);
-        burnPile.setTranslateX(burnX);
-        burnPile.setTranslateY(deckY1);
-        rootPane.getChildren().addAll(burnPile, commCards, deck.getdPane());
         //<editor-fold defaultstate="collapsed" desc="displaying all cards and buttons">
 
+    }
+
+    public static void createButtons() {
+        VBox pokerBtns = new VBox();
+        Font f = new Font("Times New Roman", 16);
+        rootPane.getChildren().add(pokerBtns);
         //button call
         Button btnCall = new Button();
         btnCall.setText("Call");
@@ -141,7 +105,18 @@ public class PokerGraphics {
         btnCall.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Call");
+                if(!(Poker.getCurrentPlayer() instanceof AI)){
+                    int requiredChips = Poker.getRequiredChips();
+                    if (Poker.getCurrentPlayer().getChipsInCurrent() != requiredChips) {
+                        System.out.println("Call");
+                        Poker.call(Poker.getCurrentPlayer(), requiredChips);
+                        int playerIndex = Poker.getPlayers().indexOf(Poker.getCurrentPlayer());
+                        Poker.determiningNextAction(playerIndex);
+                    }
+                    else{
+                        System.out.println("Anton resembelance");
+                    }
+                }
             }
         });
         pokerBtns.getChildren().add(btnCall);
@@ -154,7 +129,14 @@ public class PokerGraphics {
         btnRaise.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Bet");
+                if(!(Poker.getCurrentPlayer() instanceof AI)){
+                    ArrayList<Player> players = Poker.getPlayers();
+                    int requiredChips = Poker.getRequiredChips();
+                    System.out.println("Raise");
+                    Poker.raise(Poker.getCurrentPlayer(), requiredChips, 30);
+                    int playerIndex = Poker.getPlayers().indexOf(Poker.getCurrentPlayer());
+                    Poker.determiningNextAction(playerIndex);
+                }
             }
         });
         pokerBtns.getChildren().add(btnRaise);
@@ -167,12 +149,17 @@ public class PokerGraphics {
         btnFold.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Fold");
+                if(!(Poker.getCurrentPlayer() instanceof AI)){
+                    ArrayList<Player> players = Poker.getPlayers();
+                    int requiredChips = Poker.getRequiredChips();
+                    System.out.println("Fold");
+                    PokerGraphics.displayFold(Poker.getCurrentPlayer());
+                    int playerIndex = players.indexOf(Poker.getCurrentPlayer());
+                    Poker.determiningNextAction(playerIndex);
+                }
             }
         });
         pokerBtns.getChildren().add(btnFold);
-
-        rootPane.getChildren().add(pokerBtns);
 
         //button check
         Button btnCheck = new Button();
@@ -182,7 +169,17 @@ public class PokerGraphics {
         btnCheck.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Check");
+                ArrayList<Player> players = Poker.getPlayers();
+                if(!(Poker.getCurrentPlayer() instanceof AI)){
+                    int requiredChips = Poker.getRequiredChips();
+                    if (requiredChips == Poker.getCurrentPlayer().getChipsInCurrent()) {
+                        System.out.println("Check");
+                        int playerIndex = players.indexOf(Poker.getCurrentPlayer());
+                        Poker.determiningNextAction(playerIndex);
+                    }else{
+                        System.out.println("Anton resembelance");
+                    }
+                }
             }
         });
         pokerBtns.setTranslateY(370);
@@ -490,6 +487,8 @@ public class PokerGraphics {
 
     public static void displayDeck(Deck deck) {
         deck.getdPane().getChildren().clear();
+        deck.getdPane().setTranslateX(deckX);
+        deck.getdPane().setTranslateY(deckY1);
         ImagePattern ip = new ImagePattern(ImageBuffer.back1);
         for (int i = 0; i < deck.getDeck().size() - 1; i++) {
             Card card = deck.getDeck().get(i);
@@ -498,20 +497,26 @@ public class PokerGraphics {
             deckY2 = deckY1 - (i * 0.25);
             deck.getdPane().getChildren().add(displayCard(card));
         }
+        rootPane.getChildren().add(deck.getdPane());
     }
 
-    public static void displayBurn(Deck deck) {
-        Card card = deck.getDeck().get(0);
+    public static void displayBurn() {
+        burnPile.setTranslateX(burnX);
+        burnPile.setTranslateY(deckY1);
+        Card card = Poker.getDeck().getDeck().get(0);
         card.setFaceUp(false);
         burnPile.getChildren().add(displayCard(card));
     }
 
     public static void displayFlop(ArrayList<Card> communityCards) {
+        commCards.setTranslateX(flopX);
+        commCards.setTranslateY(flopY);
         for (int i = 0; i < 3; i++) {
             Card card = communityCards.get(i);
             card.setFaceUp(true);
             commCards.getChildren().add(displayCard(card));
         }
+        rootPane.getChildren().add(commCards);
     }
 
     public static void displayTurn(ArrayList<Card> communityCards) {
@@ -524,6 +529,12 @@ public class PokerGraphics {
         Card card = communityCards.get(4);
         card.setFaceUp(true);
         commCards.getChildren().add(displayCard(card));
+    }
+    
+    public static void removeCommunityCard(){
+        for(int i =commCards.getChildren().size()-1;i>=0;i--){
+            commCards.getChildren().remove(i);
+        }
     }
 
     public static void displayAllCards(ArrayList<Player> playersInRound) {
@@ -542,28 +553,21 @@ public class PokerGraphics {
         }
     }
 
-    public static void cCards(Deck deck) {
-        communityCards.clear();
-        for (int i = 0; i < 5; i++) {
-            communityCards.add(deck.getDeck().get(0));
-            deck.getDeck().remove(0);
-        }
-    }
 
     public static void displayFold(Player player) {
         player.getPane().getChildren().clear();
         addPlayerInfo(player);
-
-//            Path path = new Path();
-//            path.getElements().add(new MoveTo(card.getX(), card.getY()));
-//            path.getElements().add(new LineTo(burnX, deckY1));
-//
-//            PathTransition pt = new PathTransition();
-//            pt.setNode(card);
-//            pt.setPath(path);
-//            pt.setDuration(Duration.seconds(1));
-//            pt.play();
-//            root.getChildren().add(card);
+        for(int i =0;i<2;i++){
+            Card card = player.getPocketHand().getPocketHand().get(i);
+            Path path = new Path();
+            path.getElements().add(new MoveTo(card.getX(), card.getY()));
+            path.getElements().add(new LineTo(burnX, deckY1));
+            PathTransition pt = new PathTransition();
+            pt.setNode(card);
+            pt.setPath(path);
+            pt.setDuration(Duration.seconds(1));
+            pt.play();
+        }
     }
 
     public static void displayDealPlayers(ArrayList<Player> players) {
@@ -588,15 +592,6 @@ public class PokerGraphics {
                 pocketCards.getChildren().add(displayCard(card));
             }
             player.getPane().getChildren().add(pocketCards);
-        }
-    }
-
-    public static void dealPlayers(ArrayList<Player> players, Deck deck) {
-        for (int i = 0; i < 2; i++) {
-            for (Player player : players) {
-                player.getPocketHand().getPocketHand().add(deck.getDeck().get(0));
-                deck.getDeck().remove(0);
-            }
         }
     }
 

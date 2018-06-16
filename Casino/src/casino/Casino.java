@@ -27,7 +27,7 @@ public class Casino extends Application { //<--- extends Application for javaFX
      static Stage primaryStage;
     //Pane rootPane = new Pane();
     Pane roop = new Pane();
-
+    static Scene menu;
     public static void main(String[] args) {
         launch(args);
     }
@@ -43,7 +43,7 @@ public class Casino extends Application { //<--- extends Application for javaFX
         menuImage.setY(-40);
         roop.getChildren().add(menuImage);
 
-        Scene menu = new Scene(roop, 1920, 1080);
+        menu = new Scene(roop, 1920, 1080);
         Font titleF = new Font("Times New Roman", 120);
         Font game = new Font("Times New Roman", 35);
         Font f = new Font("Times New Roman", 16);
