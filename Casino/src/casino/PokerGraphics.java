@@ -1,12 +1,9 @@
 package casino;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 import javafx.animation.KeyFrame;
 import javafx.animation.PathTransition;
-import javafx.animation.PauseTransition;
-import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -103,7 +100,7 @@ public class PokerGraphics {
     }
 
     public void createButtons() {
-        VBox pokerBtns = new VBox();
+        pokerBtns = new VBox();
         Font f = new Font("Times New Roman", 16);
         rootPane.getChildren().add(pokerBtns);
         //button call
@@ -139,7 +136,6 @@ public class PokerGraphics {
             public void handle(ActionEvent event) {
                 if (!(Poker.getCurrentPlayer() instanceof AI)) {
                     raiseAmount = 0;
-                    System.out.println("Raise");
                     createChips();
                 }
             }
@@ -197,6 +193,7 @@ public class PokerGraphics {
     }
 
     public void createChips() {
+        System.out.println("raise");
         Pane betPane = new HBox();
         //button raise
         Font f = new Font("Times New Roman", 16);
@@ -299,6 +296,8 @@ public class PokerGraphics {
                         Poker.getCurrentPlayer().setChips(0);
                         Poker.getCurrentPlayer().setTotalChipsInPot(Poker.getCurrentPlayer().getTotalChipsInPot()+Poker.getCurrentPlayer().getChips());
                     }
+                    int playerIndex = players.indexOf(Poker.getCurrentPlayer());
+                    Poker.determiningNextAction(playerIndex);
                 }
             }
         });
