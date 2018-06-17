@@ -247,6 +247,7 @@ public class BlackJackGraphics {
     public static void printCard(int handNum) {
         int x = 300, y = 300;
         pCard.getChildren().clear();
+        root.getChildren().removeAll(pCard);
         for (int i = 0; i < currentPlayer.getPocketHands().get(handNum).getPlayerHand().size(); i++) {
             Card card = currentPlayer.getPocketHands().get(handNum).getPlayerHand().get(i);
             if (!card.isFaceUp()) {
@@ -263,6 +264,13 @@ public class BlackJackGraphics {
     }
 
     public static void setButtons(int handNum) {
+        root.getChildren().removeAll(hit, stay);
+        if (root.getChildren().contains(split)) {
+            root.getChildren().remove(split);
+        }
+        if (root.getChildren().contains(dDown)) {
+            root.getChildren().remove(dDown);
+        }
         if (!currentPlayer.isStay()) {
             if (round == 1) {
                 if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
@@ -295,7 +303,6 @@ public class BlackJackGraphics {
             if (root.getChildren().contains(dDown)) {
                 root.getChildren().remove(dDown);
             }
-            int x = 300, y = 300;
         }
         round++;
     }
@@ -303,7 +310,7 @@ public class BlackJackGraphics {
     public static void nextPlayer() {
     }
 
-    public static void begin() throws IOException, InterruptedException {
+    public static void begin(String name) throws IOException, InterruptedException {
         hit.setLayoutX(10);
         hit.setLayoutY(10);
         stay.setLayoutX(10);
@@ -326,9 +333,7 @@ public class BlackJackGraphics {
         split.setOnAction((ActionEvent event) -> {
             try {
                 BlackjackJAVA.playerSplit(currentPlayer, 0);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(BlackJackGraphics.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
+            } catch (InterruptedException | IOException ex) {
                 Logger.getLogger(BlackJackGraphics.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
@@ -345,6 +350,7 @@ public class BlackJackGraphics {
         Casino.primaryStage.setTitle("BLACKJACK!");
         Casino.primaryStage.setScene(scene);
         Casino.primaryStage.show();
+        BlackjackJAVA.addPlayer(name);
         BlackjackJAVA.main();
     }
 
@@ -363,6 +369,7 @@ public class BlackJackGraphics {
             public void handle(ActionEvent event) {
                 bet = Integer.parseInt(tf.getText());
                 currentPlayer.setBet(bet);
+                System.out.println(currentPlayer.getName() + " bet " + currentPlayer.getBet());
                 printCard(0);
             }
         });
