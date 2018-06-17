@@ -33,6 +33,7 @@ public class Casino extends Application { //<--- extends Application for javaFX
     //Pane rootPane = new Pane();
     Pane roop = new Pane();
     static Scene menu;
+    static String name;
 
     public static void main(String[] args) {
         launch(args);
@@ -86,7 +87,8 @@ public class Casino extends Application { //<--- extends Application for javaFX
             @Override
             public void handle(ActionEvent e) {
                 if ((nameInput.getText() != null && !nameInput.getText().isEmpty())) {
-                    Player player = new Player(nameInput.getText(), 1);
+                    name = nameInput.getText();
+                    Player player = new Player(name, 1);
                 } else {
                     nameInput.setText("You have not entered a name.");
                 }
@@ -126,7 +128,7 @@ public class Casino extends Application { //<--- extends Application for javaFX
             public void handle(ActionEvent event) {
                 System.out.println("Black Jack Game");
                 try {
-                    BlackJackGraphics.begin();
+                    BlackJackGraphics.begin(name);
                 } catch (IOException | InterruptedException ex) {
                     Logger.getLogger(Casino.class.getName()).log(Level.SEVERE, null, ex);
                 }
