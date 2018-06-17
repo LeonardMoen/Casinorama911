@@ -16,6 +16,7 @@ public class BlackjackJAVA {
         initializeGame();
         dealer = new Dealer(deck);
         addAI();
+        BlackJackGraphics.main(args);
         int answer;
         do {
             System.out.println("");
@@ -46,7 +47,6 @@ public class BlackjackJAVA {
                     numOfPlayers.remove(i);
                     i = i - 1;
                 }
-
             }
             if (deck.getDeck().isEmpty()) {
                 deck = new Deck();
@@ -290,6 +290,7 @@ public class BlackjackJAVA {
     public static void playerHit(int i, int handNum) throws IOException {
         numOfPlayers.get(i).getPocketHands().get(handNum).hitCard(deck);
         printCards(i, handNum);
+
     }
 
     public static void playerSplit(int i, int handNum) throws IOException, InterruptedException {
