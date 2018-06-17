@@ -15,16 +15,17 @@ public class Player implements Comparable {
     private ArrayList<PocketHand> pocketHands = new ArrayList<>();
     private ArrayList<Integer> numsBetOn = new ArrayList<Integer>();
     private boolean insurance = false, stay = false, naturalBlackJack, ai = false, split;
-    private double x=0, y=0;
+    private double x = 0, y = 0;
     private Pane playerPane;
-    private static double p1x = 580, p1y = 450,
-            p2x = 330, p2y = 450,
-            p3x = 150, p3y = 295,
-            p4x = 330, p4y = 140,
-            p5x = 580, p5y = 140,
-            p6x = 830, p6y = 140,
-            p7x = 830 + 180, p7y = 295,
-            p8x = 830, p8y = 450;
+    final public static double top = 75, bottom = 450, middleY = (top + bottom) / 2, farLeft = 150, farRight = 1010, middleX = (farLeft + farRight) / 2, betweenLeft = (farLeft + middleX) / 2, betweenRight = (farRight + middleX) / 2,
+            p1x = middleX, p1y = bottom,
+            p2x = betweenLeft - 50, p2y = bottom,
+            p3x = farLeft, p3y = middleY,
+            p4x = betweenLeft - 50, p4y = top,
+            p5x = middleX, p5y = top,
+            p6x = betweenRight + 50, p6y = top,
+            p7x = farRight, p7y = middleY,
+            p8x = betweenRight + 50, p8y = bottom;
 
     private int numTurn;
     public Player(String name, int playerNum) {
@@ -152,7 +153,7 @@ public class Player implements Comparable {
 
     public void setBet(int bet) {
         this.bet = bet;
-        chips = chips - bet;
+        this.chips = chips - bet;
     }
 
     public int setTotal(int n) {

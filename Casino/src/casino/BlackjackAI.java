@@ -3,6 +3,7 @@ package casino;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
 
 public class BlackjackAI extends Player {
@@ -16,6 +17,7 @@ public class BlackjackAI extends Player {
     public BlackjackAI(String name, Deck deck) {
         super(name, deck);
         setNumDecks(deck);
+        setBettingUnit();
         setAi();
     }
 
@@ -23,8 +25,6 @@ public class BlackjackAI extends Player {
         setRunningCount(players, dealer);
         setNumDecks(deck);
         setTrueCount();
-        setBettingUnit();
-        setRealBet();
     }
 
     public void setRunningCount(ArrayList<Player> players, Dealer dealer) {
@@ -55,7 +55,7 @@ public class BlackjackAI extends Player {
     }
 
     public void setInsurance() {
-        this.insurance = this.runningCount >= 5;
+        this.insurance = this.runningCount >= 3;
     }
 
     public void setAi() {
@@ -63,11 +63,12 @@ public class BlackjackAI extends Player {
     }
 
     public void setTrueCount() {
+        this.trueCount = 0;
         this.trueCount = this.runningCount / this.numDecks;
     }
 
     public void setNumDecks(Deck deck) {
-        numDecks = 0;
+        this.numDecks = 0;
         int cards = 0;
         double remainder;
         for (int i = 0; i < deck.getDeck().size(); i++) {
@@ -100,33 +101,20 @@ public class BlackjackAI extends Player {
             return true;
         } else {
             int n = r.nextInt(10);
-            if (n <= 8) {
-                return false;
-            } else {
-                return true;
-            }
+            return n > 9;
         }
     }
 
     public void setSplit() {
         if (super.getChips() >= this.realBet) {
-            int eh = r.nextInt(2);
-            if (eh == 0) {
-                this.split = true;
-            } else if (eh == 1) {
-                this.split = false;
-            }
+            this.split = super.getPocketHands().get(0).getPlayerHand().get(0).getWorth() == 1 && super.getPocketHands().get(0).getPlayerHand().get(1).getWorth() == 1;
         }
     }
 
-    public void setdDown(Deck deck, int n) {
+    public void setdDown(int n) {
         if (super.getChips() >= this.realBet) {
             if (super.getRealTotal(n) >= 9 && super.getRealTotal(n) <= 11) {
-                if (super.getRealTotal(n) + deck.getDeck().get(0).getWorth() >= 16) {
-                    dDown = true;
-                } else {
-                    dDown = false;
-                }
+                dDown = this.runningCount > 0;
             }
         }
     }
@@ -135,6 +123,7 @@ public class BlackjackAI extends Player {
         return hit;
     }
 
+    @Override
     public boolean isSplit() {
         return split;
     }
@@ -144,18 +133,23 @@ public class BlackjackAI extends Player {
     }
 
     public void setBettingUnit() {
-        this.bettingUnit = super.getChips() / r.nextInt(((11-9)+1) + 9);
+        this.bettingUnit = 0;
+        double rand = ThreadLocalRandom.current().nextDouble(8,11);
+        this.bettingUnit = (int) (super.getChips() / rand);
     }
 
     public void setRealBet() {
-        if (this.trueCount == 0) {
-            setBettingUnit();
-            this.realBet = this.bettingUnit;
-        } else if (this.trueCount - 1 < 0) {
-            this.realBet = super.getChips() / r.nextInt(((25 - 15) + 1) + 15);
-        } else {
-            this.realBet = (int) ((this.trueCount - 1) * this.bettingUnit);
-        }
+        this.realBet = 0;
+        do {
+            if (this.trueCount == 0) {
+                this.realBet = this.bettingUnit;
+            } else if (this.trueCount - 1 < 0) {
+                double rand = ThreadLocalRandom.current().nextDouble(1, 1.5);
+                this.realBet = (int) (this.bettingUnit / rand);
+            } else if (this.trueCount > 1) {
+                this.realBet = (int) (this.trueCount - 1) * (this.bettingUnit);
+            }
+        } while (this.realBet > super.getChips());
     }
 
     public int getRealBet() {
