@@ -16,18 +16,17 @@ import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Casino extends Application { //<--- extends Application for javaFX
-
-     static Stage primaryStage;
+    static PokerGraphics pokerGraphics;
+    static Stage primaryStage;
     //Pane rootPane = new Pane();
     Pane roop = new Pane();
-
+    static Scene menu;
     public static void main(String[] args) {
         launch(args);
     }
@@ -43,7 +42,7 @@ public class Casino extends Application { //<--- extends Application for javaFX
         menuImage.setY(-40);
         roop.getChildren().add(menuImage);
 
-        Scene menu = new Scene(roop, 1920, 1080);
+        menu = new Scene(roop, 1920, 1080);
         Font titleF = new Font("Times New Roman", 120);
         Font game = new Font("Times New Roman", 35);
         Font f = new Font("Times New Roman", 16);
@@ -83,7 +82,8 @@ public class Casino extends Application { //<--- extends Application for javaFX
         btnPoker.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                PokerGraphics poker = new PokerGraphics();
+                pokerGraphics = new PokerGraphics();
+                PokerGraphics.pokerSetUp();
             }
         }); 
         roop.getChildren().add(btnPoker);
@@ -137,4 +137,10 @@ public class Casino extends Application { //<--- extends Application for javaFX
         primaryStage.setScene(menu);
         primaryStage.show();
     }
+
+    public static PokerGraphics getPokerGraphics() {
+        return pokerGraphics;
+    }
+    
+    
 }
