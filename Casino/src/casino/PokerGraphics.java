@@ -53,7 +53,7 @@ public class PokerGraphics {
     ImagePattern ip = null;
 
     public PokerGraphics() {
-        
+
     }
 
     public static void pokerSetUp() {
@@ -124,23 +124,25 @@ public class PokerGraphics {
                 }
             }
         });
-        pokerBtns.getChildren().add(btnCall);
 
         //button raise
+        Pane raisePane = new HBox();
+        Pane hb = new HBox();
         Button btnRaise = new Button();
         btnRaise.setText("Bet");
         btnRaise.setFont(f);
         btnRaise.setMinSize(70, 70);
+        raisePane.getChildren().add(btnRaise);
         btnRaise.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 if (!(Poker.getCurrentPlayer() instanceof AI)) {
                     raiseAmount = 0;
-                    createChips();
+                    createChips(hb);
                 }
             }
         });
-        pokerBtns.getChildren().add(btnRaise);
+        raisePane.getChildren().add(hb);
 
         //button fold
         Button btnFold = new Button();
@@ -160,7 +162,6 @@ public class PokerGraphics {
                 }
             }
         });
-        pokerBtns.getChildren().add(btnFold);
 
         //button check
         Button btnCheck = new Button();
@@ -184,7 +185,7 @@ public class PokerGraphics {
             }
         });
         pokerBtns.setTranslateY(370);
-        pokerBtns.getChildren().add(btnCheck);
+        pokerBtns.getChildren().addAll(btnCheck, btnCall, btnFold, raisePane);
         //the raising buttons
         //Pane betPane = new HBox();
         //button raise
@@ -192,15 +193,15 @@ public class PokerGraphics {
         //betPane.getChildren().add(btnRaise);
     }
 
-    public void createChips() {
+    public void createChips(Pane raisePane) {
         System.out.println("raise");
-        Pane betPane = new HBox();
         //button raise
         Font f = new Font("Times New Roman", 16);
         //betPane.getChildren().add(btnRaise);
         //the chip buttons for raising
         double x = chipSize, y = chipSize;
         ip = null;
+
         Pane betChips = new Pane();
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 4; j++) {
@@ -273,7 +274,7 @@ public class PokerGraphics {
                 betChips.getChildren().add(c);
             }
         }
-        betPane.getChildren().add(betChips);
+        raisePane.getChildren().add(betChips);
         Button confirm = new Button();
         confirm.setText("Confirm");
         confirm.setFont(f);
@@ -285,25 +286,25 @@ public class PokerGraphics {
                 if (!(Poker.getCurrentPlayer() instanceof AI)) {
                     int requiredChips = Poker.getRequiredChips();
                     Poker.call(Poker.getCurrentPlayer(), requiredChips);
-                    if(raiseAmount<=Poker.getCurrentPlayer().getChips()){
+                    if (raiseAmount <= Poker.getCurrentPlayer().getChips()) {
                         Poker.raise(Poker.getCurrentPlayer(), requiredChips, raiseAmount);
-                        Poker.getCurrentPlayer().setChipsInCurrent(Poker.getCurrentPlayer().getChipsInCurrent()+raiseAmount);
-                        Poker.getCurrentPlayer().setChips(Poker.getCurrentPlayer().getChips()-raiseAmount);
-                        Poker.getCurrentPlayer().setTotalChipsInPot(Poker.getCurrentPlayer().getTotalChipsInPot()+raiseAmount);
-                    }else{
+                        Poker.getCurrentPlayer().setChipsInCurrent(Poker.getCurrentPlayer().getChipsInCurrent() + raiseAmount);
+                        Poker.getCurrentPlayer().setChips(Poker.getCurrentPlayer().getChips() - raiseAmount);
+                        Poker.getCurrentPlayer().setTotalChipsInPot(Poker.getCurrentPlayer().getTotalChipsInPot() + raiseAmount);
+                    } else {
                         Poker.raise(Poker.getCurrentPlayer(), requiredChips, Poker.getCurrentPlayer().getChips());
-                        Poker.getCurrentPlayer().setChipsInCurrent(Poker.getCurrentPlayer().getChipsInCurrent()+Poker.getCurrentPlayer().getChips());
+                        Poker.getCurrentPlayer().setChipsInCurrent(Poker.getCurrentPlayer().getChipsInCurrent() + Poker.getCurrentPlayer().getChips());
                         Poker.getCurrentPlayer().setChips(0);
-                        Poker.getCurrentPlayer().setTotalChipsInPot(Poker.getCurrentPlayer().getTotalChipsInPot()+Poker.getCurrentPlayer().getChips());
+                        Poker.getCurrentPlayer().setTotalChipsInPot(Poker.getCurrentPlayer().getTotalChipsInPot() + Poker.getCurrentPlayer().getChips());
                     }
                     Poker.requiredChips += raiseAmount;
                     int playerIndex = players.indexOf(Poker.getCurrentPlayer());
+                    raisePane.getChildren().clear();
                     Poker.determiningNextAction(playerIndex);
                 }
             }
         });
-        betPane.getChildren().add(confirm);
-        pokerBtns.getChildren().add(betPane);
+        raisePane.getChildren().add(confirm);
     }
 
     public static void addPlayerInfo(Player player) {
@@ -657,7 +658,7 @@ public class PokerGraphics {
     }
 
     public static void displayAllCards(ArrayList<Player> playersInRound) {
-        
+
         for (Player player : playersInRound) {
             HBox pocketCards = new HBox();
             player.getPane().getChildren().clear();
@@ -711,7 +712,6 @@ public class PokerGraphics {
         Pane p10 = new Pane();
         Pane p5 = new Pane();
         Pane p1 = new Pane();
-
 
         if (totalPot > 55000) {
             y = 100;
@@ -870,7 +870,7 @@ public class PokerGraphics {
             if (Poker.getCurrentPlayer().getChips() < 1) {
                 source.setVisible(false);
             } else {
-                raiseAmount+=1;
+                raiseAmount += 1;
             }
         }
     };
@@ -881,7 +881,7 @@ public class PokerGraphics {
             if (Poker.getCurrentPlayer().getChips() < 5) {
                 source.setVisible(false);
             } else {
-                raiseAmount+=5;
+                raiseAmount += 5;
             }
         }
     };
@@ -892,7 +892,7 @@ public class PokerGraphics {
             if (Poker.getCurrentPlayer().getChips() < 10) {
                 source.setVisible(false);
             } else {
-                raiseAmount+=10;
+                raiseAmount += 10;
             }
         }
     };
@@ -903,7 +903,7 @@ public class PokerGraphics {
             if (Poker.getCurrentPlayer().getChips() < 25) {
                 source.setVisible(false);
             } else {
-                raiseAmount+=25;
+                raiseAmount += 25;
             }
         }
     };
@@ -911,10 +911,10 @@ public class PokerGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-           if (Poker.getCurrentPlayer().getChips() < 50) {
+            if (Poker.getCurrentPlayer().getChips() < 50) {
                 source.setVisible(false);
             } else {
-                raiseAmount+=50;
+                raiseAmount += 50;
             }
         }
     };
@@ -925,7 +925,7 @@ public class PokerGraphics {
             if (Poker.getCurrentPlayer().getChips() < 100) {
                 source.setVisible(false);
             } else {
-                raiseAmount+=100;
+                raiseAmount += 100;
             }
         }
     };
@@ -936,7 +936,7 @@ public class PokerGraphics {
             if (Poker.getCurrentPlayer().getChips() < 500) {
                 source.setVisible(false);
             } else {
-                raiseAmount+=500;
+                raiseAmount += 500;
             }
         }
     };
