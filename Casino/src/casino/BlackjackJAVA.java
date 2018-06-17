@@ -8,13 +8,12 @@ public class BlackjackJAVA {
     public static InputStreamReader inStream = new InputStreamReader(System.in);
     public static BufferedReader stdin = new BufferedReader(inStream);
     public static ArrayList<Player> numOfPlayers = new ArrayList<>();
-    public static Deck deck;
+    public static Deck deck = new Deck(5);
     public static Dealer dealer;
     public static int round = 1;
 
     public static void main() throws IOException, InterruptedException {
-        initializeGame();
-        dealer = new Dealer(deck);
+        makeDeck();
         addAI();
         int answer;
         if (numOfPlayers.isEmpty()) {
@@ -49,6 +48,15 @@ public class BlackjackJAVA {
 //            deck = new Deck();
 //        }
 
+    }
+
+    public static void addPlayer(String name) {
+        numOfPlayers.add(new Player(name, deck));
+    }
+
+    public static void makeDeck() {
+        deck = new Deck(5);
+        deck.shuffle();
     }
 
     public static void addAI() throws IOException {
@@ -279,7 +287,7 @@ public class BlackjackJAVA {
             numOfPlayers.get(i).setStay(true);
             numOfPlayers.get(i).setBet(0);
         }
-        System.out.println("");
+        //      System.out.println("");
         BlackJackGraphics.printCard(handNum);
     }
 
@@ -404,22 +412,6 @@ public class BlackjackJAVA {
 //            } else {
 //            }
 //        }
-    }
-
-    public static void initializeGame() throws IOException {
-        System.out.println("Welcome to Blackjack!");
-        System.out.print("\nEnter number of players: ");
-        int number = Integer.parseInt(stdin.readLine());
-        System.out.print("\nHow many decks would you like to play with? ");
-        int numOfDecks = Integer.parseInt(stdin.readLine());
-        System.out.println("\nPlayer Names");
-        deck = new Deck(numOfDecks);
-        deck.shuffle();
-        for (int i = 1; i <= number; i++) {
-            System.out.print("Player name #" + i + ": ");
-            String name = stdin.readLine();
-            numOfPlayers.add(new Player(name, deck));
-        }
     }
 
 }
