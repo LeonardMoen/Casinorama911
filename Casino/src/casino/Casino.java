@@ -13,7 +13,10 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -22,11 +25,13 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Casino extends Application { //<--- extends Application for javaFX
+
     static PokerGraphics pokerGraphics;
     static Stage primaryStage;
     //Pane rootPane = new Pane();
     Pane roop = new Pane();
     static Scene menu;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -72,6 +77,25 @@ public class Casino extends Application { //<--- extends Application for javaFX
 
         roop.getChildren().add(tPane);
 
+        Text label1 = new Text("Name:");
+        TextField nameInput = new TextField();
+        Button submit = new Button("Submit");
+        submit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                if ((nameInput.getText() != null && !nameInput.getText().isEmpty())) {
+                    Player player = new Player(nameInput.getText(), 1);
+                } else {
+                    nameInput.setText("You have not entered a name.");
+                }
+            }
+        });
+        HBox hb = new HBox(10);
+        hb.setTranslateY(580);
+        hb.setTranslateX(titleX + 170);
+        hb.getChildren().addAll(label1, nameInput, submit);
+        roop.getChildren().add(hb);
+
         //button Poker
         Button btnPoker = new Button();
         btnPoker.setText("Poker");
@@ -85,7 +109,7 @@ public class Casino extends Application { //<--- extends Application for javaFX
                 pokerGraphics = new PokerGraphics();
                 PokerGraphics.pokerSetUp();
             }
-        }); 
+        });
         roop.getChildren().add(btnPoker);
 
         //button Black Jack
@@ -141,6 +165,5 @@ public class Casino extends Application { //<--- extends Application for javaFX
     public static PokerGraphics getPokerGraphics() {
         return pokerGraphics;
     }
-    
-    
+
 }
