@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.Scanner;
 import javafx.scene.layout.Pane;
-
+import java.util.concurrent.TimeUnit;
 
 public class Poker {
 
@@ -73,7 +73,6 @@ public class Poker {
         PokerGraphics.displayDealPlayers(players);
         Collections.sort(players);
         int startPlayer = Poker.findStartingPlayer();
-        System.out.println(startPlayer);
         sortPlayers(startPlayer);
         currentPlayer = players.get(players.size() - 1);
         roundOfBetting();
@@ -207,9 +206,9 @@ public class Poker {
                 }
             }
         } else {
-            //System.out.println(smallBlindNum);
+            System.out.println(smallBlindNum);
             boolean found = false;
-            for (int i = 0; i < players.size() - 1; i++) {
+            for (int i = 0; i < allPlayers.size() - 1; i++) {
                 for (Player player : players) {
                     if (player.getPlayerNum() == smallBlindNum + i) {
                         startPlayer = player.getPlayerNum();
@@ -263,11 +262,10 @@ public class Poker {
         int playerIndex = 0;
         System.out.println(currentPlayer.getName() + " " + pot);
         if (currentPlayer instanceof AI) {
-            System.out.println("AI turn");
+            System.out.println("AI turn " + round);
             AI ai = (AI) (currentPlayer);
             int response;
             if (round != 0) {
-                System.out.println("hello");
                 response = ai.rateOfReturn(communityCards, players, pot, requiredChips, bigBlind);
                 if (response > 4) {
                     raise(ai, requiredChips, response);
@@ -281,6 +279,9 @@ public class Poker {
                     players.remove(ai);
                 } else {
                     System.out.println(ai.getName() + " checked");
+                }
+                if (response != 4) {
+                    playerIndex = players.indexOf(currentPlayer);
                 }
             } else {
                 response = ai.preFlopBetting(bigBlind, requiredChips);
@@ -302,9 +303,9 @@ public class Poker {
                     int raise = raise(ai, requiredChips, response);
                     requiredChips += raise;
                 }
-            }
-            if (response != -1) {
-                playerIndex = players.indexOf(currentPlayer);
+                if (response != -1) {
+                    playerIndex = players.indexOf(currentPlayer);
+                }
             }
             determiningNextAction(playerIndex);
         }
@@ -312,7 +313,7 @@ public class Poker {
 
     public static void determiningNextAction(int playerIndex) {
         allPlayerCheck = false;
-        System.out.println("Determine Action");
+        PokerGraphics.displayPot();
         if (playerIndex > 0) {
             currentPlayer = players.get(playerIndex - 1);
         } else {
@@ -353,15 +354,18 @@ public class Poker {
                 int startPlayer = findStartingPlayer();
                 sortPlayers(startPlayer);
                 setCurrentPlayer(players.get(players.size() - 1));
+                allPlayerCheck = true;
                 roundOfBetting();
-            } else if (Poker.getCommunityCards().size() == 5) {
+            } else if (Poker.getCommunityCards().size() == 5&&!(allPlayerCheck)) {
                 round+=1;
-                distributeWin();
+                PokerGraphics.displayAllCards(players);
             }
         }
     }
 
     public static void roundOfBetting() {
+        System.out.println("new round");
+        PokerGraphics.displayPot();
         requiredChips = 0;
         if (round == 0) {
             requiredChips = bigBlind;
@@ -391,39 +395,21 @@ public class Poker {
         deck.getDeck().remove(0);
     }
 
-    public static int raise(Player player, int requiredChips) {
-        int raise;
-        if (player.getChipsInCurrent() < requiredChips) {
-            call(player, requiredChips);
-        }
-        do {
-            System.out.println("Chips: " + player.getChips());
-            System.out.print("Enter the amount you would like to raise: ");
-            raise = sc.nextInt();
-            if (raise > player.getChips()) {
-                System.out.println("You don't have enough chips");
-            }
-        } while (raise > player.getChips());
-        pot += raise;
-        player.setChips(player.getChips() - raise);
-        player.setChipsInCurrent(player.getChipsInCurrent() + raise);
-        player.setTotalChipsInPot(player.getTotalChipsInPot() + raise);
-        if (raise == player.getChips()) {
-            System.out.println("All In");
-        }
-        return raise;
-    }
-
     public static int raise(Player player, int requiredChips, int raise) {
         if (player.getChipsInCurrent() < requiredChips) {
             call(player, requiredChips);
         }
-        pot += raise;
-        player.setChips(player.getChips() - raise);
-        player.setChipsInCurrent(player.getChipsInCurrent() + raise);
-        player.setTotalChipsInPot(player.getTotalChipsInPot() + raise);
-        if (raise == player.getChips()) {
-            System.out.println("All In");
+        if(player.getChips()>=raise){
+            pot += raise;
+            player.setChips(player.getChips() - raise);
+            player.setChipsInCurrent(player.getChipsInCurrent() + raise);
+            player.setTotalChipsInPot(player.getTotalChipsInPot() + raise);
+        }
+        else{
+            pot += player.getChips();
+            player.setChips(0);
+            player.setChipsInCurrent(player.getChipsInCurrent() + player.getChips());
+            player.setTotalChipsInPot(player.getTotalChipsInPot() + player.getChips());
         }
         System.out.println(player.getName() + " raised " + raise);
         return raise;

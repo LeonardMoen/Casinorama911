@@ -3,7 +3,11 @@ package casino;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import javafx.animation.KeyFrame;
 import javafx.animation.PathTransition;
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -52,7 +56,7 @@ public class PokerGraphics {
     ImagePattern ip = null;
 
     public PokerGraphics() {
-
+        
     }
 
     public static void pokerSetUp() {
@@ -95,6 +99,7 @@ public class PokerGraphics {
         potPane.setTranslateX(potX);
         potPane.setTranslateY(potY);
         rootPane.getChildren().add(potPane);
+        rootPane.getChildren().add(commCards);
     }
 
     public void createButtons() {
@@ -154,6 +159,7 @@ public class PokerGraphics {
                     System.out.println("Fold");
                     PokerGraphics.displayFold(Poker.getCurrentPlayer());
                     int playerIndex = players.indexOf(Poker.getCurrentPlayer());
+                    Poker.getPlayers().remove(Poker.getCurrentPlayer());
                     Poker.determiningNextAction(playerIndex);
                 }
             }
@@ -630,7 +636,6 @@ public class PokerGraphics {
             card.setFaceUp(true);
             commCards.getChildren().add(displayCard(card));
         }
-        rootPane.getChildren().add(commCards);
     }
 
     public static void displayTurn(ArrayList<Card> communityCards) {
@@ -652,6 +657,7 @@ public class PokerGraphics {
     }
 
     public static void displayAllCards(ArrayList<Player> playersInRound) {
+        
         for (Player player : playersInRound) {
             HBox pocketCards = new HBox();
             player.getPane().getChildren().clear();
@@ -659,12 +665,20 @@ public class PokerGraphics {
             for (int i = 0; i < 2; i++) {
                 Card card = player.getPocketHand().getPocketHand().get(i);
                 if (!card.isFaceUp()) {
+                    System.out.println("flipped");
                     card.setFaceUp(true);
                 }
                 pocketCards.getChildren().add(displayCard(card));
             }
             player.getPane().getChildren().add(pocketCards);
         }
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(10), new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Poker.distributeWin();
+            }
+        }));
+        timeline.play();
     }
 
     public static void displayFold(Player player) {
@@ -683,10 +697,10 @@ public class PokerGraphics {
         }
     }
 
-    public static void displayPot(ArrayList<Player> players) {
+    public static void displayPot() {
         potPane.getChildren().clear();
 
-        int totalPot = 0, k = 0, i;
+        int totalPot = Poker.pot, k = 0, i;
         double x = 0, y = 0;
         ImagePattern chipImage;
         Pane p1000 = new Pane();
@@ -698,9 +712,6 @@ public class PokerGraphics {
         Pane p5 = new Pane();
         Pane p1 = new Pane();
 
-        for (Player player : players) {
-            totalPot += player.getChipsInCurrent();
-        }
 
         if (totalPot > 55000) {
             y = 100;
@@ -722,10 +733,7 @@ public class PokerGraphics {
         p50.setTranslateX(x + ((chipSize * 2) * 3) + (3 * 4));   //1
         p50.setTranslateY(y - (chipSize * 2));
 
-        totalPot = 1691;        //testing all chips
-        totalPot = rand.nextInt(50000);   //testing
-
-        Text pot = new Text(Integer.toString(totalPot) + " Chips");
+        Text pot = new Text(Integer.toString(Poker.pot) + " Chips");
         Rectangle bck = new Rectangle(85, 12);
         bck.setFill(Color.rgb(0, 0, 0, 0.3));
         bck.setArcHeight(15);
@@ -840,9 +848,9 @@ public class PokerGraphics {
                 Card card = player.getPocketHand().getPocketHand().get(i);
 
                 //is it computer or person to hide cards or not to hide cards
-                if (player.isAi()) {
+                if (player instanceof AI) {
                     card.setFaceUp(false);
-                    cardScale = 0.7;
+                    cardScale = 1;
                     card.setScaleX(cardScale);
                     card.setScaleY(cardScale);
                 } else {
