@@ -296,6 +296,7 @@ public class PokerGraphics {
                         Poker.getCurrentPlayer().setChips(0);
                         Poker.getCurrentPlayer().setTotalChipsInPot(Poker.getCurrentPlayer().getTotalChipsInPot()+Poker.getCurrentPlayer().getChips());
                     }
+                    Poker.requiredChips += raiseAmount;
                     int playerIndex = players.indexOf(Poker.getCurrentPlayer());
                     Poker.determiningNextAction(playerIndex);
                 }
