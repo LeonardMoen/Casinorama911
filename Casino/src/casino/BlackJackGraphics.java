@@ -35,6 +35,7 @@ public class BlackJackGraphics {
     private static Group root = new Group();
     private static int round = 1, bet;
     private static Pane pCard = new Pane();
+    private static Pane pBet = new Pane();
 
     public BlackJackGraphics() {
     }
@@ -363,7 +364,8 @@ public class BlackJackGraphics {
         btnBet = new Button("Bet");
         btnBet.setLayoutX(250);
         btnBet.setLayoutY(10);
-        root.getChildren().addAll(btnBet, hb);
+        pBet.getChildren().addAll(btnBet, hb);
+        root.getChildren().addAll(pBet);
         btnBet.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -371,6 +373,7 @@ public class BlackJackGraphics {
                 currentPlayer.setBet(bet);
                 System.out.println(currentPlayer.getName() + " bet " + currentPlayer.getBet());
                 printCard(0);
+                pBet.getChildren().clear();
             }
         });
     }
