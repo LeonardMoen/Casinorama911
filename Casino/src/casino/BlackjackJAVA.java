@@ -268,7 +268,7 @@ public class BlackjackJAVA {
         System.out.print("Total: " + dealer.getTotal());
     }
 
-    public static void printCards(Player player, int handNum) throws IOException {
+    public static void printCards(Player player, int handNum) throws IOException, InterruptedException {
         if (player.setTotal(handNum) != 0) {
             if (player.setTotal(handNum) != player.getTotal(handNum)) {
                 if (player.setTotal(handNum) == 21 || player.getTotal(handNum) == 21) {
@@ -291,7 +291,7 @@ public class BlackjackJAVA {
         BlackJackGraphics.printCard(handNum);
     }
 
-    public static void playerHit(Player player, int handNum) throws IOException {
+    public static void playerHit(Player player, int handNum) throws IOException, InterruptedException {
         //    int i = numOfPlayers.indexOf(player);
         //     numOfPlayers.get(i).getPocketHands().get(handNum).hitCard(deck);
         player.getPocketHands().get(handNum).hitCard(deck);
@@ -313,7 +313,7 @@ public class BlackjackJAVA {
         }
     }
 
-    public static void playerDD(Player player, int handNum) throws IOException {
+    public static void playerDD(Player player, int handNum) throws IOException, InterruptedException {
         if (player.getChips() >= player.getBet()) {
             player.setChips(player.getChips() + player.getBet());
             player.setBet(player.getBet() * 2);
