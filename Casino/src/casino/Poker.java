@@ -32,7 +32,7 @@ public class Poker {
         ArrayList<Player> players = new ArrayList<Player>();
         allPlayers = new ArrayList<Player>();
         allPlayers.add(Casino.getMainPlayer());
-        for (int i = 2; i < 5; i++) {
+        for (int i = 2; i < 9; i++) {
             allPlayers.add(new AI("Player " + i, i));
         }
         return allPlayers;
