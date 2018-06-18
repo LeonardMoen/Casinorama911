@@ -299,7 +299,7 @@ public class PokerGraphics {
                     }
                     Poker.requiredChips += raiseAmount;
                     int playerIndex = players.indexOf(Poker.getCurrentPlayer());
-                    pokerBtns.getChildren().remove(raisePane);
+                    raisePane.getChildren().clear();
                     Poker.determiningNextAction(playerIndex);
                 }
             }
