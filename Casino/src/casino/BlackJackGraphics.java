@@ -301,6 +301,9 @@ public class BlackJackGraphics {
                     root.getChildren().addAll(hit, stay);
                 }
             }
+        } else if (currentPlayer.isSplit() && handNum == 0) {
+            printCard(1);
+            currentPlayer.setStay(false);
         } else {
             root.getChildren().removeAll(hit, stay);
             if (root.getChildren().contains(split)) {
