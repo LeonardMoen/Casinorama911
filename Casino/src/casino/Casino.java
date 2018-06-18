@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
@@ -32,6 +34,7 @@ public class Casino extends Application { //<--- extends Application for javaFX
     //Pane rootPane = new Pane();
     Pane roop = new Pane();
     static Scene menu;
+    static String name;
 
     public static void main(String[] args) {
         launch(args);
@@ -125,6 +128,11 @@ public class Casino extends Application { //<--- extends Application for javaFX
             @Override
             public void handle(ActionEvent event) {
                 System.out.println("Black Jack Game");
+                try {
+                    BlackJackGraphics.begin(name);
+                } catch (IOException | InterruptedException ex) {
+                    Logger.getLogger(Casino.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         roop.getChildren().add(btnBJ);
