@@ -83,7 +83,7 @@ public class RouletteGraphics extends Application {
     private int numClicked = -1;
     Circle wheel = new Circle(400, 500, 100);
 
-    public void RouletteTest(ArrayList<Player> players) {
+    public void addPlayerList(ArrayList<Player> players) {
         this.players = players;
 
     }
@@ -859,10 +859,6 @@ public class RouletteGraphics extends Application {
 
     }
 
-    public static void main(String[] args) {
-        launch(args);
-
-    }
 
     public void drawWheel(Group root) throws FileNotFoundException, InterruptedException {
         Image image = new Image(new FileInputStream("src/Resources/Wheel.png"), 2000, 2000, true, true);
@@ -935,7 +931,7 @@ public class RouletteGraphics extends Application {
             root.getChildren().add(t);
             playerSquares.add(t);
 
-            Image image = new Image(new FileInputStream("src/Resources/Chip1.png"), 2000, 2000, true, true);
+            Image image = new Image(new FileInputStream("src/Resources/blackChip.png"), 2000, 2000, true, true);
             ImagePattern ip = new ImagePattern(image);
             Circle c = new Circle(xPos + 75, 890, 60);
             c.setFill(ip);
