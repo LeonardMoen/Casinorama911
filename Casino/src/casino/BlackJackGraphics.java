@@ -289,32 +289,35 @@ public class BlackJackGraphics {
                         currentPlayer.setNaturalBlackJack(true);
                         currentPlayer.setStay(true);
                         currentPlayer.setChips((int) (currentPlayer.getBet() * 1.5 + currentPlayer.getChips() + currentPlayer.getBet()));
-                        Thread.sleep(1000);
                         printCard(handNum);
                     }
                     if (ai.isSplit()) {
+                        System.out.println("Split");
                         BlackjackJAVA.playerSplit(currentPlayer, 0);
                     } else if (ai.isdDown()) {
+                        System.out.println("dd");
                         BlackjackJAVA.playerDD(currentPlayer, 0);
                     } else if (ai.isHit()) {
+                        System.out.println("hit");
                         BlackjackJAVA.playerHit(currentPlayer, 0);
-                    } else {
+                    } else if (!ai.isHit()) {
+                        System.out.println("stay");
                         currentPlayer.setStay(true);
                         setButtons(0);
                     }
                 } else {
                     if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
                         currentPlayer.setStay(true);
-                        Thread.sleep(1000);
                         printCard(handNum);
                     } else if (ai.isHit()) {
+                        System.out.println("hit");
                         BlackjackJAVA.playerHit(currentPlayer, 0);
-                    } else {
+                    } else if (!ai.isHit()) {
+                        System.out.println("stay");
                         currentPlayer.setStay(true);
                         setButtons(0);
                     }
                 }
-
             } else {
                 if (round == 1) {
                     if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
@@ -391,7 +394,6 @@ public class BlackJackGraphics {
             checkWin();
         } else {
             currentPlayer = BlackjackJAVA.numOfPlayers.get(x + 1);
-            currentPlayer.setStay(false);
             printCard(0);
             x += 1;
         }
@@ -508,41 +510,43 @@ public class BlackJackGraphics {
             pBet.getChildren().addAll(btnBet, hb);
             root.getChildren().addAll(pBet);
             btnBet.setOnAction((ActionEvent event) -> {
-                if (Integer.parseInt(tf.getText()) > currentPlayer.getChips()) {
-                    pBet.getChildren().clear();
-                    hb.getChildren().clear();
-                    root.getChildren().remove(pBet);
-                    System.out.println(currentPlayer.getName() + " not enough chips");
-                    try {
-                        setBet(n);
-
-                    } catch (IOException ex) {
-                        Logger.getLogger(BlackJackGraphics.class
-                                .getName()).log(Level.SEVERE, null, ex);
-                    }
-                } else {
-                    bet = Integer.parseInt(tf.getText());
-                    currentPlayer.setBet(bet);
-                    System.out.println(currentPlayer.getName() + " bet " + currentPlayer.getBet());
-                    pBet.getChildren().clear();
-                    hb.getChildren().clear();
-                    root.getChildren().remove(pBet);
-                    if (n == BlackjackJAVA.numOfPlayers.size() - 1) {
-                        currentPlayer = BlackjackJAVA.numOfPlayers.get(0);
+                if ((tf.getText() != null && !tf.getText().isEmpty())) {
+                    if (Integer.parseInt(tf.getText()) > currentPlayer.getChips()) {
+                        pBet.getChildren().clear();
+                        hb.getChildren().clear();
+                        root.getChildren().remove(pBet);
+                        System.out.println(currentPlayer.getName() + " not enough chips");
                         try {
-                            printBoard();
-
-                        } catch (InterruptedException | IOException ex) {
-                            Logger.getLogger(BlackJackGraphics.class
-                                    .getName()).log(Level.SEVERE, null, ex);
-                        }
-                    } else {
-                        try {
-                            setBet(n + 1);
+                            setBet(n);
 
                         } catch (IOException ex) {
                             Logger.getLogger(BlackJackGraphics.class
                                     .getName()).log(Level.SEVERE, null, ex);
+                        }
+                    } else {
+                        bet = Integer.parseInt(tf.getText());
+                        currentPlayer.setBet(bet);
+                        System.out.println(currentPlayer.getName() + " bet " + currentPlayer.getBet());
+                        pBet.getChildren().clear();
+                        hb.getChildren().clear();
+                        root.getChildren().remove(pBet);
+                        if (n == BlackjackJAVA.numOfPlayers.size() - 1) {
+                            currentPlayer = BlackjackJAVA.numOfPlayers.get(0);
+                            try {
+                                printBoard();
+
+                            } catch (InterruptedException | IOException ex) {
+                                Logger.getLogger(BlackJackGraphics.class
+                                        .getName()).log(Level.SEVERE, null, ex);
+                            }
+                        } else {
+                            try {
+                                setBet(n + 1);
+
+                            } catch (IOException ex) {
+                                Logger.getLogger(BlackJackGraphics.class
+                                        .getName()).log(Level.SEVERE, null, ex);
+                            }
                         }
                     }
                 }
