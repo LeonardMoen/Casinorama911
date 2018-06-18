@@ -52,7 +52,7 @@ import javafx.util.Duration;
  *
  * @author laua8572
  */
-public class RouletteGraphics extends Application {
+public class RouletteGraphics {
 
     private ArrayList<Rectangle> rects = new ArrayList<>();
     private ArrayList<Rectangle> outsideBets = new ArrayList<>();
@@ -88,24 +88,22 @@ public class RouletteGraphics extends Application {
 
     }
 
-    @Override
-    public void start(Stage primaryStage) throws IOException, FileNotFoundException, InterruptedException {
-        
-        players.add(new Player("ASDHGJSKSDJKLS", 0));
-        players.add(new Player("dsfhek", 1));
-        players.add(new Player("djwkalsdj", 2));
-        players.add(new Player("JKKJS", 3));
-        players.add(new Player("SHJKE", 4));
-        players.add(new Player("Bob", 5));
-        players.add(new Player("SJHKM<D", 6));
-        players.add(new Player("ASLJDHJSSKJDA", 7));
-        players.get(0).setChips(123456);
+    public RouletteGraphics() {
+    }
+
+    public void rouletteSetUp() throws FileNotFoundException, InterruptedException {
+        players.add(Casino.getMainPlayer());
+        players.add(new Player("dsfhek", 2));
+        players.add(new Player("djwkalsdj", 3));
+        players.add(new Player("JKKJS", 4));
 
         Group root = new Group();
         Scene scene = new Scene(root, 1700, 1000, Color.GREEN);
-        
-        flyingChip(root, primaryStage, scene);
-        
+
+        flyingChip(root, scene);
+        Button backBtn = new Button();
+        backBtn.setText("Back");
+        backBtn.setOnAction(e -> Casino.primaryStage.setScene(Casino.menu));
         drawBoard(root);
         drawInsideBets(root);
         drawOutsideeBets(root);
@@ -122,8 +120,8 @@ public class RouletteGraphics extends Application {
 //            next.setOnAction(event -> {
 //            });
 //        }
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        Casino.primaryStage.setScene(scene);
+        Casino.primaryStage.show();
 
     }
 
@@ -651,7 +649,7 @@ public class RouletteGraphics extends Application {
             }
         });
 
-        Image image = new Image(new FileInputStream("src/Resources/Single.png"), 2000, 2000, true, true);
+        Image image = new Image(new FileInputStream("src\\Resource\\Single.png"), 2000, 2000, true, true);
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(100);
         imageView.setFitHeight(40);
@@ -680,7 +678,7 @@ public class RouletteGraphics extends Application {
             }
         });
 
-        Image image2 = new Image(new FileInputStream("src/Resources/Corner.png"), 2000, 2000, true, true);
+        Image image2 = new Image(new FileInputStream("src\\Resource\\Corner.png"), 2000, 2000, true, true);
         ImageView imageView2 = new ImageView(image2);
         imageView2.setFitWidth(100);
         imageView2.setFitHeight(40);
@@ -711,7 +709,7 @@ public class RouletteGraphics extends Application {
             }
         });
 
-        Image image2 = new Image(new FileInputStream("src/Resources/Street.png"), 2000, 2000, true, true);
+        Image image2 = new Image(new FileInputStream("src\\Resource\\Street.png"), 2000, 2000, true, true);
         ImageView imageView2 = new ImageView(image2);
         imageView2.setFitWidth(100);
         imageView2.setFitHeight(40);
@@ -742,7 +740,7 @@ public class RouletteGraphics extends Application {
             }
         });
 
-        Image image2 = new Image(new FileInputStream("src/Resources/Split.png"), 2000, 2000, true, true);
+        Image image2 = new Image(new FileInputStream("src\\Resource\\Split.png"), 2000, 2000, true, true);
         ImageView imageView2 = new ImageView(image2);
         imageView2.setFitWidth(100);
         imageView2.setFitHeight(40);
@@ -789,7 +787,7 @@ public class RouletteGraphics extends Application {
         b.setPadding(Insets.EMPTY);
         b.setText("25");
         b.setFont(new Font(0));
-        Image image = new Image(new FileInputStream("src/Resources/$25.png"), 2000, 2000, true, true);
+        Image image = new Image(new FileInputStream("src\\Resource\\$25.png"), 2000, 2000, true, true);
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(100);
         imageView.setFitHeight(40);
@@ -803,7 +801,7 @@ public class RouletteGraphics extends Application {
         b2.setPadding(Insets.EMPTY);
         b2.setText("75");
         b2.setFont(new Font(0));
-        Image image2 = new Image(new FileInputStream("src/Resources/75.png"), 2000, 2000, true, true);
+        Image image2 = new Image(new FileInputStream("src\\Resource\\75.png"), 2000, 2000, true, true);
         ImageView imageView2 = new ImageView(image2);
         imageView2.setFitWidth(110);
         imageView2.setFitHeight(40);
@@ -817,7 +815,7 @@ public class RouletteGraphics extends Application {
         b3.setPadding(Insets.EMPTY);
         b3.setText("150");
         b3.setFont(new Font(0));
-        Image image3 = new Image(new FileInputStream("src/Resources/$150.png"), 2000, 2000, true, true);
+        Image image3 = new Image(new FileInputStream("src\\Resource\\$150.png"), 2000, 2000, true, true);
         ImageView imageView3 = new ImageView(image3);
         imageView3.setFitWidth(110);
         imageView3.setFitHeight(40);
@@ -831,7 +829,7 @@ public class RouletteGraphics extends Application {
         b4.setPadding(Insets.EMPTY);
         b4.setText("AllIn");
         b4.setFont(new Font(0));
-        Image image4 = new Image(new FileInputStream("src/Resources/All_In.png"), 2000, 2000, true, true);
+        Image image4 = new Image(new FileInputStream("src\\Resource\\All_In.png"), 2000, 2000, true, true);
         ImageView imageView4 = new ImageView(image4);
         imageView4.setFitWidth(100);
         imageView4.setFitHeight(40);
@@ -859,9 +857,8 @@ public class RouletteGraphics extends Application {
 
     }
 
-
     public void drawWheel(Group root) throws FileNotFoundException, InterruptedException {
-        Image image = new Image(new FileInputStream("src/Resources/Wheel.png"), 2000, 2000, true, true);
+        Image image = new Image(new FileInputStream("src\\Resource\\Wheel.png"), 2000, 2000, true, true);
         ImagePattern ip = new ImagePattern(image);
         wheel = new Circle(1425, 275, 200);
         wheel.setFill(Color.GREY);
@@ -871,7 +868,6 @@ public class RouletteGraphics extends Application {
         Circle c = new Circle(1425, 275, 160);
         c.setFill(Color.WHITE);
         root.getChildren().add(c);
-        
 
     }
 
@@ -899,7 +895,7 @@ public class RouletteGraphics extends Application {
                 winNumText.setText(String.valueOf(winNum));
                 winNumText.setFont(f);
                 root.getChildren().add(winNumText);
-                
+
                 resetPlayers(root);
                 try {
                     Thread.sleep(1000);
@@ -931,7 +927,7 @@ public class RouletteGraphics extends Application {
             root.getChildren().add(t);
             playerSquares.add(t);
 
-            Image image = new Image(new FileInputStream("src/Resources/blackChip.png"), 2000, 2000, true, true);
+            Image image = new Image(new FileInputStream("src\\Resource\\blackChip.png"), 2000, 2000, true, true);
             ImagePattern ip = new ImagePattern(image);
             Circle c = new Circle(xPos + 75, 890, 60);
             c.setFill(ip);
@@ -1018,7 +1014,7 @@ public class RouletteGraphics extends Application {
         }
     }
 
-    public void flyingChip(Group root, Stage primaryStage, Scene scene) throws FileNotFoundException {
+    public void flyingChip(Group root, Scene scene) throws FileNotFoundException {
         Cylinder cl = new Cylinder(100, 15);
         cl.setTranslateX(500);
         cl.setTranslateY(500);
@@ -1033,7 +1029,8 @@ public class RouletteGraphics extends Application {
         root.getChildren().add(cl);
 
         PhongMaterial m = new PhongMaterial();
-        Image image = new Image(new FileInputStream("src/Resources/Chip1.png"), 5000, 5000, true, true);
+        Image image = null;
+        image = new Image(new FileInputStream("src\\Resource\\blackChip.png"), 5000, 5000, true, true);
 
         m.setDiffuseMap(image);
         cl.setMaterial(m);
@@ -1051,4 +1048,3 @@ public class RouletteGraphics extends Application {
         r.play();
     }
 }
-

@@ -13,8 +13,8 @@ public class BlackjackJAVA {
     public static int round = 1;
 
     public static void main(String name) throws IOException, InterruptedException {
-        addPlayer(name);
         makeDeck();
+        addPlayer(name);
         addAI();
         if (numOfPlayers.isEmpty()) {
         }
