@@ -90,6 +90,7 @@ public class Casino extends Application { //<--- extends Application for javaFX
             public void handle(ActionEvent e) {
                 if ((nameInput.getText() != null && !nameInput.getText().isEmpty())) {
                     mainPlayer.setName(nameInput.getText());
+                    name = nameInput.getText();
                 } else {
                     nameInput.setText("You have not entered a name.");
                 }
