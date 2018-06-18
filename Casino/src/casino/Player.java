@@ -35,6 +35,7 @@ public class Player implements Comparable {
         blind = new Blind();
         pocketHand = new PocketHand();
         this.chipsInCurrent = 0;
+        this.totalChipsInPot=0;
         playerPane = new Pane();
         setPlayerPosition();
         this.numTurn=0;

@@ -316,7 +316,6 @@ public class BlackJackGraphics {
                         currentPlayer.setNaturalBlackJack(true);
                         currentPlayer.setStay(true);
                         currentPlayer.setChips((int) (currentPlayer.getBet() * 1.5 + currentPlayer.getChips() + currentPlayer.getBet()));
-                        Thread.sleep(1000);
                         printCard(handNum);
                     } else if (currentPlayer.getTotal(handNum) >= 9 && currentPlayer.getTotal(handNum) <= 11) {
                         if (currentPlayer.getPocketHands().get(0).checkSplit()) {
@@ -332,7 +331,6 @@ public class BlackJackGraphics {
                 } else {
                     if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
                         currentPlayer.setStay(true);
-                        Thread.sleep(1000);
                         printCard(handNum);
                     } else {
                         buttons.getChildren().addAll(hit, stay);
@@ -343,6 +341,7 @@ public class BlackJackGraphics {
         } else if (currentPlayer.isSplit()) {
             if (handNum == 0) {
                 currentPlayer.setStay(false);
+                currentPlayer.setSplit(false);
                 printCard(1);
             } else {
                 clearBtn();

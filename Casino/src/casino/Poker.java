@@ -46,9 +46,9 @@ public class Poker {
             if (player.getChips() != 0) {
                 players.add(player);
             }
-            else{
-                allPlayers.remove(player);
-            }
+//            else{
+//                allPlayers.remove(player);
+//            }
         }
         for (int i = communityCards.size() - 1; i >= 0; i--) {
             communityCards.remove(communityCards.get(i));
@@ -513,7 +513,7 @@ public class Poker {
 
     public static void distributeWin() {
         Hand winningHand = new Hand();
-        Player winningPlayer = null;
+        Player winningPlayer = players.get(0);
         if (players.size() == 1) {
             winningPlayer = players.get(0);
             players.get(0).setChips(players.get(0).getChips() + pot);
