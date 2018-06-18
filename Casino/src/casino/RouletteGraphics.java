@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
@@ -56,24 +57,40 @@ public class RouletteGraphics extends Application {
     private ArrayList<Rectangle> rects = new ArrayList<>();
     private ArrayList<Rectangle> outsideBets = new ArrayList<>();
     private ArrayList<Player> players = new ArrayList<>();
-    private ArrayList<Object> playerSquares = new ArrayList<>();
-    private ArrayList<Rectangle> playerSquareCovers = new ArrayList<>();
+    private ArrayList<Object> playerSquares = new ArrayList<>();//all the elements that displays player name, chips, etc
+    private ArrayList<Rectangle> playerSquareCovers = new ArrayList<>();//to dim all the players except the current one
     private ArrayList<Bet> bets = new ArrayList<Bet>();
-    private boolean clickedSingleBetButton = false;
-    private boolean clickedDoneBotton = false;
-    private Button next = new Button();
+    private ArrayList<Button> buttons = new ArrayList();//list of inside bet buttons and the outside bet button
+    private ArrayList<Button> moneyOptions = new ArrayList();//list of bet options eg. $100, $200, etc.
+    private ArrayList<Integer> blackNums = new ArrayList<>();
 
+    private int playerNum = 0;
+    private int playerXLoc = -325;
+    private int outsideBetIndex;
+    private int amountBet = 50;
+    private int winNum;
+    private Text winNumText = new Text();
+
+    private Button Single = new Button();
+    private Button Split = new Button();
+    private Button Corner = new Button();
+    private Button Street = new Button();
+    private Button rectButton = new Button();
+    private Button outsideButton = new Button();
+    private String buttonName = "";
+
+    Random rand = new Random();
+    private int numClicked = -1;
     Circle wheel = new Circle(400, 500, 100);
 
-    public void RouletteTest(ArrayList<Player> players) {
+    public void addPlayerList(ArrayList<Player> players) {
         this.players = players;
+
     }
 
     @Override
-
     public void start(Stage primaryStage) throws IOException, FileNotFoundException, InterruptedException {
-        int xLoc = -325;
-
+        
         players.add(new Player("ASDHGJSKSDJKLS", 0));
         players.add(new Player("dsfhek", 1));
         players.add(new Player("djwkalsdj", 2));
@@ -84,35 +101,278 @@ public class RouletteGraphics extends Application {
         players.add(new Player("ASLJDHJSSKJDA", 7));
         players.get(0).setChips(123456);
 
-        Label label1 = new Label("Name:");
-
         Group root = new Group();
         Scene scene = new Scene(root, 1700, 1000, Color.GREEN);
-
+        
+        flyingChip(root, primaryStage, scene);
+        
         drawBoard(root);
+        drawInsideBets(root);
+        drawOutsideeBets(root);
+        drawMoneyOptions(root);
+        drawWheel(root);
+        drawPlayers(root);
         setClickNums();
 
-        drawOutsideeBets(root);
-        setClickOutside();
+        //doneButton(root);
+        playPlayer(root);
 
-        drawInsideBets(root);
-
-        drawWheel(root, 2000);
-        rotateWheel(root, 2000);
-
-        drawPlayers(root);   //moves player squares
-        for (int i = 0; i < players.size() - 4; i++) {
-            movePlayers(root, xLoc);
-            xLoc -= 325;
-        }
-        flyingChip(root, primaryStage, scene);
-
+//        for (int i = 0; i < 10; i++) {
+//            System.out.println(i);
+//            next.setOnAction(event -> {
+//            });
+//        }
         primaryStage.setScene(scene);
         primaryStage.show();
+
+    }
+
+    public void playPlayer(Group root) {
+
+        for (int i = 0; i < moneyOptions.size(); i++) {//get which button is pressed for amount bet buttons
+            moneyOptions.get(i).setOnAction(e -> {
+                System.out.println("bet amount pressed");
+                String amount = ((Button) e.getSource()).getText();
+                System.out.println(amount);
+                if (amount.equals("AllIn")) {
+                    amountBet = players.get(playerNum).getChips();
+                    players.get(playerNum).setBet(amountBet);
+
+                } else {
+                    amountBet = Integer.parseInt(amount);
+                    System.out.println(amountBet);
+                    players.get(playerNum).setBet(amountBet);
+                }
+
+            });
+        }
+
+        setClickOutside();
+        buttonName = "";
+
+        for (int i = 0; i < buttons.size(); i++) {//get which button is pressed for inside bet buttons
+            buttons.get(i).setOnAction(e -> {
+                buttonName = ((Button) e.getSource()).getText();
+                System.out.println(buttonName);
+                removeClickOutside();
+                updatePlayerMoneyText(root);
+                addBet(root);
+            });
+        }
+
+    }
+
+    public void addBet(Group root) {
+        if (buttonName.equalsIgnoreCase("outsideButton")) {
+            addOutsideBet(root);
+        }
+        rectButton.setOnAction((e -> {//when a number/rect on board is clicked and an inside bet button is clicked, then add the bet
+            if (buttonName.equalsIgnoreCase("Single")) {
+                System.out.println("singleRect");
+                setClickNums();
+
+                int num1 = numClicked;
+
+                ArrayList<Integer> nums = new ArrayList();
+                nums.add(num1);
+
+                bets.add(new Bet(amountBet, 1, playerNum, nums));
+                amountBet = 50;
+                System.out.println("BetPlaced");
+                removeClickNums();
+                System.out.println(num1 + "num1");
+                nextPlayer(root);
+
+            } else if (buttonName.equals("Corner")) {
+                System.out.println("CornerRect");
+                setClickNums();
+                int num1 = 0;
+
+                num1 = numClicked;
+                ArrayList<Integer> nums = new ArrayList();
+                for (int i = num1; i < num1 + 5; i++) {
+                    nums.add(i);
+                }
+                nums.remove(2);
+                removeClickNums();
+
+                bets.add(new Bet(amountBet, 4, playerNum, nums));
+                amountBet = 50;
+                System.out.println(num1 + "num1");
+                nextPlayer(root);
+
+            } else if (buttonName.equals("Split")) {
+                System.out.println("SplitRect");
+                setClickNums();
+                int num1 = 0;
+
+                num1 = numClicked;
+
+                removeClickNums();
+
+                if (num1 % 3 == 0) {
+                    rects.get(num1 - 1).setOnMousePressed(rectOnClickAction);//index of num1 is the same as the actual number
+                } else if ((num1 - 1) % 3 == 0) {
+                    rects.get(num1 + 1).setOnMousePressed(rectOnClickAction);
+                } else if (num1 == 2) {
+                    rects.get(num1 + 1).setOnMousePressed(rectOnClickAction);
+                    rects.get(num1 - 1).setOnMousePressed(rectOnClickAction);
+                    rects.get(num1 + 3).setOnMousePressed(rectOnClickAction);
+                } else if (num1 == 35) {
+                    rects.get(num1 + 1).setOnMousePressed(rectOnClickAction);
+                    rects.get(num1 - 1).setOnMousePressed(rectOnClickAction);
+                    rects.get(num1 - 3).setOnMousePressed(rectOnClickAction);
+                } else {
+                    rects.get(num1 + 1).setOnMousePressed(rectOnClickAction);
+                    rects.get(num1 - 1).setOnMousePressed(rectOnClickAction);
+                    rects.get(num1 + 3).setOnMousePressed(rectOnClickAction);
+                    rects.get(num1 - 3).setOnMousePressed(rectOnClickAction);
+                }
+
+                final int num1F = num1;//use num1F since variable has to be final in anonomous class
+                rectButton.setOnAction((e2 -> {//when a number is clicked and an inside bet button is clicked, then add the bet
+                    final int num2 = numClicked;
+                    ArrayList<Integer> nums = new ArrayList();
+
+                    for (int j = num1F; j < num2 + 1; j++) {
+                        nums.add(j);
+                    }
+                    System.out.println(num1F + "num1");
+                    System.out.println(num2 + "num2");
+                    bets.add(new Bet(500, 2, playerNum, nums));
+                    amountBet = 50;
+                    removeClickNums();
+                    nextPlayer(root);
+                }));
+
+            } else if (buttonName.equals("Street")) {
+                System.out.println("StreetRect");
+                int num1 = numClicked;
+                int lastNum = 0;
+
+                if (num1 % 3 == 0) {//num1 is highest, so make it lowest, make lastnum hightest
+                    lastNum = num1;
+                    num1 -= 2;
+                } else if ((num1 - 1) % 3 == 0) {//num1 is already lowest, make lastnum hightest
+                    lastNum = num1 + 2;
+                } else if ((num1 + 1) % 3 == 0) {//num1 is middle number
+                    lastNum = num1 + 1;
+                    num1 -= 1;
+                }
+
+                ArrayList<Integer> nums = new ArrayList();
+                for (int i = num1; i <= lastNum; i++) {
+                    nums.add(i);
+                }
+                bets.add(new Bet(500, 3, playerNum, nums));
+                amountBet = 50;
+                System.out.println("Num1:" + num1);
+                System.out.println("NLastum1:" + lastNum);
+                nextPlayer(root);
+
+            }
+
+        }));
+
+    }
+
+    public void addOutsideBet(Group root) {
+        if (outsideBetIndex >= 0 && outsideBetIndex <= 2) {//column bets
+            int numToAdd = outsideBetIndex + 1;
+            ArrayList<Integer> numsBet = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                numsBet.add(numToAdd);
+                numToAdd += 3;
+                bets.add(new Bet(amountBet, 15, playerNum, numsBet));
+                amountBet = 50;
+                nextPlayer(root);
+            }
+        } else if (outsideBetIndex <= 5) {
+            int startingNum = (outsideBetIndex - 3) * 12 + 1;
+            System.out.println(startingNum + "Starting num");//if index@3, start @ 1, index@ 4, start @13, index @5, start at 25 (for 1st ,3nd 3rd 12 nums)
+            ArrayList<Integer> numsBet = new ArrayList<>();
+            for (int i = startingNum; i < startingNum + 12; i++) {
+                numsBet.add(i);
+            }
+            bets.add(new Bet(amountBet, 11, playerNum, numsBet));
+            amountBet = 50;
+            nextPlayer(root);
+
+        } else if (outsideBetIndex == 6 || outsideBetIndex == 11) {//1-18, 19-36
+            int startNum = 0;
+            if (outsideBetIndex == 6) {
+                startNum = 1;
+            } else if (outsideBetIndex == 6) {
+                startNum = 19;
+            }
+
+            ArrayList<Integer> numsBet = new ArrayList<>();
+            for (int i = startNum; i < startNum + 18; i++) {
+                numsBet.add(i);
+            }
+            bets.add(new Bet(amountBet, 6, playerNum, numsBet));
+            amountBet = 50;
+            nextPlayer(root);
+
+        } else if (outsideBetIndex == 7 || outsideBetIndex == 10) {//even odd
+            System.out.println("evenodd");
+            int startNum = 0;
+            if (outsideBetIndex == 7) {
+                startNum = 2;
+            } else if (outsideBetIndex == 10) {
+                startNum = 1;
+            }
+            ArrayList<Integer> numsBet = new ArrayList<>();
+            for (int i = startNum; i <= 36; i += 2) {
+                numsBet.add(i);
+            }
+            bets.add(new Bet(amountBet, 6, playerNum, numsBet));
+            amountBet = 50;
+            nextPlayer(root);
+
+        } else if (outsideBetIndex == 8 || outsideBetIndex == 9) {//red black
+            if (outsideBetIndex == 10) {
+                bets.add(new Bet(amountBet, 6, playerNum, blackNums));
+                amountBet = 50;
+                nextPlayer(root);
+
+            } else {
+                ArrayList<Integer> numsBet = new ArrayList<>();
+                for (int i = 1; i < 36; i++) {
+                    if (!blackNums.contains(i)) {
+                        numsBet.add(i);
+                    }
+                }
+                bets.add(new Bet(amountBet, 6, playerNum, numsBet));
+                amountBet = 50;
+                nextPlayer(root);
+            }
+
+        }
+    }
+
+    public String nextPlayer(Group root) {
+        if (playerNum < players.size()) {
+            playerSquareCovers.get(playerNum).setOpacity(0.5);
+            playerNum++;
+            playerSquareCovers.get(playerNum).setOpacity(0);
+
+            if (!(playerNum >= players.size() - 3)) {
+                movePlayers(root, playerXLoc);
+                playerXLoc -= 325;
+
+            }
+        }
+        if (playerNum == players.size() - 1) {
+            roll(root);
+            playerNum = 0;
+            playerXLoc = -325;
+        }
+        return null;
     }
 
     public void setClickNums() {
-        for (int i = 0; i < rects.size(); i++) {
+        for (int i = 1; i < rects.size(); i++) {//start at 1 since you cannot bet on 0
             rects.get(i).setOnMousePressed(rectOnClickAction);
         }
     }
@@ -142,7 +402,12 @@ public class RouletteGraphics extends Application {
             Rectangle temp = (Rectangle) event.getSource();
             Paint p = temp.getFill();
             temp.setFill(Color.BLUEVIOLET);
-            System.out.println(rects.indexOf(temp));
+            numClicked = rects.indexOf(temp);
+            System.out.println(numClicked);
+
+            IntStream.range(0, 1).forEach(//automatically presses rectbutton when a rect is clicked
+                    i -> rectButton.fire()
+            );
 
             new java.util.Timer().schedule(
                     new java.util.TimerTask() {
@@ -153,6 +418,7 @@ public class RouletteGraphics extends Application {
             },
                     300
             );
+
         }
 
     };
@@ -163,7 +429,11 @@ public class RouletteGraphics extends Application {
             Rectangle temp = (Rectangle) event.getSource();
             Paint p = temp.getFill();
             temp.setFill(Color.BLUEVIOLET);
-            System.out.println(rects.indexOf(temp));
+            outsideBetIndex = outsideBets.indexOf(temp);
+
+            IntStream.range(0, 1).forEach(//automatically presses outsidebutton when an outside bet is clicked
+                    i -> outsideButton.fire()
+            );
 
             new java.util.Timer().schedule(
                     new java.util.TimerTask() {
@@ -192,15 +462,16 @@ public class RouletteGraphics extends Application {
 
         Font f = new Font(STYLESHEET_CASPIAN, 35);
 
+        Rectangle zero = new Rectangle(105, 205, 70, 50);
+        zero.setFill(Color.GREEN);
+        root.getChildren().add(zero);
+        rects.add(zero);
+
+        Text t0 = new Text(125, 240, "0");
+        t0.setFill(Color.WHITE);
+        t0.setFont(f);
+
         for (int i = 0; i < 12; i++) {
-
-            Rectangle zero = new Rectangle(105, 205, 70, 50);
-            zero.setFill(Color.GREEN);
-            root.getChildren().add(zero);
-
-            Text t0 = new Text(125, 240, "0");
-            t0.setFill(Color.WHITE);
-            t0.setFont(f);
 
             Rectangle a = new Rectangle(colxPos, 150, 70, 50);
             a.setFill(Color.RED);
@@ -230,7 +501,6 @@ public class RouletteGraphics extends Application {
             root.getChildren().add(b);
             root.getChildren().add(c);
 
-            root.getChildren().add(t0);
             root.getChildren().add(t1);
             root.getChildren().add(t2);
             root.getChildren().add(t3);
@@ -243,6 +513,11 @@ public class RouletteGraphics extends Application {
     }
 
     public void drawOutsideeBets(Group root) {
+        outsideButton = new Button();
+        outsideButton.setText("outsideButton");
+        outsideButton.setVisible(false);
+        buttons.add(outsideButton);
+
         Font f1 = new Font(STYLESHEET_CASPIAN, 25);
 
         Rectangle coverWhiteArea = new Rectangle(1080, 315, 95, 165);
@@ -321,6 +596,16 @@ public class RouletteGraphics extends Application {
     }
 
     public void drawInsideBets(Group root) throws FileNotFoundException {
+        buttons.add(Single);
+        buttons.add(Corner);
+        buttons.add(Street);
+        buttons.add(Split);
+
+        Rectangle white = new Rectangle(175, 500, 610, 200);
+        white.setFill(Color.WHITE);
+        white.setArcWidth(30);
+        white.setArcHeight(30);
+        root.getChildren().add(white);
 
         Rectangle green = new Rectangle(180, 505, 600, 190);
         green.setFill(Color.GREEN);
@@ -334,8 +619,6 @@ public class RouletteGraphics extends Application {
         t.setFont(f);
         root.getChildren().add(t);
 
-        clickedSingleBetButton = false;
-
         singleButton(root);
 
         streetButton(root);
@@ -346,167 +629,127 @@ public class RouletteGraphics extends Application {
     }
 
     public void singleButton(Group root) throws FileNotFoundException {
-        if (!clickedSingleBetButton) {
-            Button button = new Button();
-            button.setTranslateX(200);
-            button.setTranslateY(625);
-            button.setPadding(Insets.EMPTY);
+        root.getChildren().add(Single);
 
-            button.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    Rectangle r = new Rectangle(200, 625, 100, 40);
-                    r.setOpacity(0.5);
-                    r.setArcHeight(10);
-                    r.setArcWidth(10);
-                    root.getChildren().add(r);
-                    buttonClickColor(root, r);
+        Single.setTranslateX(200);
+        Single.setTranslateY(625);
+        Single.setPadding(Insets.EMPTY);
+        Single.setText("Single");
+        Single.setFont(new Font(0));
 
-                    IntStream.range(0, 1).forEach(//automatically clicks button "next"
-                            i -> next.fire()
-                    );
-                }
-            });
-
-            Image image = new Image(new FileInputStream("src/Resources/Single.png"), 2000, 2000, true, true);
-            ImageView imageView = new ImageView(image);
-            imageView.setFitWidth(100);
-            imageView.setFitHeight(40);
-            button.setGraphic(imageView);
-
-            root.getChildren().add(button);
-        }
-    }
-
-    public void cornerButton(Group root) throws FileNotFoundException {
-        if (!clickedSingleBetButton) {
-            Button button2 = new Button();
-            button2.setTranslateX(350);
-            button2.setTranslateY(625);
-            button2.setPadding(Insets.EMPTY);
-
-            button2.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    Rectangle r = new Rectangle(350, 625, 100, 40);
-                    r.setOpacity(0.5);
-                    r.setArcHeight(10);
-                    r.setArcWidth(10);
-                    root.getChildren().add(r);
-                    buttonClickColor(root, r);
-
-                    IntStream.range(0, 1).forEach(//automatically clicks button "next"
-                            i -> next.fire()
-                    );
-                }
-            });
-
-            Image image2 = new Image(new FileInputStream("src/Resources/Corner.png"), 2000, 2000, true, true);
-            ImageView imageView2 = new ImageView(image2);
-            imageView2.setFitWidth(100);
-            imageView2.setFitHeight(40);
-            button2.setGraphic(imageView2);
-
-            root.getChildren().add(button2);
-        }
-    }
-
-    public void streetButton(Group root) throws FileNotFoundException {
-        if (!clickedSingleBetButton) {
-            Button button2 = new Button();
-            button2.setTranslateX(500);
-            button2.setTranslateY(625);
-            button2.setPadding(Insets.EMPTY);
-
-            button2.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    Rectangle r = new Rectangle(500, 625, 100, 40);
-                    r.setOpacity(0.5);
-                    r.setArcHeight(10);
-                    r.setArcWidth(10);
-                    root.getChildren().add(r);
-                    buttonClickColor(root, r);
-
-                    IntStream.range(0, 1).forEach(//automatically clicks button "next"
-                            i -> next.fire()
-                    );
-                }
-            });
-
-            Image image2 = new Image(new FileInputStream("src/Resources/Street.png"), 2000, 2000, true, true);
-            ImageView imageView2 = new ImageView(image2);
-            imageView2.setFitWidth(100);
-            imageView2.setFitHeight(40);
-            button2.setGraphic(imageView2);
-
-            root.getChildren().add(button2);
-        }
-    }
-
-    public void splitButton(Group root) throws FileNotFoundException {
-        if (!clickedSingleBetButton) {
-            Button button2 = new Button();
-            button2.setTranslateX(650);
-            button2.setTranslateY(625);
-            button2.setPadding(Insets.EMPTY);
-
-            button2.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    Rectangle r = new Rectangle(650, 625, 100, 40);
-                    r.setOpacity(0.5);
-                    r.setArcHeight(10);
-                    r.setArcWidth(10);
-                    root.getChildren().add(r);
-                    buttonClickColor(root, r);
-
-                    IntStream.range(0, 1).forEach(//automatically clicks button "next"
-                            i -> next.fire()
-                    );
-                }
-            });
-
-            Image image2 = new Image(new FileInputStream("src/Resources/Split.png"), 2000, 2000, true, true);
-            ImageView imageView2 = new ImageView(image2);
-            imageView2.setFitWidth(100);
-            imageView2.setFitHeight(40);
-            button2.setGraphic(imageView2);
-
-            root.getChildren().add(button2);
-        }
-    }
-
-    public void doneButton(Group root) throws FileNotFoundException {
-        Button button2 = new Button();
-        button2.setTranslateX(1000);
-        button2.setTranslateY(625);
-        button2.setPadding(Insets.EMPTY);
-
-        button2.setOnAction(new EventHandler<ActionEvent>() {
+        Single.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Rectangle r = new Rectangle(1000, 625, 200, 50);
+                Rectangle r = new Rectangle(200, 625, 100, 40);
+                r.setOpacity(0.5);
                 r.setArcHeight(10);
                 r.setArcWidth(10);
-                r.setOpacity(0.5);
                 root.getChildren().add(r);
                 buttonClickColor(root, r);
-                clickedDoneBotton = true;
+                //clickedInsideBetButton = true;
 
-                IntStream.range(0, 1).forEach(//automatically clicks button "next"
-                        i -> next.fire()
-                );
             }
         });
 
-        Image image2 = new Image(new FileInputStream("src/Resources/DoneButton.png"), 2000, 2000, true, true);
-        ImageView imageView2 = new ImageView(image2);
-        imageView2.setFitWidth(200);
-        imageView2.setFitHeight(50);
-        button2.setGraphic(imageView2);
+        Image image = new Image(new FileInputStream("src/Resources/Single.png"), 2000, 2000, true, true);
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(100);
+        imageView.setFitHeight(40);
+        Single.setGraphic(imageView);
 
-        root.getChildren().add(button2);
+    }
+
+    public void cornerButton(Group root) throws FileNotFoundException {
+        //   if (!clickedInsideBetButton) {
+        Corner.setTranslateX(350);
+        Corner.setTranslateY(625);
+        Corner.setPadding(Insets.EMPTY);
+        Corner.setText("Corner");
+        Corner.setFont(new Font(0));
+
+        Corner.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Rectangle r = new Rectangle(350, 625, 100, 40);
+                r.setOpacity(0.5);
+                r.setArcHeight(10);
+                r.setArcWidth(10);
+                root.getChildren().add(r);
+                buttonClickColor(root, r);
+                // clickedInsideBetButton = true;
+            }
+        });
+
+        Image image2 = new Image(new FileInputStream("src/Resources/Corner.png"), 2000, 2000, true, true);
+        ImageView imageView2 = new ImageView(image2);
+        imageView2.setFitWidth(100);
+        imageView2.setFitHeight(40);
+        Corner.setGraphic(imageView2);
+
+        root.getChildren().add(Corner);
+        //  }
+    }
+
+    public void streetButton(Group root) throws FileNotFoundException {
+        //   if (!clickedInsideBetButton) {
+        Street.setTranslateX(500);
+        Street.setTranslateY(625);
+        Street.setPadding(Insets.EMPTY);
+        Street.setText("Street");
+        Street.setFont(new Font(0));
+
+        Street.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Rectangle r = new Rectangle(500, 625, 100, 40);
+                r.setOpacity(0.5);
+                r.setArcHeight(10);
+                r.setArcWidth(10);
+                root.getChildren().add(r);
+                buttonClickColor(root, r);
+                //clickedInsideBetButton = true;
+            }
+        });
+
+        Image image2 = new Image(new FileInputStream("src/Resources/Street.png"), 2000, 2000, true, true);
+        ImageView imageView2 = new ImageView(image2);
+        imageView2.setFitWidth(100);
+        imageView2.setFitHeight(40);
+        Street.setGraphic(imageView2);
+
+        root.getChildren().add(Street);
+        // }
+    }
+
+    public void splitButton(Group root) throws FileNotFoundException {
+        // if (!clickedInsideBetButton) {
+        Split.setTranslateX(650);
+        Split.setTranslateY(625);
+        Split.setPadding(Insets.EMPTY);
+        Split.setText("Split");
+        Split.setFont(new Font(0));
+
+        Split.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Rectangle r = new Rectangle(650, 625, 100, 40);
+                r.setOpacity(0.5);
+                r.setArcHeight(10);
+                r.setArcWidth(10);
+                root.getChildren().add(r);
+                buttonClickColor(root, r);
+                // clickedInsideBetButton = true;
+            }
+        });
+
+        Image image2 = new Image(new FileInputStream("src/Resources/Split.png"), 2000, 2000, true, true);
+        ImageView imageView2 = new ImageView(image2);
+        imageView2.setFitWidth(100);
+        imageView2.setFitHeight(40);
+        Split.setGraphic(imageView2);
+
+        root.getChildren().add(Split);
+        // }
     }
 
     public void buttonClickColor(Group root, Rectangle r) {
@@ -521,8 +764,87 @@ public class RouletteGraphics extends Application {
         );
     }
 
+    public void drawMoneyOptions(Group root) throws FileNotFoundException {
+        Rectangle white = new Rectangle(875, 500, 610, 200);
+        white.setFill(Color.WHITE);
+        white.setArcWidth(30);
+        white.setArcHeight(30);
+        root.getChildren().add(white);
+
+        Rectangle green = new Rectangle(880, 505, 600, 190);
+        green.setFill(Color.GREEN);
+        green.setArcWidth(20);
+        green.setArcHeight(20);
+        root.getChildren().add(green);
+
+        Font f = new Font(STYLESHEET_MODENA, 50);
+        Text t = new Text(1055, 570, "Bet Options");
+        t.setFill(Color.WHITE);
+        t.setFont(f);
+        root.getChildren().add(t);
+
+        Button b = new Button("25");
+        b.setTranslateX(920);
+        b.setTranslateY(625);
+        b.setPadding(Insets.EMPTY);
+        b.setText("25");
+        b.setFont(new Font(0));
+        Image image = new Image(new FileInputStream("src/Resources/$25.png"), 2000, 2000, true, true);
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(100);
+        imageView.setFitHeight(40);
+        b.setGraphic(imageView);
+        root.getChildren().add(b);
+        moneyOptions.add(b);
+
+        Button b2 = new Button("75");
+        b2.setTranslateX(1050);
+        b2.setTranslateY(625);
+        b2.setPadding(Insets.EMPTY);
+        b2.setText("75");
+        b2.setFont(new Font(0));
+        Image image2 = new Image(new FileInputStream("src/Resources/75.png"), 2000, 2000, true, true);
+        ImageView imageView2 = new ImageView(image2);
+        imageView2.setFitWidth(110);
+        imageView2.setFitHeight(40);
+        b2.setGraphic(imageView2);
+        root.getChildren().add(b2);
+        moneyOptions.add(b2);
+
+        Button b3 = new Button("150");
+        b3.setTranslateX(1190);
+        b3.setTranslateY(625);
+        b3.setPadding(Insets.EMPTY);
+        b3.setText("150");
+        b3.setFont(new Font(0));
+        Image image3 = new Image(new FileInputStream("src/Resources/$150.png"), 2000, 2000, true, true);
+        ImageView imageView3 = new ImageView(image3);
+        imageView3.setFitWidth(110);
+        imageView3.setFitHeight(40);
+        b3.setGraphic(imageView3);
+        root.getChildren().add(b3);
+        moneyOptions.add(b3);
+
+        Button b4 = new Button("AllIn");
+        b4.setTranslateX(1330);
+        b4.setTranslateY(625);
+        b4.setPadding(Insets.EMPTY);
+        b4.setText("AllIn");
+        b4.setFont(new Font(0));
+        Image image4 = new Image(new FileInputStream("src/Resources/All_In.png"), 2000, 2000, true, true);
+        ImageView imageView4 = new ImageView(image4);
+        imageView4.setFitWidth(100);
+        imageView4.setFitHeight(40);
+        b4.setGraphic(imageView4);
+        root.getChildren().add(b4);
+        moneyOptions.add(b4);
+    }
+
     public void fillBlackNums() {
         int[] blackNums = {2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35};
+        for (int i = 0; i < blackNums.length; i++) {//put blacknums into the arraylist
+            this.blackNums.add(blackNums[i]);
+        }
 
         for (int i = 0; i < rects.size(); i++) {
             for (int j = 0; j < blackNums.length; j++) {
@@ -537,18 +859,19 @@ public class RouletteGraphics extends Application {
 
     }
 
-    public static void main(String[] args) {
-        launch(args);
 
-    }
-
-    public void drawWheel(Group root, int angle) throws FileNotFoundException, InterruptedException {
+    public void drawWheel(Group root) throws FileNotFoundException, InterruptedException {
         Image image = new Image(new FileInputStream("src/Resources/Wheel.png"), 2000, 2000, true, true);
         ImagePattern ip = new ImagePattern(image);
         wheel = new Circle(1425, 275, 200);
         wheel.setFill(Color.GREY);
         wheel.setFill(ip);
         root.getChildren().add(wheel);
+
+        Circle c = new Circle(1425, 275, 160);
+        c.setFill(Color.WHITE);
+        root.getChildren().add(c);
+        
 
     }
 
@@ -569,14 +892,25 @@ public class RouletteGraphics extends Application {
 
             @Override
             public void handle(ActionEvent event) {
+                checkWin(root, winNum);
+                Font f = new Font(120);
+                winNumText.setX(1370);
+                winNumText.setY(290);
+                winNumText.setText(String.valueOf(winNum));
+                winNumText.setFont(f);
+                root.getChildren().add(winNumText);
+                
+                resetPlayers(root);
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ex) {
                     System.out.println("That sucks");
                 }
+
                 reset.play();
             }
         });
+
     }
 
     public void drawPlayers(Group root) throws FileNotFoundException {
@@ -597,7 +931,7 @@ public class RouletteGraphics extends Application {
             root.getChildren().add(t);
             playerSquares.add(t);
 
-            Image image = new Image(new FileInputStream("src/Resources/Chip1.png"), 2000, 2000, true, true);
+            Image image = new Image(new FileInputStream("src/Resources/blackChip.png"), 2000, 2000, true, true);
             ImagePattern ip = new ImagePattern(image);
             Circle c = new Circle(xPos + 75, 890, 60);
             c.setFill(ip);
@@ -633,6 +967,57 @@ public class RouletteGraphics extends Application {
         }
     }
 
+    public void roll(Group root) {
+        winNum = rand.nextInt(37);
+        int angle = 0;
+        int wheelNums[] = new int[]{0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26};
+
+        for (int i = 0; i < wheelNums.length; i++) {
+            if (winNum == wheelNums[i]) {
+                angle = 360 * 3 + 360 - 15 - (360 / 37 * i);
+            }
+        }
+
+        rotateWheel(root, angle);
+
+    }
+
+    public void resetPlayers(Group root) {
+        playerNum = 0;
+        playerXLoc = -325;
+        for (int i = 0; i < playerSquareCovers.size(); i++) {
+            playerSquareCovers.get(i).setOpacity(0.5);
+            playerSquareCovers.get(0).setOpacity(0);
+        }
+        for (int i = 0; i < playerSquares.size(); i++) {
+            TranslateTransition t = new TranslateTransition(new Duration(3000), (Node) playerSquares.get(i));
+            t.setToX(0);
+            t.play();
+        }
+    }
+
+    public void checkWin(Group root, int winNum) {
+        for (int i = 0; i < bets.size(); i++) {
+            if (bets.get(i).getNumsBetOn().contains(winNum)) {
+                int payout = (int) (bets.get(i).getAmountBet() * bets.get(i).getPayout());
+                players.get(bets.get(i).getPlayerNum()).payout(payout);
+
+            }
+        }
+        updatePlayerMoneyText(root);
+    }
+
+    public void updatePlayerMoneyText(Group root) {
+        for (int i = 3; i < playerSquares.size(); i += 5) {
+            if (playerSquares.get(i).getClass() == Text.class) {
+                String text = Integer.toString(players.get((i - 3) / 5).getChips());
+
+                int index = root.getChildren().indexOf((Text) playerSquares.get(i));
+                ((Text) (root.getChildren().get(index))).setText(text);
+            }
+        }
+    }
+
     public void flyingChip(Group root, Stage primaryStage, Scene scene) throws FileNotFoundException {
         Cylinder cl = new Cylinder(100, 15);
         cl.setTranslateX(500);
@@ -665,6 +1050,5 @@ public class RouletteGraphics extends Application {
         r.setAxis(new Point3D(20, 20, 20));
         r.play();
     }
-
-
 }
+

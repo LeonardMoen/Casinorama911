@@ -303,11 +303,8 @@ public class BlackjackJAVA {
             player.ifSplit(deck);
             player.getPocketHands().get(1).setSplitBet(player.getBet());
             player.setChips(player.getChips() - player.getPocketHands().get(1).getSplitBet());
-            for (int d = handNum; d < player.getPocketHands().size(); d++) {
-                System.out.println("\nDeck " + (d + 1) + ":\t");
-                printCards(player, d);
-            }
             player.setSplit(true);
+            printCards(player, 0);
         } else {
             System.out.println("You do not have enough chips to split!");
         }
@@ -318,8 +315,8 @@ public class BlackjackJAVA {
             player.setChips(player.getChips() + player.getBet());
             player.setBet(player.getBet() * 2);
             player.getPocketHands().get(handNum).hitCard(deck);
-            printCards(player, handNum);
             player.setStay(true);
+            printCards(player, handNum);
         } else {
             System.out.println("You do not have enough chips to double down!");
         }

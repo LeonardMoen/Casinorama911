@@ -28,6 +28,7 @@ import javafx.stage.Stage;
 
 public class Casino extends Application { //<--- extends Application for javaFX
 
+    ArrayList <Player> players = new ArrayList<>();
     static PokerGraphics pokerGraphics;
     static Stage primaryStage;
     private static Player mainPlayer;
@@ -149,6 +150,13 @@ public class Casino extends Application { //<--- extends Application for javaFX
             @Override
             public void handle(ActionEvent event) {
                 System.out.println("Roulette Game");
+                RouletteGraphics rouletteGraphics = new RouletteGraphics();
+                rouletteGraphics.addPlayerList(players);
+                try {
+                    rouletteGraphics.start(primaryStage);
+                } catch (IOException ex) {
+                } catch (InterruptedException ex) {
+                }
             }
         });
         roop.getChildren().add(btnRoulette);
