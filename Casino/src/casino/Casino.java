@@ -84,6 +84,8 @@ public class Casino extends Application { //<--- extends Application for javaFX
         roop.getChildren().add(tPane);
 
         Text label1 = new Text("Name:");
+        label1.setFont(new Font(18));
+        label1.setFill(Color.WHITE);
         TextField nameInput = new TextField();
         Button submit = new Button("Submit");
         submit.setOnAction(new EventHandler<ActionEvent>() {
@@ -99,7 +101,7 @@ public class Casino extends Application { //<--- extends Application for javaFX
         });
         HBox hb = new HBox(10);
         hb.setTranslateY(580);
-        hb.setTranslateX(titleX + 170);
+        hb.setTranslateX(500);
         hb.getChildren().addAll(label1, nameInput, submit);
         roop.getChildren().add(hb);
 
