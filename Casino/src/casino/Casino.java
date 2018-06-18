@@ -28,6 +28,7 @@ public class Casino extends Application { //<--- extends Application for javaFX
 
     static PokerGraphics pokerGraphics;
     static Stage primaryStage;
+    private static Player mainPlayer;
     //Pane rootPane = new Pane();
     Pane roop = new Pane();
     static Scene menu;
@@ -38,6 +39,7 @@ public class Casino extends Application { //<--- extends Application for javaFX
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        mainPlayer = new Player("Player 1", 1);
         this.primaryStage = primaryStage;
         ImageView menuImage = new ImageView();
         menuImage.setImage(ImageBuffer.menu);
@@ -84,7 +86,7 @@ public class Casino extends Application { //<--- extends Application for javaFX
             @Override
             public void handle(ActionEvent e) {
                 if ((nameInput.getText() != null && !nameInput.getText().isEmpty())) {
-                    Player player = new Player(nameInput.getText(), 1);
+                    mainPlayer.setName(nameInput.getText());
                 } else {
                     nameInput.setText("You have not entered a name.");
                 }
@@ -165,5 +167,11 @@ public class Casino extends Application { //<--- extends Application for javaFX
     public static PokerGraphics getPokerGraphics() {
         return pokerGraphics;
     }
+
+    public static Player getMainPlayer() {
+        return mainPlayer;
+    }
+    
+    
 
 }

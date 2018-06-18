@@ -31,8 +31,7 @@ public class Poker {
     public static ArrayList<Player> createPlayers() {
         ArrayList<Player> players = new ArrayList<Player>();
         allPlayers = new ArrayList<Player>();
-        String name = "Player 1";
-        allPlayers.add(new Player(name, 1));
+        allPlayers.add(Casino.getMainPlayer());
         for (int i = 2; i < 5; i++) {
             allPlayers.add(new AI("Player " + i, i));
         }
@@ -46,6 +45,9 @@ public class Poker {
         for (Player player : allPlayers) {
             if (player.getChips() != 0) {
                 players.add(player);
+            }
+            else{
+                allPlayers.remove(player);
             }
         }
         for (int i = communityCards.size() - 1; i >= 0; i--) {
