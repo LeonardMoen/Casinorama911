@@ -138,6 +138,9 @@ public class RouletteGraphics {
 
                 } else {
                     amountBet = Integer.parseInt(amount);
+                    if (amountBet > players.get(playerNum).getChips()) {
+                        amountBet = players.get(playerNum).getChips();
+                    }
                     System.out.println(amountBet);
                     players.get(playerNum).setBet(amountBet);
                 }
