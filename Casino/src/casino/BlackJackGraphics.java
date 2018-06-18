@@ -25,7 +25,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class BlackJackGraphics {
-    
+
     public static Player currentPlayer;
     private static Button stay = new Button("Stay");
     private static Button dDown = new Button("Double Down");
@@ -38,10 +38,10 @@ public class BlackJackGraphics {
     private static Pane pBet = new Pane();
     private static Pane bCard = new Pane();
     static Pane buttons = new HBox();
-    
+
     public BlackJackGraphics() {
     }
-    
+
     public static Card displayCard(Card card) {
         Image image = null;
         ImagePattern ip = null;
@@ -49,7 +49,7 @@ public class BlackJackGraphics {
 
         String cardSuit = card.getSuit();
         int cardValue = card.getValue();
-        
+
         if (card.isFaceUp() == false) {
             image = ImageBuffer.back1;
         } else {
@@ -243,10 +243,10 @@ public class BlackJackGraphics {
         ip = new ImagePattern(image);
         //card.setIp(ip);
         card.setFill(ip);
-        
+
         return card;
     }
-    
+
     public static void printCard(int handNum) throws InterruptedException, IOException {
         int x = 300, y = 500;
         pCard.getChildren().clear();
@@ -265,7 +265,7 @@ public class BlackJackGraphics {
         root.getChildren().add(pCard);
         setButtons(handNum);
     }
-    
+
     public static void setButtons(int handNum) throws InterruptedException, IOException {
         clearBtn();
         if (!currentPlayer.isStay()) {
@@ -309,7 +309,7 @@ public class BlackJackGraphics {
                         setButtons(0);
                     }
                 }
-                
+
             } else {
                 if (round == 1) {
                     if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
@@ -336,8 +336,8 @@ public class BlackJackGraphics {
                         buttons.getChildren().addAll(hit, stay);
                     }
                 }
+                root.getChildren().add(buttons);
             }
-            root.getChildren().add(buttons);
         } else if (currentPlayer.isSplit()) {
             if (handNum == 0) {
                 currentPlayer.setStay(false);
@@ -351,10 +351,10 @@ public class BlackJackGraphics {
             clearBtn();
             nextPlayer();
         }
-        
+
         round++;
     }
-    
+
     public static void clearBtn() {
 //        if (root.getChildren().contains(hit)) {
 //            root.getChildren().remove(hit);
@@ -371,21 +371,23 @@ public class BlackJackGraphics {
         buttons.getChildren().clear();
         root.getChildren().remove(buttons);
     }
-    
+
     public static void checkWin() {
     }
-    
+
     public static void nextPlayer() throws InterruptedException, IOException {
         round = 1;
         x += 1;
         if (x == BlackjackJAVA.numOfPlayers.size()) {
+            x = 0;
+            currentPlayer = BlackjackJAVA.numOfPlayers.get(x);
             checkWin();
         } else {
             currentPlayer = BlackjackJAVA.numOfPlayers.get(x);
             printCard(0);
         }
     }
-    
+
     public static void begin(String name) throws IOException, InterruptedException {
         hit.setLayoutX(10);
         hit.setLayoutY(10);
@@ -398,7 +400,7 @@ public class BlackJackGraphics {
         hit.setOnAction((ActionEvent event) -> {
             try {
                 BlackjackJAVA.playerHit(currentPlayer, 0);
-                
+
             } catch (IOException | InterruptedException ex) {
                 Logger.getLogger(BlackJackGraphics.class
                         .getName()).log(Level.SEVERE, null, ex);
@@ -408,7 +410,7 @@ public class BlackJackGraphics {
             currentPlayer.setStay(true);
             try {
                 setButtons(0);
-                
+
             } catch (InterruptedException | IOException ex) {
                 Logger.getLogger(BlackJackGraphics.class
                         .getName()).log(Level.SEVERE, null, ex);
@@ -417,7 +419,7 @@ public class BlackJackGraphics {
         split.setOnAction((ActionEvent event) -> {
             try {
                 BlackjackJAVA.playerSplit(currentPlayer, 0);
-                
+
             } catch (InterruptedException | IOException ex) {
                 Logger.getLogger(BlackJackGraphics.class
                         .getName()).log(Level.SEVERE, null, ex);
@@ -428,7 +430,7 @@ public class BlackJackGraphics {
                 BlackjackJAVA.playerDD(currentPlayer, 0);
                 currentPlayer.setStay(true);
                 setButtons(0);
-                
+
             } catch (IOException | InterruptedException ex) {
                 Logger.getLogger(BlackJackGraphics.class
                         .getName()).log(Level.SEVERE, null, ex);
@@ -440,11 +442,11 @@ public class BlackJackGraphics {
         Casino.primaryStage.show();
         BlackjackJAVA.main(name);
     }
-    
+
     public static void printDealer() {
-        
+
     }
-    
+
     public static void printBoard() throws InterruptedException, IOException {    // When I make the board. need to print the players cards
         printDealer();
         bCard.getChildren().clear();
@@ -470,7 +472,7 @@ public class BlackJackGraphics {
         root.getChildren().add(bCard);
         printCard(0);
     }
-    
+
     public static void setBet(int n) throws IOException {
         currentPlayer = BlackjackJAVA.numOfPlayers.get(n);
         if (currentPlayer.isAi()) {
@@ -482,7 +484,7 @@ public class BlackJackGraphics {
                 currentPlayer = BlackjackJAVA.numOfPlayers.get(0);
                 try {
                     printBoard();
-                    
+
                 } catch (InterruptedException ex) {
                     Logger.getLogger(BlackJackGraphics.class
                             .getName()).log(Level.SEVERE, null, ex);
@@ -510,7 +512,7 @@ public class BlackJackGraphics {
                         System.out.println(currentPlayer.getName() + " not enough chips");
                         try {
                             setBet(n);
-                            
+
                         } catch (IOException ex) {
                             Logger.getLogger(BlackJackGraphics.class
                                     .getName()).log(Level.SEVERE, null, ex);
@@ -526,7 +528,7 @@ public class BlackJackGraphics {
                             currentPlayer = BlackjackJAVA.numOfPlayers.get(0);
                             try {
                                 printBoard();
-                                
+
                             } catch (InterruptedException | IOException ex) {
                                 Logger.getLogger(BlackJackGraphics.class
                                         .getName()).log(Level.SEVERE, null, ex);
@@ -534,7 +536,7 @@ public class BlackJackGraphics {
                         } else {
                             try {
                                 setBet(n + 1);
-                                
+
                             } catch (IOException ex) {
                                 Logger.getLogger(BlackJackGraphics.class
                                         .getName()).log(Level.SEVERE, null, ex);
@@ -545,5 +547,5 @@ public class BlackJackGraphics {
             });
         }
     }
-    
+
 }
