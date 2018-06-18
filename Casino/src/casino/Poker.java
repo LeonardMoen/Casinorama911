@@ -314,54 +314,100 @@ public class Poker {
     }
 
     public static void determiningNextAction(int playerIndex) {
+        boolean everyoneAllIn=true;
         allPlayerCheck = false;
+        for (Player player : players) {
+            if(player.getChips()>0){
+                everyoneAllIn=false;
+                break;
+            }
+        }
         PokerGraphics.displayPot();
         if (playerIndex > 0) {
             currentPlayer = players.get(playerIndex - 1);
         } else {
             currentPlayer = players.get(players.size() - 1);
         }
-        if(currentPlayer.getChipsInCurrent() == requiredChips&&requiredChips==0&&currentPlayer.getNumTurn()==0){
-            playTurn();
-        }
-        if (currentPlayer.getChipsInCurrent() != requiredChips||(round==0&&currentPlayer.getBlind().getTypeBlind().equalsIgnoreCase("big"))) {
-            playTurn();
-        } else {
+        if(!(everyoneAllIn)){
+            if(currentPlayer.getChipsInCurrent() == requiredChips&&requiredChips==0&&currentPlayer.getNumTurn()==0){
+                playTurn();
+            }
+            if (currentPlayer.getChipsInCurrent() != requiredChips||(round==0&&currentPlayer.getBlind().getTypeBlind().equalsIgnoreCase("big"))) {
+                playTurn();
+
+            } else {
+                if (players.size() == 1) {
+                    distributeWin();
+                }
+                if (communityCards.size() == 0) {
+                    flop();
+                    round += 1;
+                    Collections.sort(players);
+                    int startPlayer = findStartingPlayer();
+                    sortPlayers(startPlayer);
+                    setCurrentPlayer(players.get(players.size() - 1));
+                    roundOfBetting();
+                } else if (Poker.getCommunityCards().size() == 3) {
+                    turnAndRiver();
+                    round += 1;
+                    PokerGraphics.displayTurn(communityCards);
+                    Collections.sort(players);
+                    int startPlayer = findStartingPlayer();
+                    sortPlayers(startPlayer);
+                    setCurrentPlayer(players.get(players.size() - 1));
+                    allPlayerCheck = true;
+                    roundOfBetting();
+                } else if (Poker.getCommunityCards().size() == 4&&!(allPlayerCheck)) {
+                    turnAndRiver();
+                    round += 1;
+                    PokerGraphics.displayRiver(communityCards);
+                    Collections.sort(players);
+                    int startPlayer = findStartingPlayer();
+                    sortPlayers(startPlayer);
+                    setCurrentPlayer(players.get(players.size() - 1));
+                    allPlayerCheck = true;
+                    roundOfBetting();
+                } else if (Poker.getCommunityCards().size() == 5&&!(allPlayerCheck)) {
+                    round+=1;
+                    PokerGraphics.displayAllCards(players);
+                }
+            }
+        }else{
             if (players.size() == 1) {
-                distributeWin();
-            }
-            if (communityCards.size() == 0) {
-                flop();
-                round += 1;
-                Collections.sort(players);
-                int startPlayer = findStartingPlayer();
-                sortPlayers(startPlayer);
-                setCurrentPlayer(players.get(players.size() - 1));
-                roundOfBetting();
-            } else if (Poker.getCommunityCards().size() == 3) {
-                turnAndRiver();
-                round += 1;
-                PokerGraphics.displayTurn(communityCards);
-                Collections.sort(players);
-                int startPlayer = findStartingPlayer();
-                sortPlayers(startPlayer);
-                setCurrentPlayer(players.get(players.size() - 1));
-                allPlayerCheck = true;
-                roundOfBetting();
-            } else if (Poker.getCommunityCards().size() == 4&&!(allPlayerCheck)) {
-                turnAndRiver();
-                round += 1;
-                PokerGraphics.displayRiver(communityCards);
-                Collections.sort(players);
-                int startPlayer = findStartingPlayer();
-                sortPlayers(startPlayer);
-                setCurrentPlayer(players.get(players.size() - 1));
-                allPlayerCheck = true;
-                roundOfBetting();
-            } else if (Poker.getCommunityCards().size() == 5&&!(allPlayerCheck)) {
-                round+=1;
-                PokerGraphics.displayAllCards(players);
-            }
+                    distributeWin();
+                }
+                if (communityCards.size() == 0) {
+                    flop();
+                    round += 1;
+                    Collections.sort(players);
+                    int startPlayer = findStartingPlayer();
+                    sortPlayers(startPlayer);
+                    setCurrentPlayer(players.get(players.size() - 1));
+                    roundOfBetting();
+                } else if (Poker.getCommunityCards().size() == 3) {
+                    turnAndRiver();
+                    round += 1;
+                    PokerGraphics.displayTurn(communityCards);
+                    Collections.sort(players);
+                    int startPlayer = findStartingPlayer();
+                    sortPlayers(startPlayer);
+                    setCurrentPlayer(players.get(players.size() - 1));
+                    allPlayerCheck = true;
+                    roundOfBetting();
+                } else if (Poker.getCommunityCards().size() == 4&&!(allPlayerCheck)) {
+                    turnAndRiver();
+                    round += 1;
+                    PokerGraphics.displayRiver(communityCards);
+                    Collections.sort(players);
+                    int startPlayer = findStartingPlayer();
+                    sortPlayers(startPlayer);
+                    setCurrentPlayer(players.get(players.size() - 1));
+                    allPlayerCheck = true;
+                    roundOfBetting();
+                } else if (Poker.getCommunityCards().size() == 5&&!(allPlayerCheck)) {
+                    round+=1;
+                    PokerGraphics.displayAllCards(players);
+                }
         }
     }
 
