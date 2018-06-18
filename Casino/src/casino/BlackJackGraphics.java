@@ -309,7 +309,6 @@ public class BlackJackGraphics {
                         setButtons(0);
                     }
                 }
-
             } else {
                 if (round == 1) {
                     if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
