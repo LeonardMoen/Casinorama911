@@ -266,6 +266,93 @@ public class BlackJackGraphics {
     }
 
     public static void setButtons(int handNum) throws InterruptedException, IOException {
+        clearBtn();
+        if (!currentPlayer.isStay()) {
+//            if (currentPlayer.isAi()) {
+//                BlackjackAI ai = (BlackjackAI) currentPlayer;
+//                ai.setSplit();
+//                ai.setdDown(handNum);
+//                ai.setHit(BlackjackJAVA.deck, handNum);
+//                if (round == 1) {
+//                    if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
+//                        currentPlayer.setNaturalBlackJack(true);
+//                        currentPlayer.setStay(true);
+//                        currentPlayer.setChips((int) (currentPlayer.getBet() * 1.5 + currentPlayer.getChips() + currentPlayer.getBet()));
+//                        printCard(handNum);
+//                    }
+//                    if (ai.isSplit()) {
+//                        System.out.println("Split");
+//                        BlackjackJAVA.playerSplit(currentPlayer, 0);
+//                    } else if (ai.isdDown()) {
+//                        System.out.println("dd");
+//                        BlackjackJAVA.playerDD(currentPlayer, 0);
+//                    } else if (ai.isHit()) {
+//                        System.out.println("hit");
+//                        BlackjackJAVA.playerHit(currentPlayer, 0);
+//                    } else if (!ai.isHit()) {
+//                        System.out.println("stay");
+//                        currentPlayer.setStay(true);
+//                        nextPlayer();
+//                    }
+//                } else {
+//                    if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
+//                        currentPlayer.setStay(true);
+//                        printCard(handNum);
+//                    } else if (ai.isHit()) {
+//                        System.out.println("hit");
+//                        BlackjackJAVA.playerHit(currentPlayer, 0);
+//                    } else if (!ai.isHit()) {
+//                        System.out.println("stay");
+//                        currentPlayer.setStay(true);
+//                        nextPlayer();
+//                    }
+//                }
+//            } else {
+            if (round == 1) {
+                if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
+                    currentPlayer.setNaturalBlackJack(true);
+                    currentPlayer.setStay(true);
+                    currentPlayer.setChips((int) (currentPlayer.getBet() * 1.5 + currentPlayer.getChips() + currentPlayer.getBet()));
+                    Thread.sleep(1000);
+                    printCard(handNum);
+                } else if (currentPlayer.getTotal(handNum) >= 9 && currentPlayer.getTotal(handNum) <= 11) {
+                    if (currentPlayer.getPocketHands().get(0).checkSplit()) {
+                        root.getChildren().addAll(hit, stay, split, dDown);
+                    } else {
+                        root.getChildren().addAll(hit, stay, dDown);
+                    }
+                } else if (currentPlayer.getPocketHands().get(0).checkSplit()) {
+                    root.getChildren().addAll(hit, stay, split);
+                } else {
+                    root.getChildren().addAll(hit, stay);
+                }
+            } else {
+                if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
+                    currentPlayer.setStay(true);
+                    Thread.sleep(1000);
+                    printCard(handNum);
+                } else {
+                    root.getChildren().addAll(hit, stay);
+                }
+            }
+
+        } else if (currentPlayer.isSplit()) {
+            if (handNum == 0) {
+                currentPlayer.setStay(false);
+                printCard(1);
+            } else {
+                clearBtn();
+                nextPlayer();
+            }
+        } else {
+            clearBtn();
+            nextPlayer();
+        }
+
+        round++;
+    }
+
+    public static void clearBtn() {
         if (root.getChildren().contains(hit)) {
             root.getChildren().remove(hit);
         }
@@ -278,111 +365,6 @@ public class BlackJackGraphics {
         if (root.getChildren().contains(dDown)) {
             root.getChildren().remove(dDown);
         }
-        if (!currentPlayer.isStay()) {
-            if (currentPlayer.isAi()) {
-                BlackjackAI ai = (BlackjackAI) currentPlayer;
-                ai.setSplit();
-                ai.setdDown(handNum);
-                ai.setHit(BlackjackJAVA.deck, handNum);
-                if (round == 1) {
-                    if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
-                        currentPlayer.setNaturalBlackJack(true);
-                        currentPlayer.setStay(true);
-                        currentPlayer.setChips((int) (currentPlayer.getBet() * 1.5 + currentPlayer.getChips() + currentPlayer.getBet()));
-                        printCard(handNum);
-                    }
-                    if (ai.isSplit()) {
-                        System.out.println("Split");
-                        BlackjackJAVA.playerSplit(currentPlayer, 0);
-                    } else if (ai.isdDown()) {
-                        System.out.println("dd");
-                        BlackjackJAVA.playerDD(currentPlayer, 0);
-                    } else if (ai.isHit()) {
-                        System.out.println("hit");
-                        BlackjackJAVA.playerHit(currentPlayer, 0);
-                    } else if (!ai.isHit()) {
-                        System.out.println("stay");
-                        currentPlayer.setStay(true);
-                        setButtons(0);
-                    }
-                } else {
-                    if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
-                        currentPlayer.setStay(true);
-                        printCard(handNum);
-                    } else if (ai.isHit()) {
-                        System.out.println("hit");
-                        BlackjackJAVA.playerHit(currentPlayer, 0);
-                    } else if (!ai.isHit()) {
-                        System.out.println("stay");
-                        currentPlayer.setStay(true);
-                        setButtons(0);
-                    }
-                }
-            } else {
-                if (round == 1) {
-                    if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
-                        currentPlayer.setNaturalBlackJack(true);
-                        currentPlayer.setStay(true);
-                        currentPlayer.setChips((int) (currentPlayer.getBet() * 1.5 + currentPlayer.getChips() + currentPlayer.getBet()));
-                        Thread.sleep(1000);
-                        printCard(handNum);
-                    } else if (currentPlayer.getTotal(handNum) >= 9 && currentPlayer.getTotal(handNum) <= 11) {
-                        if (currentPlayer.getPocketHands().get(0).checkSplit()) {
-                            root.getChildren().addAll(hit, stay, split, dDown);
-                        } else {
-                            root.getChildren().addAll(hit, stay, dDown);
-                        }
-                    } else if (currentPlayer.getPocketHands().get(0).checkSplit()) {
-                        root.getChildren().addAll(hit, stay, split);
-                    } else {
-                        root.getChildren().addAll(hit, stay);
-                    }
-                } else {
-                    if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
-                        currentPlayer.setStay(true);
-                        Thread.sleep(1000);
-                        printCard(handNum);
-                    } else {
-                        root.getChildren().addAll(hit, stay);
-                    }
-                }
-            }
-        } else if (currentPlayer.isSplit()) {
-            if (handNum == 0) {
-                currentPlayer.setStay(false);
-                printCard(1);
-            } else {
-                if (root.getChildren().contains(hit)) {
-                    root.getChildren().remove(hit);
-                }
-                if (root.getChildren().contains(stay)) {
-                    root.getChildren().removeAll(stay);
-                }
-                if (root.getChildren().contains(split)) {
-                    root.getChildren().remove(split);
-                }
-                if (root.getChildren().contains(dDown)) {
-                    root.getChildren().remove(dDown);
-                }
-                nextPlayer();
-            }
-        } else {
-            if (root.getChildren().contains(hit)) {
-                root.getChildren().remove(hit);
-            }
-            if (root.getChildren().contains(stay)) {
-                root.getChildren().removeAll(stay);
-            }
-            if (root.getChildren().contains(split)) {
-                root.getChildren().remove(split);
-            }
-            if (root.getChildren().contains(dDown)) {
-                root.getChildren().remove(dDown);
-            }
-            nextPlayer();
-        }
-
-        round++;
     }
 
     public static void checkWin() {
@@ -454,7 +436,12 @@ public class BlackJackGraphics {
         BlackjackJAVA.main(name);
     }
 
+    public static void printDealer() {
+        
+    }
+
     public static void printBoard() throws InterruptedException, IOException {    // When I make the board. need to print the players cards
+        printDealer();
         bCard.getChildren().clear();
         if (root.getChildren().contains(bCard)) {
             root.getChildren().remove(bCard);
