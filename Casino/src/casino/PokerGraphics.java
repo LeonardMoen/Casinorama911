@@ -42,6 +42,7 @@ public class PokerGraphics {
     
     static Random rand = new Random();
     static int raiseAmount;
+    static Text raiseText;
     //positions
     final public static double deckX = 850 - 40, deckY = Player.middleY,
             flopX = 430 + 40, flopY = Player.middleY, burnX = 860 + 40, potX = 300 + 30, potY = 320,
@@ -321,10 +322,10 @@ public class PokerGraphics {
         });
         raisePane.getChildren().add(reset);
         
-        Text raiseText = new Text();
+        raiseText = new Text();
         raiseText.setText("Raise: " + raiseAmount);
         raiseText.setFill(Color.WHITE);
-        raisePane.setMargin(raiseText, new Insets(20, 0, 0, 50));
+        raisePane.setMargin(raiseText, new Insets(50, 0, 0, -50));
         raisePane.getChildren().add(raiseText);
     }
     
