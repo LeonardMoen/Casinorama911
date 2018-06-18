@@ -155,9 +155,11 @@ public class Casino extends Application { //<--- extends Application for javaFX
                 RouletteGraphics rouletteGraphics = new RouletteGraphics();
                 rouletteGraphics.addPlayerList(players);
                 try {
-                    rouletteGraphics.start(primaryStage);
-                } catch (IOException ex) {
+                    rouletteGraphics.rouletteSetUp();
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(Casino.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (InterruptedException ex) {
+                    Logger.getLogger(Casino.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
