@@ -395,7 +395,6 @@ public class BlackJackGraphics {
             lX = 150;
         }
         root.getChildren().add(pCard);
-        Thread.sleep(1000);
         printCard(0);
     }
 
