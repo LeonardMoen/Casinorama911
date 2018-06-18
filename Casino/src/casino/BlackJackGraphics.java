@@ -36,6 +36,7 @@ public class BlackJackGraphics {
     private static int round = 1, bet, x = 0;
     private static Pane pCard = new Pane();
     private static Pane pBet = new Pane();
+    private static Pane bCard = new Pane();
 
     public BlackJackGraphics() {
     }
@@ -246,7 +247,7 @@ public class BlackJackGraphics {
     }
 
     public static void printCard(int handNum) throws InterruptedException {
-        int x = 300, y = 300;
+        int x = 300, y = 500;
         pCard.getChildren().clear();
         root.getChildren().remove(pCard);
         for (int i = 0; i < currentPlayer.getPocketHands().get(handNum).getPlayerHand().size(); i++) {
@@ -375,9 +376,11 @@ public class BlackJackGraphics {
         BlackjackJAVA.main(name);
     }
 
-    public static void printBoard() throws InterruptedException {
-        pCard.getChildren().clear();
-        root.getChildren().removeAll(pCard);
+    public static void printBoard() throws InterruptedException {    // When I make the board. need to print the players cards
+        bCard.getChildren().clear();
+        if (root.getChildren().contains(bCard)) {
+            root.getChildren().remove(bCard);
+        }
         int lX = 150, y = 50;
         for (int c = 0; c < BlackjackJAVA.numOfPlayers.size(); c++) {
             for (int i = 0; i < BlackjackJAVA.numOfPlayers.get(c).getPocketHands().get(0).getPlayerHand().size(); i++) {
@@ -388,13 +391,13 @@ public class BlackJackGraphics {
                 }
                 card.setX(lX);
                 card.setY(y);
-                pCard.getChildren().add(displayCard(card));
+                bCard.getChildren().add(displayCard(card));
                 lX += 100;
             }
             y += 80;
             lX = 150;
         }
-        root.getChildren().add(pCard);
+        root.getChildren().add(bCard);
         printCard(0);
     }
 
