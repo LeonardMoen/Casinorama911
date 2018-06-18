@@ -12,13 +12,13 @@ public class BlackjackJAVA {
     public static Dealer dealer;
     public static int round = 1;
 
-    public static void main() throws IOException, InterruptedException {
+    public static void main(String name) throws IOException, InterruptedException {
+        addPlayer(name);
         makeDeck();
         addAI();
-        int answer;
         if (numOfPlayers.isEmpty()) {
         }
-        BlackJackGraphics.currentPlayer = numOfPlayers.get(0);
+//        BlackJackGraphics.currentPlayer = numOfPlayers.get(0);
         placeBets();
 //        System.out.println("");
 //        printBoard();
@@ -69,7 +69,7 @@ public class BlackjackJAVA {
         boolean repeat;
         int response;
 
-        BlackJackGraphics.setBet();
+        BlackJackGraphics.setBet(0);
 //        for (int i = 0; i < numOfPlayers.size(); i++) {
 //            if (numOfPlayers.get(i).isAi()) {
 //                BlackjackAI ai = (BlackjackAI) (numOfPlayers.get(i));
@@ -268,11 +268,11 @@ public class BlackjackJAVA {
         System.out.print("Total: " + dealer.getTotal());
     }
 
-    public static void printCards(int i, int handNum) throws IOException {
-        if (numOfPlayers.get(i).setTotal(handNum) != 0) {
-            if (numOfPlayers.get(i).setTotal(handNum) != numOfPlayers.get(i).getTotal(handNum)) {
-                if (numOfPlayers.get(i).setTotal(handNum) == 21 || numOfPlayers.get(i).getTotal(handNum) == 21) {
-                    System.out.println(numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(0) + "\t\t" + numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(1) + "\t\tTotal: 21");
+    public static void printCards(Player player, int handNum) throws IOException {
+        if (player.setTotal(handNum) != 0) {
+            if (player.setTotal(handNum) != player.getTotal(handNum)) {
+                if (player.setTotal(handNum) == 21 || player.getTotal(handNum) == 21) {
+                    //   System.out.println(numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(0) + "\t\t" + numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(1) + "\t\tTotal: 21");
                 } else {
                     //   System.out.print("Total: " + numOfPlayers.get(i).setTotal(handNum) + " or " + numOfPlayers.get(i).getTotal(handNum));
                 }
@@ -282,49 +282,47 @@ public class BlackjackJAVA {
         } else {
             // System.out.print("Total: " + numOfPlayers.get(i).getTotal(handNum));
         }
-        if (numOfPlayers.get(i).getTotal(handNum) > 21) {
+        if (player.getTotal(handNum) > 21) {
             //   System.out.println("\tBUST!\n");
-            numOfPlayers.get(i).setStay(true);
-            numOfPlayers.get(i).setBet(0);
+            player.setStay(true);
+            player.setBet(0);
         }
         //      System.out.println("");
         BlackJackGraphics.printCard(handNum);
     }
 
     public static void playerHit(Player player, int handNum) throws IOException {
-        int i = numOfPlayers.indexOf(player);
-        numOfPlayers.get(i).getPocketHands().get(handNum).hitCard(deck);
-        printCards(i, handNum);
+        //    int i = numOfPlayers.indexOf(player);
+        //     numOfPlayers.get(i).getPocketHands().get(handNum).hitCard(deck);
+        player.getPocketHands().get(handNum).hitCard(deck);
+        printCards(player, handNum);
     }
 
     public static void playerSplit(Player player, int handNum) throws IOException, InterruptedException {
-        int i = numOfPlayers.indexOf(player);
-        if (numOfPlayers.get(i).getChips() >= numOfPlayers.get(i).getBet()) {
-            numOfPlayers.get(i).ifSplit(deck);
-            numOfPlayers.get(i).getPocketHands().get(1).setSplitBet(numOfPlayers.get(i).getBet());
-            numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() - numOfPlayers.get(i).getPocketHands().get(1).getSplitBet());
-            for (int d = handNum; d < numOfPlayers.get(i).getPocketHands().size(); d++) {
+        if (player.getChips() >= player.getBet()) {
+            player.ifSplit(deck);
+            player.getPocketHands().get(1).setSplitBet(player.getBet());
+            player.setChips(player.getChips() - player.getPocketHands().get(1).getSplitBet());
+            for (int d = handNum; d < player.getPocketHands().size(); d++) {
                 System.out.println("\nDeck " + (d + 1) + ":\t");
-                printCards(i, d);
+                printCards(player, d);
             }
-            numOfPlayers.get(i).setSplit(true);
+            player.setSplit(true);
         } else {
             System.out.println("You do not have enough chips to split!");
         }
     }
 
     public static void playerDD(Player player, int handNum) throws IOException {
-        int i = numOfPlayers.indexOf(player);
-        if (numOfPlayers.get(i).getChips() >= numOfPlayers.get(i).getBet()) {
-            numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet());
-            numOfPlayers.get(i).setBet(numOfPlayers.get(i).getBet() * 2);
-            numOfPlayers.get(i).getPocketHands().get(handNum).hitCard(deck);
-            printCards(i, handNum);
-            numOfPlayers.get(i).setStay(true);
+        if (player.getChips() >= player.getBet()) {
+            player.setChips(player.getChips() + player.getBet());
+            player.setBet(player.getBet() * 2);
+            player.getPocketHands().get(handNum).hitCard(deck);
+            printCards(player, handNum);
+            player.setStay(true);
         } else {
             System.out.println("You do not have enough chips to double down!");
         }
-        printCards(i, handNum);
     }
 
     public static void playRound(int i, int handNum) throws IOException, InterruptedException {
