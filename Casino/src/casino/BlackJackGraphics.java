@@ -407,8 +407,8 @@ public class BlackJackGraphics {
             }
         });
         stay.setOnAction((ActionEvent event) -> {
-            currentPlayer.setStay(true);
             try {
+                currentPlayer.setStay(true);
                 setButtons(0);
 
             } catch (InterruptedException | IOException ex) {
@@ -419,7 +419,6 @@ public class BlackJackGraphics {
         split.setOnAction((ActionEvent event) -> {
             try {
                 BlackjackJAVA.playerSplit(currentPlayer, 0);
-
             } catch (InterruptedException | IOException ex) {
                 Logger.getLogger(BlackJackGraphics.class
                         .getName()).log(Level.SEVERE, null, ex);
