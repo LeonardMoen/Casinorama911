@@ -96,6 +96,9 @@ public class RouletteGraphics {
         players.add(new Player("dsfhek", 2));
         players.add(new Player("djwkalsdj", 3));
         players.add(new Player("JKKJS", 4));
+        players.add(new Player("dsfhek", 5));
+        players.add(new Player("djwkalsdj", 6));
+        players.add(new Player("JKKJS", 7));
 
         Group root = new Group();
         Scene scene = new Scene(root, 1700, 1000, Color.GREEN);
@@ -138,6 +141,9 @@ public class RouletteGraphics {
 
                 } else {
                     amountBet = Integer.parseInt(amount);
+                    if (amountBet > players.get(playerNum).getChips()) {
+                        amountBet = players.get(playerNum).getChips();
+                    }
                     System.out.println(amountBet);
                     players.get(playerNum).setBet(amountBet);
                 }
