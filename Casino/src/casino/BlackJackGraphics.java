@@ -340,7 +340,7 @@ public class BlackJackGraphics {
         hit.setOnAction((ActionEvent event) -> {
             try {
                 BlackjackJAVA.playerHit(currentPlayer, 0);
-            } catch (IOException ex) {
+            } catch (IOException | InterruptedException ex) {
                 Logger.getLogger(BlackJackGraphics.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
