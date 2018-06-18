@@ -103,7 +103,7 @@ public class RouletteGraphics {
         Group root = new Group();
         Scene scene = new Scene(root, 1700, 1000, Color.GREEN);
 
-        flyingChip(root, scene);
+        
         Button backBtn = new Button();
         backBtn.setText("Back");
         backBtn.setOnAction(e -> Casino.primaryStage.setScene(Casino.menu));
@@ -113,6 +113,7 @@ public class RouletteGraphics {
         drawMoneyOptions(root);
         drawWheel(root);
         drawPlayers(root);
+        flyingChip(root, scene);
         setClickNums();
 
         //doneButton(root);
@@ -1041,14 +1042,14 @@ public class RouletteGraphics {
         m.setDiffuseMap(image);
         cl.setMaterial(m);
 
-        TranslateTransition t = new TranslateTransition(new Duration(3500), cl);
+        TranslateTransition t = new TranslateTransition(new Duration(5000), cl);
         t.setToZ(-5000);
         t.play();
-        TranslateTransition t2 = new TranslateTransition(new Duration(3500), cl);
+        TranslateTransition t2 = new TranslateTransition(new Duration(5000), cl);
         t2.setToX(1000);
         t2.play();
 
-        RotateTransition r = new RotateTransition(new Duration(3000), cl);
+        RotateTransition r = new RotateTransition(new Duration(4500), cl);
         r.setByAngle(3000);
         r.setAxis(new Point3D(20, 20, 20));
         r.play();
