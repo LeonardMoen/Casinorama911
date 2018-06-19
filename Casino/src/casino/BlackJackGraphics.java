@@ -250,7 +250,9 @@ public class BlackJackGraphics {
     public static void printCard(int handNum) throws InterruptedException, IOException {
         int x = 300, y = 500;
         pCard.getChildren().clear();
-        root.getChildren().remove(pCard);
+        if (root.getChildren().contains(pCard)) {
+            root.getChildren().remove(pCard);
+        }
         for (int i = 0; i < currentPlayer.getPocketHands().get(handNum).getPlayerHand().size(); i++) {
             Card card = currentPlayer.getPocketHands().get(handNum).getPlayerHand().get(i);
             if (!card.isFaceUp()) {
@@ -365,6 +367,13 @@ public class BlackJackGraphics {
     }
 
     public static void dealerPlay() {
+        while (!BlackjackJAVA.dealer.checkSeventeen()) {
+            BlackjackJAVA.dealer.getDealerHand().hitCard(BlackjackJAVA.deck);
+//            printDealer();
+        }
+        if (BlackjackJAVA.dealer.getTotal() > 21) {
+            BlackjackJAVA.dealer.setBust(true);
+        }
     }
 
     public static void nextPlayer() throws InterruptedException, IOException {
@@ -373,7 +382,7 @@ public class BlackJackGraphics {
         if (x == BlackjackJAVA.numOfPlayers.size()) {
             x = 0;
             currentPlayer = BlackjackJAVA.numOfPlayers.get(x);
-            dealerPlay();
+//            dealerPlay();
         } else {
             currentPlayer = BlackjackJAVA.numOfPlayers.get(x);
             printCard(0);
