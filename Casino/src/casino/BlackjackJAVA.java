@@ -15,6 +15,7 @@ public class BlackjackJAVA {
     public static void main(String name) throws IOException, InterruptedException {
         makeDeck();
         addPlayer(name);
+        dealer = new Dealer(deck);
         addAI();
         if (numOfPlayers.isEmpty()) {
         }
@@ -50,7 +51,11 @@ public class BlackjackJAVA {
     }
 
     public static void addPlayer(String name) {
-        numOfPlayers.add(new Player (name, deck));
+        if (name == null) {
+            numOfPlayers.add(new Player("Player 1", deck));
+        } else {
+            numOfPlayers.add(new Player(name, deck));
+        }
         numOfPlayers.get(0).setChips(Casino.getMainPlayer().getChips());
     }
 
