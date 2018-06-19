@@ -356,7 +356,9 @@ public class BlackJackGraphics {
 
     public static void clearBtn() {
         buttons.getChildren().clear();
-        root.getChildren().remove(buttons);
+        if (root.getChildren().contains(buttons)) {
+            root.getChildren().remove(buttons);
+        }
     }
 
     public static void checkWin() {
