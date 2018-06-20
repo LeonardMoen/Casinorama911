@@ -147,7 +147,7 @@ public class RouletteGraphics {
         //backBtn.setText("  ");
         backBtn.setShape(new Circle());
 
-        Image image = new Image(new FileInputStream("C:\\Users\\Anthony\\Desktop\\Netbeans\\Casinorama911\\Casino\\src\\Resource\\backButton.png"), 5000, 5000, true, true);
+        Image image = new Image(new FileInputStream("src\\Resource\\backButton.png"), 5000, 5000, true, true);
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(75);
         imageView.setFitHeight(75);
@@ -1174,7 +1174,7 @@ public class RouletteGraphics {
         c.setFill(Color.DARKGREEN);
         root.getChildren().add(c);
 
-        Image image = new Image(new FileInputStream("C:\\Users\\Anthony\\Desktop\\Netbeans\\Casinorama911\\Casino\\src\\Resource\\QuestionMark.png"), 5000, 5000, true, true);
+        Image image = new Image(new FileInputStream("src\\Resource\\QuestionMark.png"), 5000, 5000, true, true);
         c.setFill(new ImagePattern(image));
 
         inst1 = new Rectangle(0, 0, 2500, 2000);
@@ -1182,7 +1182,7 @@ public class RouletteGraphics {
         root.getChildren().add(inst1);
         inst1.setOpacity(0);
         inst2 = new Rectangle(200, 0, 1300, 1000);
-        Image image2 = new Image(new FileInputStream("C:\\Users\\Anthony\\Desktop\\Netbeans\\Casinorama911\\Casino\\src\\Resource\\howToPlay.png"), 7000, 7000, true, true);
+        Image image2 = new Image(new FileInputStream("src\\Resource\\howToPlay.png"), 7000, 7000, true, true);
         inst2.setFill(new ImagePattern(image2));
         inst2.setOpacity(0);
         root.getChildren().add(inst2);
