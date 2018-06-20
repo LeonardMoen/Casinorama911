@@ -80,12 +80,12 @@ public class RouletteGraphics {
     private Button rectButton = new Button();
     private Button outsideButton = new Button();
     private String buttonName = "";
+    Button instBack = new Button("Back");
 
     private Rectangle coverBoard;
     private Rectangle coverBets;
     private Rectangle inst1;
     private Rectangle inst2;
-    
 
     Random rand = new Random();
     private int numClicked = -1;
@@ -124,10 +124,8 @@ public class RouletteGraphics {
         drawWheel(root);
         drawPlayers(root);
         coverBets(root);
-        
 
         //flyingChip(root, scene);
-
         playPlayer(root);
 
         Casino.primaryStage.setScene(scene);
@@ -1179,23 +1177,44 @@ public class RouletteGraphics {
         Image image = new Image(new FileInputStream("C:\\Users\\Anthony\\Desktop\\Netbeans\\Casinorama911\\Casino\\src\\Resource\\QuestionMark.png"), 5000, 5000, true, true);
         c.setFill(new ImagePattern(image));
 
-        Circle c2 = new Circle(500, 60, 40);
-        c2.setOnMouseClicked(instructions);
-        c2.setOpacity(0);
-        root.getChildren().add(c2);
-        System.out.println("asdf");
-
-        inst1 = new Rectangle(0, 0, 1700, 1000);
+        inst1 = new Rectangle(0, 0, 2500, 2000);
         inst1.setFill(Color.ALICEBLUE);
         root.getChildren().add(inst1);
         inst1.setOpacity(0);
         inst2 = new Rectangle(200, 0, 1300, 1000);
         Image image2 = new Image(new FileInputStream("C:\\Users\\Anthony\\Desktop\\Netbeans\\Casinorama911\\Casino\\src\\Resource\\howToPlay.png"), 7000, 7000, true, true);
         inst2.setFill(new ImagePattern(image2));
-        inst2.setOpacity(1);
+        inst2.setOpacity(0);
         root.getChildren().add(inst2);
 
+        Circle c2 = new Circle(500, 60, 40);
+        c2.setOnMouseClicked(instructions);
+        c2.setOpacity(0);
+        root.getChildren().add(c2);
+        System.out.println("asdf");
+
+        instBack.setFont(new Font(20));
+        instBack.setTranslateX(100);
+        instBack.setTranslateY(700);
+        root.getChildren().add(instBack);
+        instBack.toBack();
+        instBack.setVisible(false);
+
+        instBack.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                
+                inst1.toBack();
+                inst2.toBack();
+                inst1.setOpacity(0);
+                inst2.setOpacity(0);
+                instBack.toBack();
+                instBack.setVisible(false);
+            }
+        });
+
     }
+
     EventHandler<Event> instructions = new EventHandler<Event>() {
         @Override
         public void handle(Event event) {
@@ -1204,6 +1223,9 @@ public class RouletteGraphics {
             inst2.toFront();
             inst1.setOpacity(1);
             inst2.setOpacity(1);
+            instBack.toFront();
+            instBack.setVisible(true);
+            
         }
 
     };
