@@ -1,12 +1,8 @@
 package casino;
 
 import java.io.*;
-import java.math.BigInteger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -15,7 +11,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -30,6 +25,7 @@ public class Casino extends Application { //<--- extends Application for javaFX
 
     ArrayList <Player> players = new ArrayList<>();
     static PokerGraphics pokerGraphics;
+    static Poker poker;
     static Stage primaryStage;
     private static Player mainPlayer;
     //Pane rootPane = new Pane();
@@ -188,6 +184,16 @@ public class Casino extends Application { //<--- extends Application for javaFX
     public static PokerGraphics getPokerGraphics() {
         return pokerGraphics;
     }
+
+    public static Poker getPoker() {
+        return poker;
+    }
+
+    public static void setPoker(Poker poker) {
+        Casino.poker = poker;
+    }
+    
+    
 
     public static Player getMainPlayer() {
         return mainPlayer;
