@@ -35,14 +35,14 @@ public class PokerGraphics {
     static Pane rootPane;
 
     //etc on table
-    static Pane pokerBtns = new VBox(2);
+    static Pane blkJckBtns = new VBox(2);
     static Pane burnPile = new Pane();
     static HBox commCards = new HBox();
     static Pane potPane = new Pane();
 
     static Random rand = new Random();
     static int raiseAmount;
-    static Text raiseText;
+    static Text raiseText, waitText;
     //positions
     final public static double deckX = 850 - 40, deckY = Player.middleY,
             flopX = 430 + 40, flopY = Player.middleY, burnX = 860 + 40, potX = 300 + 30, potY = 320,
@@ -100,9 +100,9 @@ public class PokerGraphics {
     }
 
     public void createButtons() {
-        pokerBtns = new VBox();
+        blkJckBtns = new VBox();
         Font f = new Font("Times New Roman", 16);
-        rootPane.getChildren().add(pokerBtns);
+        rootPane.getChildren().add(blkJckBtns);
         //button call
         Button btnCall = new Button();
         btnCall.setText("Call");
@@ -184,8 +184,8 @@ public class PokerGraphics {
                 }
             }
         });
-        pokerBtns.setTranslateY(370);
-        pokerBtns.getChildren().addAll(btnCheck, btnCall, btnFold, raisePane);
+        blkJckBtns.setTranslateY(370);
+        blkJckBtns.getChildren().addAll(btnCheck, btnCall, btnFold, raisePane);
         //the raising buttons
         //Pane betPane = new HBox();
         //button raise
@@ -323,10 +323,12 @@ public class PokerGraphics {
         });
         raisePane.getChildren().add(reset);
 
+        //displaying raise amount
         raiseText = new Text();
         raiseText.setText("Raise: " + raiseAmount);
+        raiseText.setFont(f);
         raiseText.setFill(Color.WHITE);
-        raisePane.setMargin(raiseText, new Insets(50, 0, 0, -50));
+        raisePane.setMargin(raiseText, new Insets(-18, 0, 0, -185));
         raisePane.getChildren().add(raiseText);
     }
 
