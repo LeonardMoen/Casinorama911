@@ -182,7 +182,7 @@ public class Poker {
     }
 
     public static int findStartingPlayer() {
-        int startPlayer = 0;
+        int startPlayer = smallBlindNum;
         if (round == 0) {
             for (int i = 0; i < players.size(); i++) {
                 if (players.get(i).getBlind().getTypeBlind().equalsIgnoreCase("big")) {
@@ -213,7 +213,11 @@ public class Poker {
             boolean found = false;
             for (int i = 0; i < allPlayers.size() - 1; i++) {
                 for (Player player : players) {
-                    if (player.getPlayerNum() == smallBlindNum + i) {
+                    int checkNum = smallBlindNum + i;
+                    if(checkNum>8){
+                        checkNum-=8;
+                    }
+                    if (player.getPlayerNum() == checkNum) {
                         startPlayer = player.getPlayerNum();
                         found = true;
                         break;
