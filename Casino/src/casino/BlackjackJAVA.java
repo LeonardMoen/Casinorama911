@@ -15,10 +15,10 @@ public class BlackjackJAVA {
     public static void main(String name) throws IOException, InterruptedException {
         makeDeck();
         addPlayer(name);
+        dealer = new Dealer(deck);
         addAI();
         if (numOfPlayers.isEmpty()) {
         }
-//        BlackJackGraphics.currentPlayer = numOfPlayers.get(0);
         placeBets();
 //        System.out.println("");
 //        printBoard();
@@ -51,7 +51,12 @@ public class BlackjackJAVA {
     }
 
     public static void addPlayer(String name) {
-        numOfPlayers.add(new Player(name, deck));
+        if (name == null) {
+            numOfPlayers.add(new Player("Player 1", deck));
+        } else {
+            numOfPlayers.add(new Player(name, deck));
+        }
+        numOfPlayers.get(0).setChips(Casino.getMainPlayer().getChips());
     }
 
     public static void makeDeck() {
@@ -66,58 +71,7 @@ public class BlackjackJAVA {
     }
 
     public static void placeBets() throws IOException, InterruptedException {
-        boolean repeat;
-        int response;
-
         BlackJackGraphics.setBet(0);
-//        for (int i = 0; i < numOfPlayers.size(); i++) {
-//            if (numOfPlayers.get(i).isAi()) {
-//                BlackjackAI ai = (BlackjackAI) (numOfPlayers.get(i));
-//                System.out.println(ai.getName().toUpperCase() + "\t\tChips: $" + ai.getChips());
-//                ai.setRealBet();
-//                ai.setBet(ai.getRealBet());
-//                System.out.print("How much would you like to bet: $");
-//                Thread.sleep(1200);
-//                System.out.print(ai.getBet());
-//                System.out.println("");
-//            } else {
-//                response = 0;
-//                if (numOfPlayers.get(i).getChips() == 0) {
-//                    System.out.println(numOfPlayers.get(i).getName().toUpperCase() + ", you have no more CHIPS!\n");
-//                    System.out.print("Would you like to:\n1) Buy more chips\n2) Leave table\nEnter your choice: ");
-//                    response = Integer.parseInt(stdin.readLine());
-//                    switch (response) {
-//                        case 1:
-//                            System.out.print("How many chips would you like to buy? ");
-//                            int buy = Integer.parseInt(stdin.readLine());
-//                            numOfPlayers.get(i).setChips(buy);
-//                            break;
-//                        case 2:
-//                            numOfPlayers.remove(i);
-//                            i = i - 1;
-//                            break;
-//                        default:
-//                            System.out.println("That was not one of the options!");
-//                            break;
-//                    }
-//                }
-//                System.out.println("");
-//                if (response != 2) {
-//                    System.out.println(numOfPlayers.get(i).getName().toUpperCase() + "\t\tChips: $" + numOfPlayers.get(i).getChips());
-//                    do {
-//                        System.out.print("How much would you like to bet: $");
-//                        int bet = Integer.parseInt(stdin.readLine());
-//                        if (bet > numOfPlayers.get(i).getChips()) {
-//                            System.out.println("\nYou only have $" + numOfPlayers.get(i).getChips() + "\n");
-//                            repeat = true;
-//                        } else {
-//                            numOfPlayers.get(i).setBet(bet);
-//                            repeat = false;
-//                        }
-//                    } while (repeat);
-//                }
-//            }
-//        }
     }
 
     public static void resetCharacteristics() {

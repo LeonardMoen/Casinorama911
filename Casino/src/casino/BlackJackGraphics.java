@@ -261,7 +261,9 @@ public class BlackJackGraphics {
     public static void printCard(int handNum) throws InterruptedException, IOException {
         int x = 300, y = 500;
         pCard.getChildren().clear();
-        root.getChildren().remove(pCard);
+        if (root.getChildren().contains(pCard)) {
+            root.getChildren().remove(pCard);
+        }
         for (int i = 0; i < currentPlayer.getPocketHands().get(handNum).getPlayerHand().size(); i++) {
             Card card = currentPlayer.getPocketHands().get(handNum).getPlayerHand().get(i);
             if (!card.isFaceUp()) {
@@ -320,7 +322,6 @@ public class BlackJackGraphics {
                         setButtons(0);
                     }
                 }
-
             } else {
                 if (round == 1) {
                     if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
@@ -367,23 +368,23 @@ public class BlackJackGraphics {
     }
 
     public static void clearBtn() {
-//        if (root.getChildren().contains(hit)) {
-//            root.getChildren().remove(hit);
-//        }
-//        if (root.getChildren().contains(stay)) {
-//            root.getChildren().removeAll(stay);
-//        }
-//        if (root.getChildren().contains(split)) {
-//            root.getChildren().remove(split);
-//        }
-//        if (root.getChildren().contains(dDown)) {
-//            root.getChildren().remove(dDown);
-//        }
         buttons.getChildren().clear();
-        root.getChildren().remove(buttons);
+        if (root.getChildren().contains(buttons)) {
+            root.getChildren().remove(buttons);
+        }
     }
 
     public static void checkWin() {
+    }
+
+    public static void dealerPlay() {
+        while (!BlackjackJAVA.dealer.checkSeventeen()) {
+            BlackjackJAVA.dealer.getDealerHand().hitCard(BlackjackJAVA.deck);
+//            printDealer();
+        }
+        if (BlackjackJAVA.dealer.getTotal() > 21) {
+            BlackjackJAVA.dealer.setBust(true);
+        }
     }
 
     public static void nextPlayer() throws InterruptedException, IOException {
@@ -392,7 +393,7 @@ public class BlackJackGraphics {
         if (x == BlackjackJAVA.numOfPlayers.size()) {
             x = 0;
             currentPlayer = BlackjackJAVA.numOfPlayers.get(x);
-            checkWin();
+//            dealerPlay();
         } else {
             currentPlayer = BlackjackJAVA.numOfPlayers.get(x);
             printCard(0);
@@ -400,14 +401,6 @@ public class BlackJackGraphics {
     }
 
     public static void begin(String name) throws IOException, InterruptedException {
-        hit.setLayoutX(10);
-        hit.setLayoutY(10);
-        stay.setLayoutX(10);
-        stay.setLayoutY(40);
-        split.setLayoutX(10);
-        split.setLayoutY(70);
-        dDown.setLayoutX(10);
-        dDown.setLayoutY(100);
         hit.setOnAction((ActionEvent event) -> {
             try {
                 BlackjackJAVA.playerHit(currentPlayer, 0);
@@ -418,8 +411,8 @@ public class BlackJackGraphics {
             }
         });
         stay.setOnAction((ActionEvent event) -> {
-            currentPlayer.setStay(true);
             try {
+                currentPlayer.setStay(true);
                 setButtons(0);
 
             } catch (InterruptedException | IOException ex) {
@@ -430,7 +423,6 @@ public class BlackJackGraphics {
         split.setOnAction((ActionEvent event) -> {
             try {
                 BlackjackJAVA.playerSplit(currentPlayer, 0);
-
             } catch (InterruptedException | IOException ex) {
                 Logger.getLogger(BlackJackGraphics.class
                         .getName()).log(Level.SEVERE, null, ex);

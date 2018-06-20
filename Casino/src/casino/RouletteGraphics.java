@@ -25,6 +25,7 @@ import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Point3D;
+import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
@@ -44,6 +45,7 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -78,6 +80,12 @@ public class RouletteGraphics {
     private Button rectButton = new Button();
     private Button outsideButton = new Button();
     private String buttonName = "";
+    Button instBack = new Button("Back");
+
+    private Rectangle coverBoard;
+    private Rectangle coverBets;
+    private Rectangle inst1;
+    private Rectangle inst2;
 
     Random rand = new Random();
     private int numClicked = -1;
@@ -93,39 +101,74 @@ public class RouletteGraphics {
 
     public void rouletteSetUp() throws FileNotFoundException, InterruptedException {
         players.add(Casino.getMainPlayer());
-        players.add(new Player("dsfhek", 2));
-        players.add(new Player("djwkalsdj", 3));
-        players.add(new Player("JKKJS", 4));
-        players.add(new Player("dsfhek", 5));
-        players.add(new Player("djwkalsdj", 6));
-        players.add(new Player("JKKJS", 7));
+        players.get(0).setPlayerNum(0);
+        players.add(new Player("dsfhek", 1));
+        players.add(new Player("djwkalsdj", 2));
+        players.add(new Player("JKKJS", 3));
+        players.add(new Player("dsfhek", 4));
+        players.add(new Player("djwkalsdj", 5));
+        players.add(new Player("JKKJS", 6));
+
+        players.get(2).setChips(0);
 
         Group root = new Group();
         Scene scene = new Scene(root, 1700, 1000, Color.GREEN);
 
-        
-        Button backBtn = new Button();
-        backBtn.setText("Back");
-        backBtn.setOnAction(e -> Casino.primaryStage.setScene(Casino.menu));
+        coverBets(root);
+        QuestionMark(root);
+        backbtn(root);
         drawBoard(root);
         drawInsideBets(root);
         drawOutsideeBets(root);
         drawMoneyOptions(root);
         drawWheel(root);
         drawPlayers(root);
-        flyingChip(root, scene);
-        setClickNums();
+        coverBets(root);
 
-        //doneButton(root);
+        //flyingChip(root, scene);
         playPlayer(root);
 
-//        for (int i = 0; i < 10; i++) {
-//            System.out.println(i);
-//            next.setOnAction(event -> {
-//            });
-//        }
         Casino.primaryStage.setScene(scene);
         Casino.primaryStage.show();
+
+    }
+
+    public void backbtn(Group root) throws FileNotFoundException {
+        Rectangle r = new Rectangle(40, 20, 240, 100);
+        r.setFill(Color.DARKGREEN);
+        r.setOpacity(0.5);
+        r.setArcWidth(25);
+        r.setArcHeight(25);
+        root.getChildren().add(r);
+
+        Button backBtn = new Button();
+        backBtn.setTranslateX(50);
+        backBtn.setTranslateY(25);
+        //backBtn.setText("  ");
+        backBtn.setShape(new Circle());
+
+        Image image = new Image(new FileInputStream("src\\Resource\\backButton.png"), 5000, 5000, true, true);
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(75);
+        imageView.setFitHeight(75);
+        backBtn.setGraphic(imageView);
+
+        // backBtn.setOnAction(e -> Casino.primaryStage.setScene(Casino.menu));
+        root.getChildren().add(backBtn);
+
+        Font f = new Font(45);
+        Text t = new Text(150, 83, "Back");
+        t.setFont(f);
+        t.setFill(Color.WHITE);
+        root.getChildren().add(t);
+
+        Rectangle r2 = new Rectangle(40, 20, 240, 100);
+        r2.setFill(Color.DARKGREEN);
+        r2.setOpacity(0);
+        r2.setArcWidth(25);
+        r2.setArcHeight(25);
+        root.getChildren().add(r2);
+        r2.setOnMouseClicked(backAction);
 
     }
 
@@ -133,35 +176,35 @@ public class RouletteGraphics {
 
         for (int i = 0; i < moneyOptions.size(); i++) {//get which button is pressed for amount bet buttons
             moneyOptions.get(i).setOnAction(e -> {
+                uncoverBoard(root);
+                uncoverBets(root);
                 System.out.println("bet amount pressed");
                 String amount = ((Button) e.getSource()).getText();
                 System.out.println(amount);
                 if (amount.equals("AllIn")) {
                     amountBet = players.get(playerNum).getChips();
-                    players.get(playerNum).setBet(amountBet);
 
                 } else {
                     amountBet = Integer.parseInt(amount);
-                    if (amountBet > players.get(playerNum).getChips()) {
-                        amountBet = players.get(playerNum).getChips();
-                    }
-                    System.out.println(amountBet);
-                    players.get(playerNum).setBet(amountBet);
+                    System.out.println(amountBet + "= Amount bet");
                 }
 
-            });
-        }
+                setClickOutside();
+                buttonName = "";
+                System.out.println("-------------------------------------");
 
-        setClickOutside();
-        buttonName = "";
+                for (int j = 0; j < buttons.size(); j++) {//get which button is pressed for inside bet buttons
+                    buttons.get(j).setOnAction(e2 -> {
+                        players.get(playerNum).setBet(amountBet);
+                        buttonName = ((Button) e2.getSource()).getText();
+                        System.out.println(buttonName + "button name");
+                        removeClickOutside();
+                        updatePlayerMoneyText(root);
+                        setClickNums();
+                        addBet(root);
+                    });
+                }
 
-        for (int i = 0; i < buttons.size(); i++) {//get which button is pressed for inside bet buttons
-            buttons.get(i).setOnAction(e -> {
-                buttonName = ((Button) e.getSource()).getText();
-                System.out.println(buttonName);
-                removeClickOutside();
-                updatePlayerMoneyText(root);
-                addBet(root);
             });
         }
 
@@ -170,6 +213,7 @@ public class RouletteGraphics {
     public void addBet(Group root) {
         if (buttonName.equalsIgnoreCase("outsideButton")) {
             addOutsideBet(root);
+            removeClickNums();
         }
         rectButton.setOnAction((e -> {//when a number/rect on board is clicked and an inside bet button is clicked, then add the bet
             if (buttonName.equalsIgnoreCase("Single")) {
@@ -357,18 +401,33 @@ public class RouletteGraphics {
     }
 
     public String nextPlayer(Group root) {
+        removeClickNums();
+        removeClickOutside();
+        coverBoard(root);
+        coverBets(root);
         if (playerNum < players.size()) {
-            playerSquareCovers.get(playerNum).setOpacity(0.5);
-            playerNum++;
-            playerSquareCovers.get(playerNum).setOpacity(0);
-
-            if (!(playerNum >= players.size() - 3)) {
+            if (players.get(playerNum + 1).getChips() == 0) {
+                playerNum++;
+                playerSquareCovers.get(playerNum).setOpacity(0.7);
                 movePlayers(root, playerXLoc);
                 playerXLoc -= 325;
+            }
+            playerSquareCovers.get(playerNum).setOpacity(0.5);
+            if (playerNum < players.size() - 1) {
+                playerSquareCovers.get(playerNum + 1).setOpacity(0);
+            }
 
+            if (!(playerNum >= players.size() - 3)) {//if there are 4 or less players left do not move the squares
+                movePlayers(root, playerXLoc);
+                playerXLoc -= 325;
             }
         }
-        if (playerNum == players.size() - 1) {
+
+        System.out.println("playernum===" + playerNum);
+        playerNum++;
+        System.out.println("Player num====" + playerNum);
+        if (playerNum == players.size()) {
+
             roll(root);
             playerNum = 0;
             playerXLoc = -325;
@@ -402,13 +461,18 @@ public class RouletteGraphics {
     }
 
     EventHandler<Event> rectOnClickAction = new EventHandler<Event>() {
+
         @Override
         public void handle(Event event) {
+
             Rectangle temp = (Rectangle) event.getSource();
             Paint p = temp.getFill();
+            temp.setOpacity(0.3);
             temp.setFill(Color.BLUEVIOLET);
             numClicked = rects.indexOf(temp);
             System.out.println(numClicked);
+
+            removeClickNums();
 
             IntStream.range(0, 1).forEach(//automatically presses rectbutton when a rect is clicked
                     i -> rectButton.fire()
@@ -419,11 +483,11 @@ public class RouletteGraphics {
                 @Override
                 public void run() {
                     temp.setFill(p);
+                    temp.setOpacity(0);
                 }
             },
-                    300
+                    200
             );
-
         }
 
     };
@@ -453,6 +517,15 @@ public class RouletteGraphics {
 
     };
 
+    EventHandler<Event> backAction = new EventHandler<Event>() {
+        @Override
+        public void handle(Event event) {
+            Casino.primaryStage.setScene(Casino.menu);
+
+        }
+
+    };
+
     public void drawBoard(Group root) {
 
         int counter = 1;
@@ -475,12 +548,12 @@ public class RouletteGraphics {
         Text t0 = new Text(125, 240, "0");
         t0.setFill(Color.WHITE);
         t0.setFont(f);
+        root.getChildren().add(t0);
 
         for (int i = 0; i < 12; i++) {
 
             Rectangle a = new Rectangle(colxPos, 150, 70, 50);
             a.setFill(Color.RED);
-            rects.add(a);
 
             Text t1 = new Text(colxPos + 15, 185, Integer.toString(counter));
             t1.setFill(Color.WHITE);
@@ -488,7 +561,6 @@ public class RouletteGraphics {
 
             Rectangle b = new Rectangle(colxPos, 205, 70, 50);
             b.setFill(Color.RED);
-            rects.add(b);
 
             Text t2 = new Text(colxPos + 15, 240, Integer.toString(counter + 1));
             t2.setFill(Color.WHITE);
@@ -496,7 +568,6 @@ public class RouletteGraphics {
 
             Rectangle c = new Rectangle(colxPos, 260, 70, 50);
             c.setFill(Color.RED);
-            rects.add(c);
 
             Text t3 = new Text(colxPos + 15, 295, Integer.toString(counter + 2));
             t3.setFill(Color.WHITE);
@@ -510,11 +581,24 @@ public class RouletteGraphics {
             root.getChildren().add(t2);
             root.getChildren().add(t3);
 
+            Rectangle click1 = new Rectangle(colxPos, 150, 70, 50);
+            Rectangle click2 = new Rectangle(colxPos, 205, 70, 50);
+            Rectangle click3 = new Rectangle(colxPos, 260, 70, 50);
+            click1.setOpacity(0);
+            click2.setOpacity(0);
+            click3.setOpacity(0);
+            rects.add(click1);
+            rects.add(click2);
+            rects.add(click3);
+            root.getChildren().add(click1);
+            root.getChildren().add(click2);
+            root.getChildren().add(click3);
+
             colxPos += 75;
             counter += 3;
 
         }
-        fillBlackNums();
+        fillBlackNums(root);
     }
 
     public void drawOutsideeBets(Group root) {
@@ -845,7 +929,7 @@ public class RouletteGraphics {
         moneyOptions.add(b4);
     }
 
-    public void fillBlackNums() {
+    public void fillBlackNums(Group root) {
         int[] blackNums = {2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35};
         for (int i = 0; i < blackNums.length; i++) {//put blacknums into the arraylist
             this.blackNums.add(blackNums[i]);
@@ -855,7 +939,8 @@ public class RouletteGraphics {
             for (int j = 0; j < blackNums.length; j++) {
 
                 if (i == blackNums[j] - 1) {
-                    rects.get(i).setFill(Color.BLACK);
+                    int index = root.getChildren().indexOf(rects.get(i)) - 6;
+                    ((Rectangle) (root.getChildren().get(index))).setFill(Color.BLACK);
                 }
 
             }
@@ -873,7 +958,8 @@ public class RouletteGraphics {
         root.getChildren().add(wheel);
 
         Circle c = new Circle(1425, 275, 160);
-        c.setFill(Color.WHITE);
+        c.setFill(Color.GREY);
+        c.setOpacity(1);
         root.getChildren().add(c);
 
     }
@@ -897,8 +983,11 @@ public class RouletteGraphics {
             public void handle(ActionEvent event) {
                 checkWin(root, winNum);
                 Font f = new Font(120);
-                winNumText.setX(1370);
-                winNumText.setY(290);
+                winNumText.setX(1365);
+                winNumText.setY(200);
+                winNumText.setTextOrigin(VPos.TOP);
+                winNumText.setTextAlignment(TextAlignment.JUSTIFY);
+
                 winNumText.setText(String.valueOf(winNum));
                 winNumText.setFont(f);
                 root.getChildren().add(winNumText);
@@ -1054,4 +1143,91 @@ public class RouletteGraphics {
         r.setAxis(new Point3D(20, 20, 20));
         r.play();
     }
+
+    public void coverBoard(Group root) {
+        coverBoard = new Rectangle(180, 150, 900, 160);
+        coverBoard.setOpacity(0);
+        root.getChildren().add(coverBoard);
+        coverBoard.toFront();
+    }
+
+    public void uncoverBoard(Group root) {
+        root.getChildren().remove(coverBoard);
+    }
+
+    public void coverBets(Group root) {
+        coverBets = new Rectangle(180, 150, 1200, 380);
+        coverBets.setOpacity(0);
+        root.getChildren().add(coverBets);
+    }
+
+    public void uncoverBets(Group root) {
+        root.getChildren().remove(coverBets);
+    }
+
+    public void AI(Group root) {
+
+    }
+
+    public void QuestionMark(Group root) throws FileNotFoundException {
+        Circle c = new Circle(500, 60, 40);
+        c.setFill(Color.DARKGREEN);
+        root.getChildren().add(c);
+
+        Image image = new Image(new FileInputStream("src\\Resource\\QuestionMark.png"), 5000, 5000, true, true);
+        c.setFill(new ImagePattern(image));
+
+        inst1 = new Rectangle(0, 0, 2500, 2000);
+        inst1.setFill(Color.ALICEBLUE);
+        root.getChildren().add(inst1);
+        inst1.setOpacity(0);
+        inst2 = new Rectangle(200, 0, 1300, 1000);
+        Image image2 = new Image(new FileInputStream("src\\Resource\\howToPlay.png"), 7000, 7000, true, true);
+        inst2.setFill(new ImagePattern(image2));
+        inst2.setOpacity(0);
+        root.getChildren().add(inst2);
+
+        Circle c2 = new Circle(500, 60, 40);
+        c2.setOnMouseClicked(instructions);
+        c2.setOpacity(0);
+        root.getChildren().add(c2);
+        System.out.println("asdf");
+
+        instBack.setFont(new Font(20));
+        instBack.setTranslateX(100);
+        instBack.setTranslateY(700);
+        root.getChildren().add(instBack);
+        instBack.toBack();
+        instBack.setVisible(false);
+
+        instBack.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                
+                inst1.toBack();
+                inst2.toBack();
+                inst1.setOpacity(0);
+                inst2.setOpacity(0);
+                instBack.toBack();
+                instBack.setVisible(false);
+            }
+        });
+
+    }
+
+    EventHandler<Event> instructions = new EventHandler<Event>() {
+        @Override
+        public void handle(Event event) {
+            System.out.println("inst");
+            inst1.toFront();
+            inst2.toFront();
+            inst1.setOpacity(1);
+            inst2.setOpacity(1);
+            instBack.toFront();
+            instBack.setVisible(true);
+            
+        }
+
+    };
+
 }

@@ -119,7 +119,7 @@ public class PokerGraphics {
                         int playerIndex = Poker.getPlayers().indexOf(Poker.getCurrentPlayer());
                         Poker.determiningNextAction(playerIndex);
                     } else {
-                        System.out.println("Anton resembelance");
+                        System.out.println("button not working");
                     }
                 }
             }
