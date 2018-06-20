@@ -75,13 +75,14 @@ public class PokerGraphics {
 
         Casino.primaryStage.setScene(pokerScene);
         Poker poker = new Poker();
+        Casino.setPoker(poker);
         ArrayList<Player> players = Poker.getPlayers();
         for (Player player : Poker.getAllPlayers()) {
             addPlayerInfo(player);
             rootPane.getChildren().add(player.getPane());
         }
         //displayShuffle(deck);
-        Poker.playPoker();
+        Casino.getPoker().playPoker();
 
         Font game = new Font("Times New Roman", 35);
         Font f = new Font("Times New Roman", 16);
@@ -117,9 +118,10 @@ public class PokerGraphics {
                         System.out.println("Call");
                         Poker.call(Poker.getCurrentPlayer(), requiredChips);
                         int playerIndex = Poker.getPlayers().indexOf(Poker.getCurrentPlayer());
-                        Poker.determiningNextAction(playerIndex);
+                        rootPane.getChildren().remove(pokerBtns);
+                        Casino.getPoker().determiningNextAction(playerIndex);
                     } else {
-                        System.out.println("Anton resembelance");
+                        System.out.println("You cannot call");
                     }
                 }
             }
@@ -158,7 +160,8 @@ public class PokerGraphics {
                     PokerGraphics.displayFold(Poker.getCurrentPlayer());
                     int playerIndex = players.indexOf(Poker.getCurrentPlayer());
                     Poker.getPlayers().remove(Poker.getCurrentPlayer());
-                    Poker.determiningNextAction(playerIndex);
+                    rootPane.getChildren().remove(pokerBtns);
+                    Casino.getPoker().determiningNextAction(playerIndex);
                 }
             }
         });
@@ -175,11 +178,14 @@ public class PokerGraphics {
                 if (!(Poker.getCurrentPlayer() instanceof AI)) {
                     int requiredChips = Poker.getRequiredChips();
                     if (requiredChips == Poker.getCurrentPlayer().getChipsInCurrent()) {
+                        Poker.getCurrentPlayer().getPane().getChildren().clear();
+                        PokerGraphics.updatePlayerAction(Poker.getCurrentPlayer(), "Check");
                         System.out.println("Check");
                         int playerIndex = players.indexOf(Poker.getCurrentPlayer());
-                        Poker.determiningNextAction(playerIndex);
+                        rootPane.getChildren().remove(pokerBtns);
+                        Casino.getPoker().determiningNextAction(playerIndex);
                     } else {
-                        System.out.println("Anton resembelance");
+                        System.out.println("You cannot check");
                     }
                 }
             }
@@ -195,6 +201,7 @@ public class PokerGraphics {
 
     public void createChips(HBox raisePane) {
         System.out.println("raise");
+        raiseText = new Text();
         //button raise
         Font f = new Font("Times New Roman", 16);
         //betPane.getChildren().add(btnRaise);
@@ -301,7 +308,8 @@ public class PokerGraphics {
                     Poker.requiredChips += raiseAmount;
                     int playerIndex = players.indexOf(Poker.getCurrentPlayer());
                     raisePane.getChildren().clear();
-                    Poker.determiningNextAction(playerIndex);
+                    rootPane.getChildren().remove(pokerBtns);
+                    Casino.getPoker().determiningNextAction(playerIndex);
                 }
             }
         });
@@ -323,10 +331,9 @@ public class PokerGraphics {
         });
         raisePane.getChildren().add(reset);
 
-        raiseText = new Text();
         raiseText.setText("Raise: " + raiseAmount);
-        raiseText.setFill(Color.WHITE);
-        raisePane.setMargin(raiseText, new Insets(50, 0, 0, -50));
+        raiseText.setFill(Color.BLACK);
+        raisePane.setMargin(raiseText, new Insets(50, 0, 0, -125));
         raisePane.getChildren().add(raiseText);
     }
 
@@ -374,7 +381,61 @@ public class PokerGraphics {
 
         Text options[] = new Text[]{
             new Text("Chips: " + player.getChips()),
-            new Text("Bet: " + player.getChipsInCurrent()),
+            new Text(blind)};
+
+        for (int i = 0; i < 2; i++) {
+            options[i].setFill(Color.WHITESMOKE);
+            VBox.setMargin(options[i], new Insets(0, 0, -2, 5));
+            vbox.getChildren().add(options[i]);
+        }
+        playerInfo.getChildren().addAll(infoBck, vbox);
+        player.getPane().getChildren().add(playerInfo);
+    }
+    
+    public static void updatePlayerAction(Player player, String action){
+        String blind;
+        Pane playerInfo = new Pane();
+
+        VBox vbox = new VBox();
+//        vbox.setPadding(new Insets(5));
+        vbox.setSpacing(0);
+
+        //setting blind names
+        if (player.getBlind().getTypeBlind().equalsIgnoreCase("big")) {
+            blind = "Big Blind";
+        } else if (player.getBlind().getTypeBlind().equalsIgnoreCase("small")) {
+            blind = "Small Blind";
+        } else {
+            blind = "";
+        }
+
+        Rectangle infoBck = new Rectangle(140, 70);
+        infoBck.setFill(Color.rgb(0, 0, 0, 0.3));
+        infoBck.setArcHeight(25);
+        infoBck.setArcWidth(25);
+        infoBck.setX(-7);
+        infoBck.setY(-4);
+
+        if (player.getPlayerNum() == 1 || player.getPlayerNum() == 2 || player.getPlayerNum() == 8) { //places info on bottom
+            playerInfo.setTranslateY(95);
+        } else if (player.getPlayerNum() == 3) { //places info on leftside
+            playerInfo.setTranslateX(-135);
+            playerInfo.setTranslateY(0);
+        } else if (player.getPlayerNum() == 7) { //places info on rightside
+            playerInfo.setTranslateX(135);
+            playerInfo.setTranslateY(0);
+        } else if (player.getPlayerNum() == 4 || player.getPlayerNum() == 5 || player.getPlayerNum() == 6) { //places info on top
+            playerInfo.setTranslateY(-70);
+        }
+
+        Text title = new Text(player.getName());
+        title.setFill(Color.WHITE);
+        title.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        vbox.getChildren().add(title);
+
+        Text options[] = new Text[]{
+            new Text("Chips: " + player.getChips()),
+            new Text(action),
             new Text(blind)};
 
         for (int i = 0; i < 3; i++) {
@@ -699,7 +760,7 @@ public class PokerGraphics {
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(10), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                Poker.distributeWin();
+                Casino.getPoker().distributeWin();
             }
         }));
         timeline.play();
