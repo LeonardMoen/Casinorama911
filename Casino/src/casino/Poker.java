@@ -439,9 +439,16 @@ public class Poker {
                         }
                     }));
                     timeline.play();
+                    Timeline timeline1 = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent actionEvent) {
+                            turnAndRiver();
+                            PokerGraphics.displayRiver(communityCards);
+                        }
+                    }));
+                    timeline1.play();
                 }
-                System.out.println(communityCards.size());
-                if (Poker.getCommunityCards().size() == 4) {
+                else if (Poker.getCommunityCards().size() == 4) {
                     System.out.println("gutentag");
                     Timeline timeline1 = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
                         @Override
@@ -578,7 +585,7 @@ public class Poker {
     public void distributeWin() {
         boolean sidePot= false;
         Hand winningHand = new Hand();
-        Player winningPlayer = null;
+        Player winningPlayer = Casino.getMainPlayer();
         if (getPlayers().size() == 1) {
             winningPlayer = getPlayers().get(0);
             getPlayers().get(0).setChips(getPlayers().get(0).getChips() + pot);
