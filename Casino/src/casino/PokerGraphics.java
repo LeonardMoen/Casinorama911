@@ -128,6 +128,7 @@ public class PokerGraphics {
                         Casino.getPoker().determiningNextAction(playerIndex);
                     } else {
                         System.out.println("You cannot call");
+                        getPokerBtns().getChildren().remove(btnCall);
                     }
                 }
             }
@@ -194,6 +195,7 @@ public class PokerGraphics {
                         Casino.getPoker().determiningNextAction(playerIndex);
                     } else {
                         System.out.println("You cannot check");
+                        getPokerBtns().getChildren().remove(btnCheck);
                     }
                 }
             }
@@ -288,6 +290,7 @@ public class PokerGraphics {
                 }
                 c.setFill(getIp());
                 betChips.getChildren().add(c);
+                setIp(null);
             }
         }
 
@@ -325,6 +328,8 @@ public class PokerGraphics {
                 if (!(Poker.getCurrentPlayer() instanceof AI)) {
                     setRaiseAmount(0);
                     getRaiseText().setText("Raise: " + getRaiseAmount());
+                    raisePane.getChildren().clear();
+                    createChips(raisePane);
                 }
             }
         });
@@ -767,7 +772,7 @@ public class PokerGraphics {
         }));
         timeline.play();
     }
-    
+
     public static void displayAllCardsAllIn(ArrayList<Player> playersInRound) {
 
         for (Player player : playersInRound) {
