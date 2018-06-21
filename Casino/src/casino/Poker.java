@@ -418,26 +418,32 @@ public class Poker {
         } else {
             if (getPlayers().size() == 1) {
                 distributeWin();
+            }else{
+                if (getCommunityCards().size() == 0) {
+                        flop();
+                } 
+                else if(Poker.getCommunityCards().size() == 3){
+                    Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent actionEvent) {
+                            turnAndRiver();
+                            PokerGraphics.displayTurn(communityCards);
+                        }
+                    }));
+                    timeline.play();
+                }
+                else if(Poker.getCommunityCards().size() == 3){
+                    Timeline timeline1 = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent actionEvent) {
+                            turnAndRiver();
+                            PokerGraphics.displayRiver(communityCards);
+                        }
+                    }));
+                    timeline1.play();
+                }
+                PokerGraphics.displayAllCards(getPlayers());
             }
-            flop();
-            
-            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent actionEvent) {
-                    turnAndRiver();
-                    PokerGraphics.displayTurn(communityCards);
-                }
-            }));
-            timeline.play();
-            Timeline timeline1 = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent actionEvent) {
-                    turnAndRiver();
-                    PokerGraphics.displayRiver(communityCards);
-                }
-            }));
-            timeline1.play();
-            PokerGraphics.displayAllCards(getPlayers());
         }
     }
 
@@ -486,13 +492,16 @@ public class Poker {
             call(player, requiredChips);
         }
         if (player.getChips() >= raise) {
-            setPot(getPot() + raise);
+            System.out.println(raise);
+            System.out.println(player.getChips());
+            pot += raise;
             player.setChips(player.getChips() - raise);
+            System.out.println(player.getChips());
             player.setChipsInCurrent(player.getChipsInCurrent() + raise);
             player.setTotalChipsInPot(player.getTotalChipsInPot() + raise);
         } else {
             raise = player.getChips();
-            setPot(getPot() + player.getChips());
+            pot += player.getChips();
             player.setChips(0);
             player.setChipsInCurrent(player.getChipsInCurrent() + player.getChips());
             player.setTotalChipsInPot(player.getTotalChipsInPot() + player.getChips());
