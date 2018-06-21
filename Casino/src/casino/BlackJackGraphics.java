@@ -50,6 +50,7 @@ public class BlackJackGraphics {
     static ArrayList<HBox> pCard = new ArrayList<>();
     static ArrayList<Pane> playerInfo = new ArrayList<>();
     static Pane dealerPane = new Pane();
+    static ArrayList<HBox> boardCards = new ArrayList<>();
 
     public BlackJackGraphics() {
     }
@@ -336,6 +337,10 @@ public class BlackJackGraphics {
                 }
             }
         }
+        resetRound();
+    }
+
+    public static void resetRound() {
     }
 
     public static void setWin(int i, int win) {
@@ -660,7 +665,7 @@ public class BlackJackGraphics {
         pTable.setY(-40);
         Scene scene = new Scene(root, 1920, 1080);
         root.getChildren().addAll(pTable, backBtn);
-        Casino.primaryStage.setTitle("BLACKJACK!");
+        Casino.primaryStage.setTitle("Blackjack");
         Casino.primaryStage.setScene(scene);
         Casino.primaryStage.show();
         BlackjackJAVA.main(name);
@@ -726,7 +731,9 @@ public class BlackJackGraphics {
     }
 
     public static void printBoard() throws InterruptedException, IOException {    // When I make the board. need to print the players cards
-        ArrayList<HBox> boardCards = new ArrayList<>();
+        if (!boardCards.isEmpty()) {
+            boardCards.clear();
+        }
         if (root.getChildren().contains(boardCards)) {
             root.getChildren().remove(boardCards);
         }
@@ -753,7 +760,9 @@ public class BlackJackGraphics {
 
     public static void printBlankBoard() throws InterruptedException, IOException {    // When I make the board. need to print the players cards
         printBeginDealer();
-        ArrayList<HBox> boardCards = new ArrayList<>();
+        if (!boardCards.isEmpty()) {
+            boardCards.clear();
+        }
         if (root.getChildren().contains(boardCards)) {
             root.getChildren().remove(boardCards);
         }
