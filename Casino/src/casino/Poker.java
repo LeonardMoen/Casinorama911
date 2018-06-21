@@ -328,7 +328,7 @@ public class Poker {
         if (getCurrentPlayer() instanceof AI) {
             int playerIndex = 0;
             AI ai = (AI) (getCurrentPlayer());
-            if (response > 4&&ai.getChips()>0) {
+            if (response > 4 && ai.getChips() > 0) {
                 raise(ai, getRequiredChips(), response);
                 setRequiredChips(getRequiredChips() + response);
             } else if (response == 3 && ai.getChipsInCurrent() < getRequiredChips()) {
@@ -366,7 +366,7 @@ public class Poker {
                 numPlayerNotAllIn += 1;
             }
         }
-        if (numPlayerNotAllIn <= 1&&(currentPlayer.getChipsInCurrent()==requiredChips||currentPlayer.getChips()==0)) {
+        if (numPlayerNotAllIn <= 1 && (currentPlayer.getChipsInCurrent() == requiredChips || currentPlayer.getChips() == 0)) {
             everyoneAllIn = true;
         }
         if (!(everyoneAllIn)) {
@@ -427,10 +427,6 @@ public class Poker {
                 PokerGraphics.displayAllCardsAllIn(getPlayers());
                 if (getCommunityCards().size() == 0) {
                     flop();
-                }
-                System.out.println(communityCards.size());
-                if (Poker.getCommunityCards().size() == 3) {
-                    System.out.println("hitler");
                     Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent actionEvent) {
@@ -448,8 +444,24 @@ public class Poker {
                     }));
                     timeline1.play();
                 }
-                else if (Poker.getCommunityCards().size() == 4) {
-                    System.out.println("gutentag");
+                else if (Poker.getCommunityCards().size() == 3) {
+                    Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent actionEvent) {
+                            turnAndRiver();
+                            PokerGraphics.displayTurn(communityCards);
+                        }
+                    }));
+                    timeline.play();
+                    Timeline timeline1 = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent actionEvent) {
+                            turnAndRiver();
+                            PokerGraphics.displayRiver(communityCards);
+                        }
+                    }));
+                    timeline1.play();
+                } else if (Poker.getCommunityCards().size() == 4) {
                     Timeline timeline1 = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent actionEvent) {
@@ -462,7 +474,8 @@ public class Poker {
                 Timeline timeline2 = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent actionEvent) {
-                        distributeWin();                    }
+                        distributeWin();
+                    }
                 }));
                 timeline2.play();
             }
@@ -583,7 +596,8 @@ public class Poker {
     }
 
     public void distributeWin() {
-        boolean sidePot= false;
+        System.out.println("distributed the wealth");
+        boolean sidePot = false;
         Hand winningHand = new Hand();
         Player winningPlayer = Casino.getMainPlayer();
         if (getPlayers().size() == 1) {
@@ -608,15 +622,15 @@ public class Poker {
             int remainingPot = 0;
             for (Player player : getPlayers()) {
                 if (player.getTotalChipsInPot() > winningPlayer.getTotalChipsInPot()) {
-                    pot= pot - (player.getTotalChipsInPot() - winningPlayer.getTotalChipsInPot());
+                    pot = pot - (player.getTotalChipsInPot() - winningPlayer.getTotalChipsInPot());
                     remainingPot += (player.getTotalChipsInPot() - winningPlayer.getTotalChipsInPot());
-                    sidePot=true;
+                    sidePot = true;
                 }
             }
             winningPlayer.setChips(winningPlayer.getChips() + getPot());
             players.remove(winningPlayer);
             setPot(0 + remainingPot);
-            if(sidePot){
+            if (sidePot) {
                 distributeWin();
             }
             System.out.println(winningPlayer.getName() + " Chips: " + winningPlayer.getChips());
