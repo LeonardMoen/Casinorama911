@@ -208,7 +208,7 @@ public class PokerGraphics {
     }
 
     public void createChips(HBox raisePane) {
-        raiseAmount=0;
+        raiseAmount = 0;
         System.out.println("raise");
         setRaiseText(new Text());
         //button raise
@@ -227,10 +227,10 @@ public class PokerGraphics {
                 if (i == 0) {
                     switch (j) {
                         case 0:
-                            if (Poker.getPlayers().get(0).getChips() >= 1000) {
-                                setIp(new ImagePattern(ImageBuffer.chip1000));
-                                c.setOnMouseClicked(chip1000OnClickAction);
-                            }
+//                            if (Poker.getPlayers().get(0).getChips() >= 1000) {
+//                                setIp(new ImagePattern(ImageBuffer.chip1000));
+//                                c.setOnMouseClicked(chip1000OnClickAction);
+//                            }
                             break;
                         case 1:
                             if (Poker.getPlayers().get(0).getChips() >= 500) {
@@ -948,31 +948,24 @@ public class PokerGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            int totalPlayerChips = Poker.getCurrentPlayer().getChips();
-            if (totalPlayerChips < 1) {
+            if (Poker.getCurrentPlayer().getChips() - raiseAmount - 1 < 0) {
                 source.setVisible(false);
-            } else if (totalPlayerChips > raiseAmount) {
-                totalPlayerChips -= raiseAmount;
+            } else {
                 setRaiseAmount(getRaiseAmount() + 1);
                 getRaiseText().setText("Raise: " + getRaiseAmount());
-            } else {
-                source.setVisible(false);
             }
+
         }
     };
     EventHandler chip5OnClickAction = new EventHandler() {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            int totalPlayerChips = Poker.getCurrentPlayer().getChips();
-            if (totalPlayerChips < 5) {
+            if (Poker.getCurrentPlayer().getChips() - raiseAmount - 5 < 0) {
                 source.setVisible(false);
-            } else if (totalPlayerChips > raiseAmount) {
-                totalPlayerChips -= raiseAmount;
+            } else {
                 setRaiseAmount(getRaiseAmount() + 5);
                 getRaiseText().setText("Raise: " + getRaiseAmount());
-            } else {
-                source.setVisible(false);
             }
         }
     };
@@ -980,15 +973,11 @@ public class PokerGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            int totalPlayerChips = Poker.getCurrentPlayer().getChips();
-            if (totalPlayerChips < 10) {
+            if (Poker.getCurrentPlayer().getChips() - raiseAmount - 10 < 0) {
                 source.setVisible(false);
-            } else if (totalPlayerChips > raiseAmount) {
-                totalPlayerChips -= raiseAmount;
+            } else {
                 setRaiseAmount(getRaiseAmount() + 10);
                 getRaiseText().setText("Raise: " + getRaiseAmount());
-            } else {
-                source.setVisible(false);
             }
         }
     };
@@ -996,15 +985,11 @@ public class PokerGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            int totalPlayerChips = Poker.getCurrentPlayer().getChips();
-            if (totalPlayerChips < 25) {
+            if (Poker.getCurrentPlayer().getChips() - raiseAmount - 25 < 0) {
                 source.setVisible(false);
-            } else if (totalPlayerChips > raiseAmount) {
-                totalPlayerChips -= raiseAmount;
+            } else {
                 setRaiseAmount(getRaiseAmount() + 25);
                 getRaiseText().setText("Raise: " + getRaiseAmount());
-            } else {
-                source.setVisible(false);
             }
         }
     };
@@ -1012,15 +997,11 @@ public class PokerGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            int totalPlayerChips = Poker.getCurrentPlayer().getChips();
-            if (totalPlayerChips < 50) {
+            if (Poker.getCurrentPlayer().getChips() - raiseAmount - 50 < 0) {
                 source.setVisible(false);
-            } else if (totalPlayerChips > raiseAmount) {
-                totalPlayerChips -= raiseAmount;
+            } else {
                 setRaiseAmount(getRaiseAmount() + 50);
                 getRaiseText().setText("Raise: " + getRaiseAmount());
-            } else {
-                source.setVisible(false);
             }
         }
     };
@@ -1028,15 +1009,11 @@ public class PokerGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            int totalPlayerChips = Poker.getCurrentPlayer().getChips();
-            if (totalPlayerChips < 100) {
+            if (Poker.getCurrentPlayer().getChips() - raiseAmount - 100 < 0) {
                 source.setVisible(false);
-            } else if (totalPlayerChips > raiseAmount) {
-                totalPlayerChips -= raiseAmount;
+            } else {
                 setRaiseAmount(getRaiseAmount() + 100);
                 getRaiseText().setText("Raise: " + getRaiseAmount());
-            } else {
-                source.setVisible(false);
             }
         }
     };
@@ -1044,32 +1021,20 @@ public class PokerGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            int totalPlayerChips = Poker.getCurrentPlayer().getChips();
-            if (totalPlayerChips < 500) {
+            if (Poker.getCurrentPlayer().getChips() - raiseAmount - 500 < 0) {
                 source.setVisible(false);
-            } else if (totalPlayerChips > raiseAmount) {
-                totalPlayerChips -= raiseAmount;
+            } else {
                 setRaiseAmount(getRaiseAmount() + 500);
                 getRaiseText().setText("Raise: " + getRaiseAmount());
-            } else {
-                source.setVisible(false);
             }
         }
     };
-    EventHandler chip1000OnClickAction = new EventHandler() {
+    EventHandler chipAllInOnClickAction = new EventHandler() {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            int totalPlayerChips = Poker.getCurrentPlayer().getChips();
-            if (totalPlayerChips < 1000) {
-                source.setVisible(false);
-            } else if (totalPlayerChips > raiseAmount) {
-                totalPlayerChips -= raiseAmount;
-                setRaiseAmount(getRaiseAmount() + 1000);
-                getRaiseText().setText("Raise: " + getRaiseAmount());
-            } else {
-                source.setVisible(false);
-            }
+            setRaiseAmount(Poker.getCurrentPlayer().getChips());
+            getRaiseText().setText("Raise: " + getRaiseAmount());
         }
     };
     EventHandler ChipOnMouseEntered = new EventHandler() {
