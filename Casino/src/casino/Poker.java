@@ -376,10 +376,11 @@ public class Poker {
 
             } else {
                 if (!(waitForAi)) {
+                    System.out.println(communityCards.size());
                     if (getPlayers().size() == 1) {
                         distributeWin();
                     }
-                    if (getCommunityCards().size() == 0 && currentPlayer.getPlayerNum() != 1) {
+                    if (getCommunityCards().size() == 0) {
                         flop();
                         setRound(getRound() + 1);
                         Collections.sort(getPlayers());
@@ -422,7 +423,7 @@ public class Poker {
                 if (getCommunityCards().size() == 0) {
                         flop();
                 } 
-                else if(Poker.getCommunityCards().size() == 3){
+                if(Poker.getCommunityCards().size() == 3){
                     Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent actionEvent) {
@@ -432,7 +433,7 @@ public class Poker {
                     }));
                     timeline.play();
                 }
-                else if(Poker.getCommunityCards().size() == 3){
+                if(Poker.getCommunityCards().size() == 3){
                     Timeline timeline1 = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent actionEvent) {
