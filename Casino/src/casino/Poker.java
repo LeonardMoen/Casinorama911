@@ -37,6 +37,7 @@ public class Poker {
     public static ArrayList<Player> createPlayers() {
         ArrayList<Player> players = new ArrayList<Player>();
         setAllPlayers(new ArrayList<Player>());
+        Casino.getMainPlayer().setPlayerNum(1);
         getAllPlayers().add(Casino.getMainPlayer());
         for (int i = 2; i < 9; i++) {
             getAllPlayers().add(new AI("Player " + i, i));
@@ -350,14 +351,17 @@ public class Poker {
     }
 
     public void determiningNextAction(int playerIndex) {
-        boolean everyoneAllIn = true;
+        boolean everyoneAllIn = false;
         boolean waitForAi = false;
         allPlayerCheck = false;
+        int numPlayerNotAllIn = 0;
         for (Player player : getPlayers()) {
             if (player.getChips() > 0) {
-                everyoneAllIn = false;
-                break;
+                numPlayerNotAllIn += 1;
             }
+        }
+        if (numPlayerNotAllIn <= 1) {
+            everyoneAllIn = true;
         }
         PokerGraphics.displayPot();
         if (playerIndex > 0) {
@@ -419,11 +423,12 @@ public class Poker {
         } else {
             if (getPlayers().size() == 1) {
                 distributeWin();
-            }else{
+            } else {
+                PokerGraphics.displayAllCardsAllIn(getPlayers());
                 if (getCommunityCards().size() == 0) {
-                        flop();
-                } 
-                if(Poker.getCommunityCards().size() == 3){
+                    flop();
+                }
+                if (Poker.getCommunityCards().size() == 3) {
                     Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent actionEvent) {
@@ -433,7 +438,7 @@ public class Poker {
                     }));
                     timeline.play();
                 }
-                if(Poker.getCommunityCards().size() == 3){
+                if (Poker.getCommunityCards().size() == 4) {
                     Timeline timeline1 = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent actionEvent) {
@@ -443,7 +448,12 @@ public class Poker {
                     }));
                     timeline1.play();
                 }
-                PokerGraphics.displayAllCards(getPlayers());
+                Timeline timeline2 = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        distributeWin();                    }
+                }));
+                timeline2.play();
             }
         }
     }
@@ -454,10 +464,6 @@ public class Poker {
             PokerGraphics.addPlayerInfo(player);
         }
         System.out.println("new round");
-        for (Player player : getPlayers()) {
-
-            PokerGraphics.addPlayerInfo(player);
-        }
         PokerGraphics.displayPot();
         setRequiredChips(0);
         if (getRound() == 0) {
