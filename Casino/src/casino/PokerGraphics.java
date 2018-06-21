@@ -31,7 +31,7 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 public class PokerGraphics {
-
+    
     private static Pane rootPane;
 
     //etc on table
@@ -39,14 +39,14 @@ public class PokerGraphics {
     private static Pane burnPile = new Pane();
     private static HBox commCards = new HBox();
     private static Pane potPane = new Pane();
-
+    
     private static Random rand = new Random();
     private static int raiseAmount;
-
+    
     private static Text raiseText;
     private static Text waitText;
     private static boolean clicked = false;
-
+    
     private static final double deckX = 1100;
     private static final double deckY = Player.middleY;
     private static final double flopX = 700;
@@ -56,11 +56,11 @@ public class PokerGraphics {
     private static final double potY = Player.middleY + 75;
     private static final double chipSize = 20;
     private ImagePattern ip = null;
-
+    
     public PokerGraphics() {
-
+        
     }
-
+    
     public static void pokerSetUp() {
         setRootPane(new Pane());
         ImagePattern ip = new ImagePattern(ImageBuffer.pokerTable);
@@ -78,7 +78,7 @@ public class PokerGraphics {
         backBtn.setText("Back");
         backBtn.setOnAction(e -> Casino.primaryStage.setScene(Casino.menu));
         getRootPane().getChildren().add(backBtn);
-
+        
         Casino.primaryStage.setScene(pokerScene);
         Poker poker = new Poker();
         Casino.setPoker(poker);
@@ -89,7 +89,7 @@ public class PokerGraphics {
         }
         //displayShuffle(deck);
         Casino.getPoker().playPoker();
-
+        
         Font game = new Font("Times New Roman", 35);
         Font f = new Font("Times New Roman", 16);
 
@@ -105,7 +105,7 @@ public class PokerGraphics {
         getRootPane().getChildren().add(getPotPane());
         getRootPane().getChildren().add(getCommCards());
     }
-
+    
     public void createButtons() {
         setPokerBtns(new VBox());
         Font f = new Font("Times New Roman", 16);
@@ -206,7 +206,7 @@ public class PokerGraphics {
 
         //betPane.getChildren().add(btnRaise);
     }
-
+    
     public void createChips(HBox raisePane) {
         System.out.println("raise");
         setRaiseText(new Text());
@@ -216,7 +216,7 @@ public class PokerGraphics {
         //the chip buttons for raising
         double x = getChipSize(), y = getChipSize();
         setIp(null);
-
+        
         Pane betChips = new Pane();
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 4; j++) {
@@ -262,21 +262,21 @@ public class PokerGraphics {
                             break;
                         case 1:
                             if (Poker.getPlayers().get(0).getChips() >= 10) {
-
+                                
                                 setIp(new ImagePattern(ImageBuffer.chip10));
                                 c.setOnMouseClicked(chip10OnClickAction);
                             }
                             break;
                         case 2:
                             if (Poker.getPlayers().get(0).getChips() >= 5) {
-
+                                
                                 setIp(new ImagePattern(ImageBuffer.chip5));
                                 c.setOnMouseClicked(chip5OnClickAction);
                             }
                             break;
                         case 3:
                             if (Poker.getPlayers().get(0).getChips() >= 1) {
-
+                                
                                 setIp(new ImagePattern(ImageBuffer.chip1));
                                 c.setOnMouseClicked(chip1OnClickAction);
                             }
@@ -289,7 +289,7 @@ public class PokerGraphics {
                 betChips.getChildren().add(c);
             }
         }
-
+        
         raisePane.getChildren().add(betChips);
         Button confirm = new Button();
         confirm.setText("Confirm");
@@ -322,7 +322,7 @@ public class PokerGraphics {
             }
         });
         raisePane.getChildren().add(confirm);
-
+        
         Button reset = new Button();
         reset.setText("Reset");
         reset.setFont(f);
@@ -347,12 +347,12 @@ public class PokerGraphics {
         raisePane.setMargin(getRaiseText(), new Insets(-18, 0, 0, -185));
         raisePane.getChildren().add(getRaiseText());
     }
-
+    
     public static void addPlayerInfo(Player player) {
         String blind;
-
+        
         Pane playerInfo = new Pane();
-
+        
         VBox vbox = new VBox();
 //        vbox.setPadding(new Insets(5));
         vbox.setSpacing(0);
@@ -365,14 +365,14 @@ public class PokerGraphics {
         } else {
             blind = "";
         }
-
+        
         Rectangle infoBck = new Rectangle(140, 70);
         infoBck.setFill(Color.rgb(0, 0, 0, 0.3));
         infoBck.setArcHeight(25);
         infoBck.setArcWidth(25);
         infoBck.setX(-7);
         infoBck.setY(-4);
-
+        
         if (player.getPlayerNum() == 1 || player.getPlayerNum() == 2 || player.getPlayerNum() == 8) { //places info on bottom
             playerInfo.setTranslateY(95 + 40);
         } else if (player.getPlayerNum() == 3) { //places info on leftside
@@ -384,16 +384,16 @@ public class PokerGraphics {
         } else if (player.getPlayerNum() == 4 || player.getPlayerNum() == 5 || player.getPlayerNum() == 6) { //places info on top
             playerInfo.setTranslateY(-70 - 20);
         }
-
+        
         Text title = new Text(player.getName());
         title.setFill(Color.WHITE);
         title.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         vbox.getChildren().add(title);
-
+        
         Text options[] = new Text[]{
             new Text("Chips: " + player.getChips()),
             new Text(blind)};
-
+        
         for (int i = 0; i < 2; i++) {
             options[i].setFill(Color.WHITESMOKE);
             VBox.setMargin(options[i], new Insets(0, 0, -2, 5));
@@ -402,11 +402,11 @@ public class PokerGraphics {
         playerInfo.getChildren().addAll(infoBck, vbox);
         player.getPane().getChildren().add(playerInfo);
     }
-
+    
     public static void updatePlayerAction(Player player, String action) {
         String blind;
         Pane playerInfo = new Pane();
-
+        
         VBox vbox = new VBox();
 //        vbox.setPadding(new Insets(5));
         vbox.setSpacing(0);
@@ -419,14 +419,14 @@ public class PokerGraphics {
         } else {
             blind = "";
         }
-
+        
         Rectangle infoBck = new Rectangle(140, 70);
         infoBck.setFill(Color.rgb(0, 0, 0, 0.3));
         infoBck.setArcHeight(25);
         infoBck.setArcWidth(25);
         infoBck.setX(-7);
         infoBck.setY(-4);
-
+        
         if (player.getPlayerNum() == 1 || player.getPlayerNum() == 2 || player.getPlayerNum() == 8) { //places info on bottom
             playerInfo.setTranslateY(95 + 40);
         } else if (player.getPlayerNum() == 3) { //places info on leftside
@@ -438,17 +438,17 @@ public class PokerGraphics {
         } else if (player.getPlayerNum() == 4 || player.getPlayerNum() == 5 || player.getPlayerNum() == 6) { //places info on top
             playerInfo.setTranslateY(-70 - 20);
         }
-
+        
         Text title = new Text(player.getName());
         title.setFill(Color.WHITE);
         title.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         vbox.getChildren().add(title);
-
+        
         Text options[] = new Text[]{
             new Text("Chips: " + player.getChips()),
             new Text(action),
             new Text(blind)};
-
+        
         for (int i = 0; i < 3; i++) {
             options[i].setFill(Color.WHITESMOKE);
             VBox.setMargin(options[i], new Insets(0, 0, -2, 5));
@@ -457,7 +457,7 @@ public class PokerGraphics {
         playerInfo.getChildren().addAll(infoBck, vbox);
         player.getPane().getChildren().add(playerInfo);
     }
-
+    
     public static Card displayCard(Card card) {
         Image image = null;
         ImagePattern ip = null;
@@ -465,7 +465,7 @@ public class PokerGraphics {
 
         String cardSuit = card.getSuit();
         int cardValue = card.getValue();
-
+        
         if (card.isFaceUp() == false) {
             image = ImageBuffer.back1;
         } else {
@@ -659,26 +659,26 @@ public class PokerGraphics {
         ip = new ImagePattern(image);
         //card.setIp(ip);
         card.setFill(ip);
-
+        
         return card;
     }
-
+    
     public static void dealCard(double x, double y, Card card, Player player) {
         Pane pane = new Pane();
-
+        
         Path path = new Path();
         path.getElements().add(new MoveTo(card.getX(), card.getY()));
         path.getElements().add(new LineTo(x, y));
-
+        
         PathTransition pt = new PathTransition();
         pt.setNode(card);
         pt.setPath(path);
         pt.setDuration(Duration.seconds(1));
         pt.play();
-
+        
         player.getPane().getChildren().add(pane);
     }
-
+    
     public static void displayShuffle(Deck deck) {
         ImagePattern ip = new ImagePattern(ImageBuffer.back1);
         deck.getdPane().getChildren().clear();
@@ -690,7 +690,7 @@ public class PokerGraphics {
             cpath.getElements().add(new CubicCurveTo(-rand.nextInt(500) + 100, -rand.nextInt(500) + 200, -rand.nextInt(500) + 200, getRand().nextInt(200) + 100, getRand().nextInt(500) + 100, getRand().nextInt(200) + 100));
             cpath.getElements().add(new CubicCurveTo(getRand().nextInt(500) + 100, getRand().nextInt(500) + 200, getRand().nextInt(500) + 200, -rand.nextInt(200) + 100, 0, 0));
             cpath.getElements().add(new MoveTo(0, 0));
-
+            
             PathTransition cPT = new PathTransition();
             cPT.setNode(card);
             cPT.setPath(cpath);
@@ -701,7 +701,7 @@ public class PokerGraphics {
         }
         displayDeck(deck);
     }
-
+    
     public static void displayDeck(Deck deck) {
         deck.getdPane().getChildren().clear();
         deck.getdPane().setTranslateX(getDeckX());
@@ -715,7 +715,7 @@ public class PokerGraphics {
         }
         getRootPane().getChildren().add(deck.getdPane());
     }
-
+    
     public static void displayBurn() {
         getBurnPile().setTranslateX(getBurnX());
         getBurnPile().setTranslateY(getDeckY());
@@ -723,7 +723,7 @@ public class PokerGraphics {
         card.setFaceUp(false);
         getBurnPile().getChildren().add(displayCard(card));
     }
-
+    
     public static void displayFlop(ArrayList<Card> communityCards) {
         getCommCards().setTranslateX(getFlopX());
         getCommCards().setTranslateY(getFlopY());
@@ -733,27 +733,27 @@ public class PokerGraphics {
             getCommCards().getChildren().add(displayCard(card));
         }
     }
-
+    
     public static void displayTurn(ArrayList<Card> communityCards) {
         Card card = communityCards.get(3);
         card.setFaceUp(true);
         getCommCards().getChildren().add(displayCard(card));
     }
-
+    
     public static void displayRiver(ArrayList<Card> communityCards) {
         Card card = communityCards.get(4);
         card.setFaceUp(true);
         getCommCards().getChildren().add(displayCard(card));
     }
-
+    
     public static void removeCommunityCard() {
         for (int i = getCommCards().getChildren().size() - 1; i >= 0; i--) {
             getCommCards().getChildren().remove(i);
         }
     }
-
+    
     public static void displayAllCards(ArrayList<Player> playersInRound) {
-
+        
         for (Player player : playersInRound) {
             HBox pocketCards = new HBox();
             player.getPane().getChildren().clear();
@@ -776,7 +776,7 @@ public class PokerGraphics {
         }));
         timeline.play();
     }
-
+    
     public static void displayFold(Player player) {
         player.getPane().getChildren().clear();
         addPlayerInfo(player);
@@ -792,10 +792,10 @@ public class PokerGraphics {
             pt.play();
         }
     }
-
+    
     public static void displayPot() {
         getPotPane().getChildren().clear();
-
+        
         int totalPot = Poker.getPot(), k = 0, i;
         double x = 0, y = 0;
         ImagePattern chipImage;
@@ -807,7 +807,7 @@ public class PokerGraphics {
         Pane p10 = new Pane();
         Pane p5 = new Pane();
         Pane p1 = new Pane();
-
+        
         if (totalPot > 55000) {
             y = 100;
         }
@@ -827,7 +827,7 @@ public class PokerGraphics {
         p100.setTranslateY(y - (getChipSize() * 2));
         p50.setTranslateX(x + ((getChipSize() * 2) * 3) + (3 * 4));   //1
         p50.setTranslateY(y - (getChipSize() * 2));
-
+        
         Text pot = new Text(Integer.toString(Poker.getPot()) + " Chips");
         Rectangle bck = new Rectangle(85, 12);
         bck.setFill(Color.rgb(0, 0, 0, 0.3));
@@ -835,14 +835,14 @@ public class PokerGraphics {
         bck.setArcWidth(15);
         bck.setX(x + 2);
         bck.setY(y + 20);
-
+        
         Font f = new Font("Times New Roman", 50);
         pot.setFill(Color.WHITE);
         pot.setX(x + 10);
         pot.setY(y + 30);
-
+        
         DropShadow highlight = new DropShadow(1, Color.BLACK);
-
+        
         for (i = totalPot; i >= 1000; i -= 1000) {
             k++;
             chipImage = new ImagePattern(ImageBuffer.chip1000);
@@ -932,10 +932,10 @@ public class PokerGraphics {
         }
         getPotPane().getChildren().addAll(p1000, p500, p100, p50, p25, p10, p5, p1, bck, pot);
     }
-
+    
     public static void displayDealPlayers(ArrayList<Player> players) {
         Image image = null;
-
+        
         for (Player player : players) {
             HBox pocketCards = new HBox();
             for (int i = 0; i < 2; i++) {
@@ -952,7 +952,7 @@ public class PokerGraphics {
             player.getPane().getChildren().add(pocketCards);
         }
     }
-
+    
     EventHandler chip1OnClickAction = new EventHandler() {
         @Override
         public void handle(Event event) {
@@ -971,9 +971,11 @@ public class PokerGraphics {
             Circle source = (Circle) event.getSource();
             if (Poker.getCurrentPlayer().getChips() < 5) {
                 source.setVisible(false);
-            } else {
+            } else if (Poker.getCurrentPlayer().getChips() - raiseAmount > raiseAmount) {
                 setRaiseAmount(getRaiseAmount() + 5);
                 getRaiseText().setText("Raise: " + getRaiseAmount());
+            } else {
+                source.setVisible(false);
             }
         }
     };
@@ -983,9 +985,11 @@ public class PokerGraphics {
             Circle source = (Circle) event.getSource();
             if (Poker.getCurrentPlayer().getChips() < 10) {
                 source.setVisible(false);
-            } else {
+            }  else if (Poker.getCurrentPlayer().getChips() - raiseAmount > raiseAmount) {
                 setRaiseAmount(getRaiseAmount() + 10);
                 getRaiseText().setText("Raise: " + getRaiseAmount());
+            } else {
+                source.setVisible(false);
             }
         }
     };
@@ -995,9 +999,11 @@ public class PokerGraphics {
             Circle source = (Circle) event.getSource();
             if (Poker.getCurrentPlayer().getChips() < 25) {
                 source.setVisible(false);
-            } else {
+            } else if (Poker.getCurrentPlayer().getChips() - raiseAmount > raiseAmount) {
                 setRaiseAmount(getRaiseAmount() + 25);
                 getRaiseText().setText("Raise: " + getRaiseAmount());
+            } else {
+                source.setVisible(false);
             }
         }
     };
@@ -1007,9 +1013,11 @@ public class PokerGraphics {
             Circle source = (Circle) event.getSource();
             if (Poker.getCurrentPlayer().getChips() < 50) {
                 source.setVisible(false);
-            } else {
+            } else if (Poker.getCurrentPlayer().getChips() - raiseAmount > raiseAmount) {
                 setRaiseAmount(getRaiseAmount() + 50);
                 getRaiseText().setText("Raise: " + getRaiseAmount());
+            } else {
+                source.setVisible(false);
             }
         }
     };
@@ -1019,9 +1027,11 @@ public class PokerGraphics {
             Circle source = (Circle) event.getSource();
             if (Poker.getCurrentPlayer().getChips() < 100) {
                 source.setVisible(false);
-            } else {
+            }  else if (Poker.getCurrentPlayer().getChips() - raiseAmount > raiseAmount) {
                 setRaiseAmount(getRaiseAmount() + 100);
                 getRaiseText().setText("Raise: " + getRaiseAmount());
+            } else {
+                source.setVisible(false);
             }
         }
     };
@@ -1031,9 +1041,11 @@ public class PokerGraphics {
             Circle source = (Circle) event.getSource();
             if (Poker.getCurrentPlayer().getChips() < 500) {
                 source.setVisible(false);
-            } else {
+            }  else if (Poker.getCurrentPlayer().getChips() - raiseAmount > raiseAmount) {
                 setRaiseAmount(getRaiseAmount() + 500);
                 getRaiseText().setText("Raise: " + getRaiseAmount());
+            } else {
+                source.setVisible(false);
             }
         }
     };
@@ -1043,9 +1055,11 @@ public class PokerGraphics {
             Circle source = (Circle) event.getSource();
             if (Poker.getCurrentPlayer().getChips() < 1000) {
                 source.setVisible(false);
-            } else {
+            }  else if (Poker.getCurrentPlayer().getChips() - raiseAmount > raiseAmount) {
                 setRaiseAmount(getRaiseAmount() + 1000);
                 getRaiseText().setText("Raise: " + getRaiseAmount());
+            } else {
+                source.setVisible(false);
             }
         }
     };
