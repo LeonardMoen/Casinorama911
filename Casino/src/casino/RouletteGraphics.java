@@ -66,6 +66,7 @@ public class RouletteGraphics {
     private ArrayList<Button> buttons = new ArrayList();//list of inside bet buttons and the outside bet button
     private ArrayList<Button> moneyOptions = new ArrayList();//list of bet options eg. $100, $200, etc.
     private ArrayList<Integer> blackNums = new ArrayList<>();
+    private ArrayList<Circle> chipsOnBoard = new ArrayList<>();
 
     private int playerNum = 0;
     private int playerXLoc = -325;
@@ -128,7 +129,7 @@ public class RouletteGraphics {
         coverBets(root);
         drawAiButton(root);
 
-        flyingChip(root, scene);
+        //flyingChip(root, scene);
         playPlayer(root);
 
         Casino.primaryStage.setScene(scene);
@@ -157,13 +158,17 @@ public class RouletteGraphics {
         b.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                AI(root);
+                try {
+                    AI(root);
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(RouletteGraphics.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
             }
         });
     }
 
-    public void AI(Group root) {
+    public void AI(Group root) throws FileNotFoundException {
 
         if (playerNum < players.size() - 1) {
             //coverAllBets(root);
@@ -176,15 +181,23 @@ public class RouletteGraphics {
                 amountBet = 150;
             } else if (betPick == 3) {
                 amountBet = players.get(playerNum).getChips();
-            }else if (betPick == 4){
+            } else if (betPick == 4) {
                 amountBet = 0;
             }
             if (players.get(playerNum).getChips() < amountBet) {
                 amountBet = players.get(playerNum).getChips();
             }
+
             players.get(playerNum).setBet(amountBet);
             AI = true;
             updatePlayerMoneyText(root);
+
+            ArrayList<Integer> a = new ArrayList<>();
+            a.add(rand.nextInt(36) + 1);
+            bets.add(new Bet(amountBet, 1, playerNum, a));
+
+            placeChip(a, root);
+
             nextPlayer(root);
         }
     }
@@ -257,7 +270,11 @@ public class RouletteGraphics {
                         removeClickOutside();
                         updatePlayerMoneyText(root);
                         setClickNums();
-                        addBet(root);
+                        try {
+                            addBet(root);
+                        } catch (FileNotFoundException ex) {
+                            Logger.getLogger(RouletteGraphics.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     });
                 }
 
@@ -266,7 +283,7 @@ public class RouletteGraphics {
 
     }
 
-    public void addBet(Group root) {
+    public void addBet(Group root) throws FileNotFoundException {
         if (buttonName.equalsIgnoreCase("outsideButton")) {
             addOutsideBet(root);
             removeClickNums();
@@ -282,11 +299,19 @@ public class RouletteGraphics {
                 nums.add(num1);
 
                 bets.add(new Bet(amountBet, 1, playerNum, nums));
+                try {
+                    placeChip(nums, root);
+                } catch (FileNotFoundException ex) {
+                }
                 amountBet = 50;
                 System.out.println("BetPlaced");
                 removeClickNums();
                 System.out.println(num1 + "num1");
-                nextPlayer(root);
+                try {
+                    nextPlayer(root);
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(RouletteGraphics.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
             } else if (buttonName.equals("Corner")) {
                 System.out.println("CornerRect");
@@ -302,9 +327,17 @@ public class RouletteGraphics {
                 removeClickNums();
 
                 bets.add(new Bet(amountBet, 4, playerNum, nums));
+                try {
+                    placeChip(nums, root);
+                } catch (FileNotFoundException ex) {
+                }
                 amountBet = 50;
                 System.out.println(num1 + "num1");
-                nextPlayer(root);
+                try {
+                    nextPlayer(root);
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(RouletteGraphics.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
             } else if (buttonName.equals("Split")) {
                 System.out.println("SplitRect");
@@ -345,9 +378,17 @@ public class RouletteGraphics {
                     System.out.println(num1F + "num1");
                     System.out.println(num2 + "num2");
                     bets.add(new Bet(500, 2, playerNum, nums));
+                    try {
+                        placeChip(nums, root);
+                    } catch (FileNotFoundException ex) {
+                    }
                     amountBet = 50;
                     removeClickNums();
-                    nextPlayer(root);
+                    try {
+                        nextPlayer(root);
+                    } catch (FileNotFoundException ex) {
+                        Logger.getLogger(RouletteGraphics.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }));
 
             } else if (buttonName.equals("Street")) {
@@ -370,10 +411,18 @@ public class RouletteGraphics {
                     nums.add(i);
                 }
                 bets.add(new Bet(500, 3, playerNum, nums));
+                try {
+                    placeChip(nums, root);
+                } catch (FileNotFoundException ex) {
+                }
                 amountBet = 50;
                 System.out.println("Num1:" + num1);
                 System.out.println("NLastum1:" + lastNum);
-                nextPlayer(root);
+                try {
+                    nextPlayer(root);
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(RouletteGraphics.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
             }
 
@@ -381,7 +430,7 @@ public class RouletteGraphics {
 
     }
 
-    public void addOutsideBet(Group root) {
+    public void addOutsideBet(Group root) throws FileNotFoundException {
         if (outsideBetIndex >= 0 && outsideBetIndex <= 2) {//column bets
             int numToAdd = outsideBetIndex + 1;
             ArrayList<Integer> numsBet = new ArrayList<>();
@@ -389,6 +438,10 @@ public class RouletteGraphics {
                 numsBet.add(numToAdd);
                 numToAdd += 3;
                 bets.add(new Bet(amountBet, 15, playerNum, numsBet));
+                try {
+                    placeChip(numsBet, root);
+                } catch (FileNotFoundException ex) {
+                }
                 amountBet = 50;
                 nextPlayer(root);
             }
@@ -400,6 +453,10 @@ public class RouletteGraphics {
                 numsBet.add(i);
             }
             bets.add(new Bet(amountBet, 11, playerNum, numsBet));
+            try {
+                placeChip(numsBet, root);
+            } catch (FileNotFoundException ex) {
+            }
             amountBet = 50;
             nextPlayer(root);
 
@@ -416,6 +473,10 @@ public class RouletteGraphics {
                 numsBet.add(i);
             }
             bets.add(new Bet(amountBet, 6, playerNum, numsBet));
+            try {
+                placeChip(numsBet, root);
+            } catch (FileNotFoundException ex) {
+            }
             amountBet = 50;
             nextPlayer(root);
 
@@ -432,12 +493,20 @@ public class RouletteGraphics {
                 numsBet.add(i);
             }
             bets.add(new Bet(amountBet, 6, playerNum, numsBet));
+            try {
+                placeChip(numsBet, root);
+            } catch (FileNotFoundException ex) {
+            }
             amountBet = 50;
             nextPlayer(root);
 
         } else if (outsideBetIndex == 8 || outsideBetIndex == 9) {//red black
             if (outsideBetIndex == 10) {
                 bets.add(new Bet(amountBet, 6, playerNum, blackNums));
+                try {
+                    placeChip(blackNums, root);
+                } catch (FileNotFoundException ex) {
+                }
                 amountBet = 50;
                 nextPlayer(root);
 
@@ -449,6 +518,10 @@ public class RouletteGraphics {
                     }
                 }
                 bets.add(new Bet(amountBet, 6, playerNum, numsBet));
+                try {
+                    placeChip(numsBet, root);
+                } catch (FileNotFoundException ex) {
+                }
                 amountBet = 50;
                 nextPlayer(root);
             }
@@ -456,19 +529,22 @@ public class RouletteGraphics {
         }
     }
 
-    public void nextPlayer(Group root) {
+    public void nextPlayer(Group root) throws FileNotFoundException {
 
         removeClickNums();
         removeClickOutside();
         coverBoard(root);
         coverBets(root);
         if (playerNum < players.size()) {
-            if (players.get(playerNum + 1).getChips() == 0) {
-                playerNum++;
-                playerSquareCovers.get(playerNum).setOpacity(0.7);
-                movePlayers(root, playerXLoc);
-                playerXLoc -= 325;
+            if (playerNum != players.size() - 1) {
+                if (players.get(playerNum + 1).getChips() == 0) {
+                    playerNum++;
+                    playerSquareCovers.get(playerNum).setOpacity(0.7);
+                    movePlayers(root, playerXLoc);
+                    playerXLoc -= 325;
+                }
             }
+
             playerSquareCovers.get(playerNum).setOpacity(0.5);
             if (playerNum < players.size() - 1) {
                 playerSquareCovers.get(playerNum + 1).setOpacity(0);
@@ -480,7 +556,7 @@ public class RouletteGraphics {
             }
             if (AI) {
                 playerNum++;
-                System.out.println(playerNum+"playernum-----------------");
+                System.out.println(playerNum + "playernum-----------------");
                 AI(root);
             }
         }
@@ -1058,7 +1134,8 @@ public class RouletteGraphics {
                 } catch (InterruptedException ex) {
                     System.out.println("That sucks");
                 }
-
+                removeChipsOnBoard(root);
+                checkPlayerPoor(root);
                 reset.play();
             }
         });
@@ -1285,6 +1362,122 @@ public class RouletteGraphics {
         }
 
     };
-    
-    
+
+    public void placeChip(ArrayList<Integer> nums, Group root) throws FileNotFoundException {
+        for (int i = 0; i < nums.size(); i++) {
+            int numsBefore = -10;
+            for (int j = 0; j < bets.size(); j++) {//goes through all bets
+                if (bets.get(j).getNumsBetOn().contains(nums.get(i))) {
+                    numsBefore += 10;
+                }
+            }
+            System.out.println(numsBefore + "numsBefore");
+
+            int colNum = ((nums.get(i) - 1) / 3);
+
+            int rowNum = -1;
+            if ((nums.get(i) - 1) % 3 == 0) {
+                rowNum = 0;
+            } else if ((nums.get(i) - 2) % 3 == 0) {
+                rowNum = 1;
+            } else if ((nums.get(i)) % 3 == 0) {
+                rowNum = 2;
+            }
+            int x = 210 + 75 * colNum;
+            int y = 175 + (55 * rowNum) - numsBefore;
+
+            Circle c = new Circle(x, y, 20);
+            Image image;
+
+            image = new Image(new FileInputStream("src\\Resource\\blackChip.png"), 2000, 2000, true, true);
+
+            if (playerNum == 1) {
+                image = new Image(new FileInputStream("src\\Resource\\Chip2.png"), 2000, 2000, true, true);
+            } else if (playerNum == 2) {
+                image = new Image(new FileInputStream("src\\Resource\\Chip3.png"), 2000, 2000, true, true);
+            } else if (playerNum == 3) {
+                image = new Image(new FileInputStream("src\\Resource\\Chip4.png"), 2000, 2000, true, true);
+            } else if (playerNum == 4) {
+                image = new Image(new FileInputStream("src\\Resource\\Chip5.png"), 2000, 2000, true, true);
+            } else if (playerNum == 5) {
+                image = new Image(new FileInputStream("src\\Resource\\Chip6.png"), 2000, 2000, true, true);
+            } else if (playerNum == 6) {
+                image = new Image(new FileInputStream("src\\Resource\\Chip7.png"), 2000, 2000, true, true);
+            } else {
+                c.setFill(Color.GREEN);
+            }
+            c.setFill(new ImagePattern(image));
+            c.setOpacity(0.85);
+            chipsOnBoard.add(c);
+            root.getChildren().add(c);
+            rectsToFront(root);//makes rects clickable, not covered by chips
+
+        }
+
+    }
+
+    public void rectsToFront(Group root) {
+        for (int i = 0; i < rects.size(); i++) {
+            rects.get(i).toFront();
+        }
+    }
+
+    public void removeChipsOnBoard(Group root) {
+        for (int i = 0; i < chipsOnBoard.size(); i++) {
+            int index = root.getChildren().indexOf(chipsOnBoard.get(i));
+            root.getChildren().remove(index);
+        }
+    }
+
+    public void checkPlayerPoor(Group root) {
+        Rectangle r = new Rectangle(0, 0, 3000, 3000);
+        r.setOpacity(0.9);
+        r.setFill(Color.WHITE);
+        root.getChildren().add(r);
+
+        Text t = new Text("You have no money left.");
+        t.setFont(new Font(50));
+        t.setTranslateX(625);
+        t.setTranslateY(400);
+        root.getChildren().add(t);
+
+        Text t2 = new Text("Roulette will exit");
+        t2.setFont(new Font(50));
+        t2.setTranslateX(700);
+        t2.setTranslateY(550);
+        root.getChildren().add(t2);
+
+        Button b = new Button("OK");
+        b.setFont(new Font(35));
+        b.setTranslateX(800);
+        b.setTranslateY(700);
+        
+        root.getChildren().add(b);
+        
+        b.setOnAction(e -> Casino.primaryStage.setScene(Casino.menu));
+        
+        
+        Button b2 = new Button("Buy $500");
+        b2.setFont(new Font(35));
+        b2.setTranslateX(750);
+        b2.setTranslateY(850);
+        
+        root.getChildren().add(b2);
+
+        b2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                players.get(0).setChips(500);
+                root.getChildren().remove(r);
+                root.getChildren().remove(t);
+                root.getChildren().remove(t2);
+                root.getChildren().remove(b);
+                root.getChildren().remove(b2);
+                updatePlayerMoneyText(root);
+
+            }
+        });
+        
+    }
+
 }
