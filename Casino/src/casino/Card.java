@@ -10,14 +10,16 @@ import javafx.scene.shape.Rectangle;
 
 public class Card extends Rectangle implements Comparable {
 
+
     private int value, worth;
     private String suit;
-    double x, y;
-    boolean faceUp;
-    ImagePattern ip;
+    private double x;
+    private double y;
+    private boolean faceUp;
+    private ImagePattern ip;
 
     public Card(int value, String suit) {
-        super(63, 88);
+        super(63*1.25, 88*1.25);
         this.value = value;
         this.suit = suit;
         setWorth();
