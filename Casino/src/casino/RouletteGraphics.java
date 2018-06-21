@@ -437,14 +437,16 @@ public class RouletteGraphics {
             for (int i = 0; i < 12; i++) {
                 numsBet.add(numToAdd);
                 numToAdd += 3;
-                bets.add(new Bet(amountBet, 15, playerNum, numsBet));
-                try {
-                    placeChip(numsBet, root);
-                } catch (FileNotFoundException ex) {
-                }
-                amountBet = 50;
-                nextPlayer(root);
+
             }
+            bets.add(new Bet(amountBet, 15, playerNum, numsBet));
+            try {
+                placeChip(numsBet, root);
+            } catch (FileNotFoundException ex) {
+            }
+            amountBet = 50;
+            nextPlayer(root);
+
         } else if (outsideBetIndex <= 5) {
             int startingNum = (outsideBetIndex - 3) * 12 + 1;
             System.out.println(startingNum + "Starting num");//if index@3, start @ 1, index@ 4, start @13, index @5, start at 25 (for 1st ,3nd 3rd 12 nums)
@@ -464,7 +466,7 @@ public class RouletteGraphics {
             int startNum = 0;
             if (outsideBetIndex == 6) {
                 startNum = 1;
-            } else if (outsideBetIndex == 6) {
+            } else if (outsideBetIndex == 11) {
                 startNum = 19;
             }
 
@@ -755,12 +757,16 @@ public class RouletteGraphics {
             Rectangle r = new Rectangle(1080, yPos, 90, 50);    //column bets
             r.setFill(Color.GREEN);
             root.getChildren().add(r);
-            outsideBets.add(r);
 
             Text t = new Text(1095, yPos + 32, "Col " + Integer.toString(i + 1));
             t.setFill(Color.WHITE);
             t.setFont(f1);
             root.getChildren().add(t);
+
+            Rectangle r2 = new Rectangle(1080, yPos, 90, 50);    
+            r2.setOpacity(0);
+            root.getChildren().add(r2);
+            outsideBets.add(r2);
 
             yPos += 55;
         }
@@ -769,12 +775,16 @@ public class RouletteGraphics {
             Rectangle r = new Rectangle(xPos, 315, 295, 50);    //dozen bets
             r.setFill(Color.GREEN);
             root.getChildren().add(r);
-            outsideBets.add(r);
 
             Text t = new Text(xPos + 110, yPos + 32, "Dozen " + Integer.toString(i + 1));
             t.setFill(Color.WHITE);
             t.setFont(f1);
             root.getChildren().add(t);
+
+            Rectangle r2 = new Rectangle(xPos, 315, 295, 50);    
+            r2.setOpacity(0);
+            root.getChildren().add(r2);
+            outsideBets.add(r2);
 
             xPos += 300;
         }
@@ -783,7 +793,12 @@ public class RouletteGraphics {
             Rectangle r = new Rectangle(xPos, 370, 145, 50);
             r.setFill(Color.GREEN);
             root.getChildren().add(r);
-            outsideBets.add(r);
+
+            Rectangle r2 = new Rectangle(xPos, 370, 145, 50);    
+            r2.setOpacity(0);
+            root.getChildren().add(r2);
+            outsideBets.add(r2);
+
             xPos += 150;
         }
         xPos = 230;
@@ -1434,53 +1449,54 @@ public class RouletteGraphics {
     }
 
     public void checkPlayerPoor(Group root) {
-        Rectangle r = new Rectangle(0, 0, 3000, 3000);
-        r.setOpacity(0.9);
-        r.setFill(Color.WHITE);
-        root.getChildren().add(r);
+        if (players.get(0).getChips() <= 0) {
+            Rectangle r = new Rectangle(0, 0, 3000, 3000);
+            r.setOpacity(0.9);
+            r.setFill(Color.WHITE);
+            root.getChildren().add(r);
 
-        Text t = new Text("You have no money left.");
-        t.setFont(new Font(50));
-        t.setTranslateX(625);
-        t.setTranslateY(400);
-        root.getChildren().add(t);
+            Text t = new Text("You have no money left.");
+            t.setFont(new Font(50));
+            t.setTranslateX(625);
+            t.setTranslateY(400);
+            root.getChildren().add(t);
 
-        Text t2 = new Text("Roulette will exit");
-        t2.setFont(new Font(50));
-        t2.setTranslateX(700);
-        t2.setTranslateY(550);
-        root.getChildren().add(t2);
+            Text t2 = new Text("Roulette will exit");
+            t2.setFont(new Font(50));
+            t2.setTranslateX(700);
+            t2.setTranslateY(550);
+            root.getChildren().add(t2);
 
-        Button b = new Button("OK");
-        b.setFont(new Font(35));
-        b.setTranslateX(800);
-        b.setTranslateY(700);
+            Button b = new Button("OK");
+            b.setFont(new Font(35));
+            b.setTranslateX(800);
+            b.setTranslateY(700);
 
-        root.getChildren().add(b);
+            root.getChildren().add(b);
 
-        b.setOnAction(e -> Casino.primaryStage.setScene(Casino.menu));
+            b.setOnAction(e -> Casino.primaryStage.setScene(Casino.menu));
 
-        Button b2 = new Button("Buy $500");
-        b2.setFont(new Font(35));
-        b2.setTranslateX(750);
-        b2.setTranslateY(850);
+            Button b2 = new Button("Buy $500");
+            b2.setFont(new Font(35));
+            b2.setTranslateX(750);
+            b2.setTranslateY(850);
 
-        root.getChildren().add(b2);
+            root.getChildren().add(b2);
 
-        b2.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                players.get(0).setChips(500);
-                root.getChildren().remove(r);
-                root.getChildren().remove(t);
-                root.getChildren().remove(t2);
-                root.getChildren().remove(b);
-                root.getChildren().remove(b2);
-                updatePlayerMoneyText(root);
+            b2.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    players.get(0).setChips(500);
+                    root.getChildren().remove(r);
+                    root.getChildren().remove(t);
+                    root.getChildren().remove(t2);
+                    root.getChildren().remove(b);
+                    root.getChildren().remove(b2);
+                    updatePlayerMoneyText(root);
 
-            }
-        });
+                }
+            });
 
+        }
     }
-
 }
