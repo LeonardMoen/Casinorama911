@@ -208,6 +208,7 @@ public class PokerGraphics {
     }
     
     public void createChips(HBox raisePane) {
+        raiseAmount=0;
         System.out.println("raise");
         setRaiseText(new Text());
         //button raise
@@ -302,17 +303,7 @@ public class PokerGraphics {
                 if (!(Poker.getCurrentPlayer() instanceof AI)) {
                     int requiredChips = Poker.getRequiredChips();
                     Poker.call(Poker.getCurrentPlayer(), requiredChips);
-                    if (getRaiseAmount() <= Poker.getCurrentPlayer().getChips()) {
-                        Poker.raise(Poker.getCurrentPlayer(), requiredChips, getRaiseAmount());
-                        Poker.getCurrentPlayer().setChipsInCurrent(Poker.getCurrentPlayer().getChipsInCurrent() + getRaiseAmount());
-                        Poker.getCurrentPlayer().setChips(Poker.getCurrentPlayer().getChips() - getRaiseAmount());
-                        Poker.getCurrentPlayer().setTotalChipsInPot(Poker.getCurrentPlayer().getTotalChipsInPot() + getRaiseAmount());
-                    } else {
-                        Poker.raise(Poker.getCurrentPlayer(), requiredChips, Poker.getCurrentPlayer().getChips());
-                        Poker.getCurrentPlayer().setChipsInCurrent(Poker.getCurrentPlayer().getChipsInCurrent() + Poker.getCurrentPlayer().getChips());
-                        Poker.getCurrentPlayer().setChips(0);
-                        Poker.getCurrentPlayer().setTotalChipsInPot(Poker.getCurrentPlayer().getTotalChipsInPot() + Poker.getCurrentPlayer().getChips());
-                    }
+                    Poker.raise(Poker.getCurrentPlayer(), requiredChips, raiseAmount);
                     Poker.setRequiredChips(Poker.getRequiredChips() + getRaiseAmount());
                     int playerIndex = players.indexOf(Poker.getCurrentPlayer());
                     raisePane.getChildren().clear();
