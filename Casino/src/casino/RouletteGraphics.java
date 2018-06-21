@@ -129,7 +129,7 @@ public class RouletteGraphics {
         coverBets(root);
         drawAiButton(root);
 
-        flyingChip(root, scene);
+        //flyingChip(root, scene);
         playPlayer(root);
 
         Casino.primaryStage.setScene(scene);
@@ -1387,29 +1387,33 @@ public class RouletteGraphics {
             int y = 175 + (55 * rowNum) - numsBefore;
 
             Circle c = new Circle(x, y, 20);
-            Image image;
-
-            image = new Image(new FileInputStream("src\\Resource\\blackChip.png"), 2000, 2000, true, true);
-
-            if (playerNum == 1) {
-                image = new Image(new FileInputStream("src\\Resource\\Chip2.png"), 2000, 2000, true, true);
-            } else if (playerNum == 2) {
-                image = new Image(new FileInputStream("src\\Resource\\Chip3.png"), 2000, 2000, true, true);
-            } else if (playerNum == 3) {
-                image = new Image(new FileInputStream("src\\Resource\\Chip4.png"), 2000, 2000, true, true);
-            } else if (playerNum == 4) {
-                image = new Image(new FileInputStream("src\\Resource\\Chip5.png"), 2000, 2000, true, true);
-            } else if (playerNum == 5) {
-                image = new Image(new FileInputStream("src\\Resource\\Chip6.png"), 2000, 2000, true, true);
-            } else if (playerNum == 6) {
-                image = new Image(new FileInputStream("src\\Resource\\Chip7.png"), 2000, 2000, true, true);
-            } else {
-                c.setFill(Color.GREEN);
-            }
-            c.setFill(new ImagePattern(image));
-            c.setOpacity(0.85);
-            chipsOnBoard.add(c);
             root.getChildren().add(c);
+
+            Color color = Color.BLUEVIOLET;;
+            if (playerNum == 1) {
+                color = Color.ALICEBLUE;
+            } else if (playerNum == 2) {
+                color = Color.DARKORANGE;
+            } else if (playerNum == 3) {
+                color = Color.CADETBLUE.brighter();
+            } else if (playerNum == 4) {
+                color = Color.HOTPINK;
+            } else if (playerNum == 5) {
+                color = Color.BROWN;
+            } else if (playerNum == 6) {
+                color = Color.LIGHTSEAGREEN.saturate();
+            } else {
+                c.setFill(Color.PLUM);
+            }
+            c.setFill(color);
+            c.setOpacity(0.8);
+            chipsOnBoard.add(c);
+
+            Circle c2 = new Circle(x, y, 15, Color.WHITE);
+            c2.setOpacity(0.3);
+            root.getChildren().add(c2);
+            chipsOnBoard.add(c2);
+
             rectsToFront(root);//makes rects clickable, not covered by chips
 
         }
@@ -1451,17 +1455,16 @@ public class RouletteGraphics {
         b.setFont(new Font(35));
         b.setTranslateX(800);
         b.setTranslateY(700);
-        
+
         root.getChildren().add(b);
-        
+
         b.setOnAction(e -> Casino.primaryStage.setScene(Casino.menu));
-        
-        
+
         Button b2 = new Button("Buy $500");
         b2.setFont(new Font(35));
         b2.setTranslateX(750);
         b2.setTranslateY(850);
-        
+
         root.getChildren().add(b2);
 
         b2.setOnAction(new EventHandler<ActionEvent>() {
@@ -1477,7 +1480,7 @@ public class RouletteGraphics {
 
             }
         });
-        
+
     }
 
 }
