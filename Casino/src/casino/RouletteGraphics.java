@@ -129,7 +129,7 @@ public class RouletteGraphics {
         coverBets(root);
         drawAiButton(root);
 
-        //flyingChip(root, scene);
+        flyingChip(root, scene);
         playPlayer(root);
 
         Casino.primaryStage.setScene(scene);
