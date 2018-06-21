@@ -328,7 +328,7 @@ public class Poker {
         if (getCurrentPlayer() instanceof AI) {
             int playerIndex = 0;
             AI ai = (AI) (getCurrentPlayer());
-            if (response > 4) {
+            if (response > 4&&ai.getChips()>0) {
                 raise(ai, getRequiredChips(), response);
                 setRequiredChips(getRequiredChips() + response);
             } else if (response == 3 && ai.getChipsInCurrent() < getRequiredChips()) {
@@ -428,7 +428,9 @@ public class Poker {
                 if (getCommunityCards().size() == 0) {
                     flop();
                 }
+                System.out.println(communityCards.size());
                 if (Poker.getCommunityCards().size() == 3) {
+                    System.out.println("hitler");
                     Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent actionEvent) {
@@ -438,7 +440,9 @@ public class Poker {
                     }));
                     timeline.play();
                 }
+                System.out.println(communityCards.size());
                 if (Poker.getCommunityCards().size() == 4) {
+                    System.out.println("gutentag");
                     Timeline timeline1 = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent actionEvent) {
