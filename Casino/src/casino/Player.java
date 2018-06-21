@@ -17,7 +17,7 @@ public class Player implements Comparable {
     private boolean insurance = false, stay = false, naturalBlackJack, ai = false, split;
     private double x = 0, y = 0;
     private Pane playerPane;
-    final public static double top = 75, bottom = 450, middleY = (top + bottom) / 2, farLeft = 150, farRight = 1010, middleX = (farLeft + farRight) / 2, betweenLeft = (farLeft + middleX) / 2, betweenRight = (farRight + middleX) / 2,
+    final public static double top = 130, bottom = 700, middleY = (top + bottom) / 2, farLeft = 200, farRight = 1550, middleX = (farLeft + farRight) / 2, betweenLeft = (farLeft + middleX) / 2, betweenRight = (farRight + middleX) / 2,
             p1x = middleX, p1y = bottom,
             p2x = betweenLeft - 50, p2y = bottom,
             p3x = farLeft, p3y = middleY,
