@@ -4,29 +4,28 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
-import javafx.scene.Node;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
 public class BlackJackGraphics {
 
     public static Player currentPlayer;
+    static Pane blkJckBtns = new VBox(2);
     private static Button stay = new Button("Stay");
     private static Button dDown = new Button("Double Down");
     private static Button split = new Button("Split");
@@ -35,9 +34,13 @@ public class BlackJackGraphics {
     private static Pane root = new Pane();
     private static int round = 1, bet, x = 0;
     private static Pane pCard = new Pane();
-    private static Pane pBet = new Pane();
+    private static Pane pBet = new HBox();
     private static Pane bCard = new Pane();
     static Pane buttons = new HBox();
+    static ImagePattern ip;
+    static double chipSize = 17;
+    static Text betText;
+    static int betAmount;
 
     public BlackJackGraphics() {
     }
@@ -485,21 +488,20 @@ public class BlackJackGraphics {
                 setBet(n + 1);
             }
         } else {
-            Label tfBet = new Label("Bet: ");
+            Text bText = new Text("Bet: ");
+            bText.setFont(new Font(16));
             TextField tf = new TextField();
-            HBox hb = new HBox();
-            hb.getChildren().addAll(tfBet, tf);
-            hb.setSpacing(5);
             btnBet = new Button("Bet");
-            btnBet.setLayoutX(250);
-            btnBet.setLayoutY(10);
-            pBet.getChildren().addAll(btnBet, hb);
+            pBet.setTranslateY(300);
+            pBet.setTranslateX(500);
+
+            pBet.getChildren().addAll(bText, tf, btnBet);
             root.getChildren().addAll(pBet);
+
             btnBet.setOnAction((ActionEvent event) -> {
                 if ((tf.getText() != null && !tf.getText().isEmpty())) {
                     if (Integer.parseInt(tf.getText()) > currentPlayer.getChips()) {
                         pBet.getChildren().clear();
-                        hb.getChildren().clear();
                         root.getChildren().remove(pBet);
                         System.out.println(currentPlayer.getName() + " not enough chips");
                         try {
@@ -514,7 +516,6 @@ public class BlackJackGraphics {
                         currentPlayer.setBet(bet);
                         System.out.println(currentPlayer.getName() + " bet " + currentPlayer.getBet());
                         pBet.getChildren().clear();
-                        hb.getChildren().clear();
                         root.getChildren().remove(pBet);
                         if (n == BlackjackJAVA.numOfPlayers.size() - 1) {
                             currentPlayer = BlackjackJAVA.numOfPlayers.get(0);
@@ -540,4 +541,260 @@ public class BlackJackGraphics {
         }
     }
 
+    public static HBox createChips() {
+        System.out.println("Bet");
+        //button raise
+        Font f = new Font("Times New Roman", 16);
+        //betPane.getChildren().add(btnRaise);
+        //the chip buttons for raising
+        double x = chipSize, y = chipSize;
+        ip = null;
+        betAmount = 0;
+        HBox bPane = new HBox();
+
+        Pane betChips = new Pane();
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 4; j++) {
+                Circle c = new Circle(x + (j * chipSize * 2), y + (i * chipSize * 2), chipSize);
+                c.setOnMouseEntered(ChipOnMouseEntered);
+                c.setOnMouseExited(ChipOnMouseExited);
+                if (i == 0) {
+                    switch (j) {
+                        case 0:
+                            if (Poker.getPlayers().get(0).getChips() >= 1000) {
+                                ip = new ImagePattern(ImageBuffer.chip1000);
+                                c.setOnMouseClicked(chip1000OnClickAction);
+                            }
+                            break;
+                        case 1:
+                            if (Poker.getPlayers().get(0).getChips() >= 500) {
+                                ip = new ImagePattern(ImageBuffer.chip500);
+                                c.setOnMouseClicked(chip500OnClickAction);
+                            }
+                            break;
+                        case 2:
+                            if (Poker.getPlayers().get(0).getChips() >= 100) {
+                                ip = new ImagePattern(ImageBuffer.chip100);
+                                c.setOnMouseClicked(chip100OnClickAction);
+                            }
+                            break;
+                        case 3:
+                            if (Poker.getPlayers().get(0).getChips() >= 50) {
+                                ip = new ImagePattern(ImageBuffer.chip50);
+                                c.setOnMouseClicked(chip50OnClickAction);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                } else if (i == 1) {
+                    switch (j) {
+                        case 0:
+                            if (Poker.getPlayers().get(0).getChips() >= 25) {
+                                ip = new ImagePattern(ImageBuffer.chip25);
+                                c.setOnMouseClicked(chip25OnClickAction);
+                            }
+                            break;
+                        case 1:
+                            if (Poker.getPlayers().get(0).getChips() >= 10) {
+
+                                ip = new ImagePattern(ImageBuffer.chip10);
+                                c.setOnMouseClicked(chip10OnClickAction);
+                            }
+                            break;
+                        case 2:
+                            if (Poker.getPlayers().get(0).getChips() >= 5) {
+
+                                ip = new ImagePattern(ImageBuffer.chip5);
+                                c.setOnMouseClicked(chip5OnClickAction);
+                            }
+                            break;
+                        case 3:
+                            if (Poker.getPlayers().get(0).getChips() >= 1) {
+
+                                ip = new ImagePattern(ImageBuffer.chip1);
+                                c.setOnMouseClicked(chip1OnClickAction);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                c.setFill(ip);
+                betChips.getChildren().add(c);
+            }
+        }
+        bPane.getChildren().add(betChips);
+
+        Button confirm = new Button();
+        confirm.setText("Confirm");
+        confirm.setFont(f);
+        confirm.setMinSize(70, 70);
+        confirm.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                ArrayList<Player> players = Poker.getPlayers();
+                if (!(Poker.getCurrentPlayer() instanceof AI)) {
+                    int requiredChips = Poker.getRequiredChips();
+                    Poker.call(Poker.getCurrentPlayer(), requiredChips);
+                    if (betAmount > currentPlayer.getChips()) {
+                        bPane.getChildren().clear();
+                        root.getChildren().remove(blkJckBtns);
+                        System.out.println(currentPlayer.getName() + " not enough chips");
+//                        setBet(n);
+                    } else {
+                        bet = betAmount;
+                        currentPlayer.setBet(bet);
+                        System.out.println(currentPlayer.getName() + " bet " + currentPlayer.getBet());
+                        bPane.getChildren().clear();
+                        root.getChildren().remove(blkJckBtns);
+//                        if (n == BlackjackJAVA.numOfPlayers.size() - 1) {
+//                            currentPlayer = BlackjackJAVA.numOfPlayers.get(0);
+//                            printBoard();
+//                        } else {
+//                            setBet(n + 1);
+//                        }
+                    }
+                    bPane.getChildren().clear();
+                }
+            }
+        });
+        bPane.getChildren().add(confirm);
+
+        Button reset = new Button();
+        reset.setText("Reset");
+        reset.setFont(f);
+        reset.setMinSize(70, 70);
+        reset.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                ArrayList<Player> players = Poker.getPlayers();
+                if (!(Poker.getCurrentPlayer() instanceof AI)) {
+                    betAmount = 0;
+                    betText.setText("Bet: " + betAmount);
+                }
+            }
+        });
+        bPane.getChildren().add(reset);
+
+        betText = new Text();
+        betText.setText("Raise: " + betAmount);
+        betText.setFill(Color.WHITE);
+        bPane.setMargin(betText, new Insets(50, 0, 0, -50));
+        bPane.getChildren().add(betText);
+
+        return bPane;
+    }
+
+    static EventHandler chip1OnClickAction = new EventHandler() {
+        @Override
+        public void handle(Event event) {
+            Circle source = (Circle) event.getSource();
+            if (Poker.getCurrentPlayer().getChips() < 1) {
+                source.setVisible(false);
+            } else {
+                betAmount += 1;
+                betText.setText("Raise: " + betAmount);
+            }
+        }
+    };
+    static EventHandler chip5OnClickAction = new EventHandler() {
+        @Override
+        public void handle(Event event) {
+            Circle source = (Circle) event.getSource();
+            if (Poker.getCurrentPlayer().getChips() < 5) {
+                source.setVisible(false);
+            } else {
+                betAmount += 5;
+                betText.setText("Raise: " + betAmount);
+            }
+        }
+    };
+    static EventHandler chip10OnClickAction = new EventHandler() {
+        @Override
+        public void handle(Event event) {
+            Circle source = (Circle) event.getSource();
+            if (Poker.getCurrentPlayer().getChips() < 10) {
+                source.setVisible(false);
+            } else {
+                betAmount += 10;
+                betText.setText("Raise: " + betAmount);
+            }
+        }
+    };
+    static EventHandler chip25OnClickAction = new EventHandler() {
+        @Override
+        public void handle(Event event) {
+            Circle source = (Circle) event.getSource();
+            if (Poker.getCurrentPlayer().getChips() < 25) {
+                source.setVisible(false);
+            } else {
+                betAmount += 25;
+                betText.setText("Raise: " + betAmount);
+            }
+        }
+    };
+    static EventHandler chip50OnClickAction = new EventHandler() {
+        @Override
+        public void handle(Event event) {
+            Circle source = (Circle) event.getSource();
+            if (Poker.getCurrentPlayer().getChips() < 50) {
+                source.setVisible(false);
+            } else {
+                betAmount += 50;
+                betText.setText("Raise: " + betAmount);
+            }
+        }
+    };
+    static EventHandler chip100OnClickAction = new EventHandler() {
+        @Override
+        public void handle(Event event) {
+            Circle source = (Circle) event.getSource();
+            if (Poker.getCurrentPlayer().getChips() < 100) {
+                source.setVisible(false);
+            } else {
+                betAmount += 100;
+                betText.setText("Raise: " + betAmount);
+            }
+        }
+    };
+    static EventHandler chip500OnClickAction = new EventHandler() {
+        @Override
+        public void handle(Event event) {
+            Circle source = (Circle) event.getSource();
+            if (Poker.getCurrentPlayer().getChips() < 500) {
+                source.setVisible(false);
+            } else {
+                betAmount += 500;
+                betText.setText("Raise: " + betAmount);
+            }
+        }
+    };
+    static EventHandler chip1000OnClickAction = new EventHandler() {
+        @Override
+        public void handle(Event event) {
+            Circle source = (Circle) event.getSource();
+            if (Poker.getCurrentPlayer().getChips() < 1000) {
+                source.setVisible(false);
+            } else {
+                betAmount += 1000;
+                betText.setText("Raise: " + betAmount);
+            }
+        }
+    };
+    static EventHandler ChipOnMouseEntered = new EventHandler() {
+        @Override
+        public void handle(Event event) {
+            DropShadow highlight = new DropShadow(10, Color.GOLDENROD);
+            Circle source = (Circle) event.getSource();
+            source.setEffect(highlight);
+        }
+    };
+    static EventHandler ChipOnMouseExited = new EventHandler() {
+        @Override
+        public void handle(Event event) {
+            Circle source = (Circle) event.getSource();
+            source.setEffect(null);
+        }
+    };
 }

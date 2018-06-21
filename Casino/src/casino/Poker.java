@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.Scanner;
 import javafx.scene.layout.Pane;
-import java.util.concurrent.TimeUnit;
+import javafx.concurrent.Task;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 
 public class Poker {
 
@@ -20,12 +22,11 @@ public class Poker {
     static Deck deck;
     static Player currentPlayer;
     static boolean allPlayerCheck;
-    
+
     public Poker() {
         createPlayers();
         players = new ArrayList<Player>();
         communityCards = new ArrayList<Card>();
-        Casino.getPokerGraphics().createButtons();
     }
 
     public static ArrayList<Player> createPlayers() {
@@ -38,7 +39,7 @@ public class Poker {
         return allPlayers;
     }
 
-    public static void newHand() {
+    public void newHand() {
         System.out.println("NEW HAND");
         pot = 0;
         players.clear();
@@ -64,7 +65,7 @@ public class Poker {
         round = 0;
     }
 
-    public static void playPoker() {
+    public void playPoker() {
         newHand();
         smallBlindNum = setBlinds();
         findRequiredChips();
@@ -181,7 +182,7 @@ public class Poker {
     }
 
     public static int findStartingPlayer() {
-        int startPlayer = 0;
+        int startPlayer = smallBlindNum;
         if (round == 0) {
             for (int i = 0; i < players.size(); i++) {
                 if (players.get(i).getBlind().getTypeBlind().equalsIgnoreCase("big")) {
@@ -212,7 +213,11 @@ public class Poker {
             boolean found = false;
             for (int i = 0; i < allPlayers.size() - 1; i++) {
                 for (Player player : players) {
-                    if (player.getPlayerNum() == smallBlindNum + i) {
+                    int checkNum = smallBlindNum + i;
+                    if(checkNum>8){
+                        checkNum-=8;
+                    }
+                    if (player.getPlayerNum() == checkNum) {
                         startPlayer = player.getPlayerNum();
                         found = true;
                         break;
@@ -250,13 +255,11 @@ public class Poker {
         Poker.players = players;
     }
 
-    public static void playTurn() {
-        for (Player player : allPlayers) {
-            player.getPane().getChildren().clear();
-            PokerGraphics.addPlayerInfo(player);
-        }
+    public void playTurn() {
+        currentPlayer.getPane().getChildren().clear();
+        PokerGraphics.updatePlayerAction(currentPlayer, "Thinking");
         PokerGraphics.displayDealPlayers(players);
-        currentPlayer.setNumTurn(currentPlayer.getNumTurn()+1);
+        currentPlayer.setNumTurn(currentPlayer.getNumTurn() + 1);
         if (players.size() == 1) {
             distributeWin();
             return;
@@ -269,37 +272,34 @@ public class Poker {
             int response;
             if (round != 0) {
                 response = ai.rateOfReturn(communityCards, players, pot, requiredChips, bigBlind);
-                if (response > 4) {
-                    raise(ai, requiredChips, response);
-                    requiredChips += response;
-                } else if (response == 3) {
-                    call(ai, requiredChips);
-                } else if (response == 4 && ai.getChipsInCurrent() < requiredChips) {
-                    playerIndex = players.indexOf(currentPlayer);
-                    System.out.println(ai.getName() + " folded");
-                    PokerGraphics.displayFold(ai);
-                    players.remove(ai);
-                } else {
-                    System.out.println(ai.getName() + " checked");
-                }
-                if (response != 4) {
-                    playerIndex = players.indexOf(currentPlayer);
-                }
+                Task task = new Task<Integer>() {
+                    @Override
+                    protected Integer call() throws Exception {
+                        Integer response = ai.rateOfReturn(communityCards, players, pot, requiredChips, bigBlind);
+                        updateValue(response);
+                        return response;
+                    }
+                };
+                Thread th = new Thread(task);
+                th.setDaemon(true);
+                th.start();
+                task.setOnSucceeded(taskFinished);
             } else {
                 response = ai.preFlopBetting(bigBlind, requiredChips);
                 if (response == 0 && ai.getChipsInCurrent() != requiredChips) {
                     call(ai, requiredChips);
                 } else if (response == -1) {
-                    if(!(ai.getChipsInCurrent()==requiredChips)){
+                    if (!(ai.getChipsInCurrent() == requiredChips)) {
                         playerIndex = players.indexOf(currentPlayer);
                         System.out.println(ai.getName() + " folded");
                         players.remove(ai);
                         PokerGraphics.displayFold(ai);
-                    }
-                    else{
+                    } else {
                         System.out.println(ai.getName() + " checked");
                     }
                 } else if (response == 0) {
+                    currentPlayer.getPane().getChildren().clear();
+                    PokerGraphics.updatePlayerAction(currentPlayer, "Check");
                     System.out.println(ai.getName() + " checked");
                 } else {
                     int raise = raise(ai, requiredChips, response);
@@ -308,17 +308,46 @@ public class Poker {
                 if (response != -1) {
                     playerIndex = players.indexOf(currentPlayer);
                 }
+                determiningNextAction(playerIndex);
+            }
+        }else{
+            Casino.getPokerGraphics().createButtons();
+        }
+    }
+
+    public void aiDecision(int response) {
+        if (currentPlayer instanceof AI) {
+            int playerIndex = 0;
+            AI ai = (AI) (currentPlayer);
+            if (response > 4) {
+                raise(ai, requiredChips, response);
+                requiredChips += response;
+            } else if (response == 3&&ai.getChipsInCurrent() < requiredChips) {
+                call(ai, requiredChips);
+            } else if (response == 4 && ai.getChipsInCurrent() < requiredChips) {
+                playerIndex = players.indexOf(currentPlayer);
+                System.out.println(ai.getName() + " folded");
+                PokerGraphics.displayFold(ai);
+                players.remove(ai);
+            } else {
+                currentPlayer.getPane().getChildren().clear();
+                PokerGraphics.updatePlayerAction(currentPlayer, "Check");
+                System.out.println(ai.getName() + " checked");
+            }
+            if (response != 4) {
+                playerIndex = players.indexOf(currentPlayer);
             }
             determiningNextAction(playerIndex);
         }
     }
 
-    public static void determiningNextAction(int playerIndex) {
-        boolean everyoneAllIn=true;
+    public void determiningNextAction(int playerIndex) {
+        boolean everyoneAllIn = true;
+        boolean waitForAi=false;
         allPlayerCheck = false;
         for (Player player : players) {
-            if(player.getChips()>0){
-                everyoneAllIn=false;
+            if (player.getChips() > 0) {
+                everyoneAllIn = false;
                 break;
             }
         }
@@ -328,91 +357,104 @@ public class Poker {
         } else {
             currentPlayer = players.get(players.size() - 1);
         }
-        if(!(everyoneAllIn)){
-            if(currentPlayer.getChipsInCurrent() == requiredChips&&requiredChips==0&&currentPlayer.getNumTurn()==0){
+        if (!(everyoneAllIn)) {
+            if (currentPlayer.getChipsInCurrent() == requiredChips && requiredChips == 0 && currentPlayer.getNumTurn() == 0) {
+                waitForAi=true;
                 playTurn();
             }
-            if (currentPlayer.getChipsInCurrent() != requiredChips||(round==0&&currentPlayer.getBlind().getTypeBlind().equalsIgnoreCase("big"))) {
+            if (currentPlayer.getChipsInCurrent() != requiredChips || (round == 0 && currentPlayer.getBlind().getTypeBlind().equalsIgnoreCase("big"))) {
+                waitForAi=true;
                 playTurn();
 
-            } else {
-                if (players.size() == 1) {
-                    distributeWin();
-                }
-                if (communityCards.size() == 0) {
-                    flop();
-                    round += 1;
-                    Collections.sort(players);
-                    int startPlayer = findStartingPlayer();
-                    sortPlayers(startPlayer);
-                    setCurrentPlayer(players.get(players.size() - 1));
-                    roundOfBetting();
-                } else if (Poker.getCommunityCards().size() == 3) {
-                    turnAndRiver();
-                    round += 1;
-                    PokerGraphics.displayTurn(communityCards);
-                    Collections.sort(players);
-                    int startPlayer = findStartingPlayer();
-                    sortPlayers(startPlayer);
-                    setCurrentPlayer(players.get(players.size() - 1));
-                    allPlayerCheck = true;
-                    roundOfBetting();
-                } else if (Poker.getCommunityCards().size() == 4&&!(allPlayerCheck)) {
-                    turnAndRiver();
-                    round += 1;
-                    PokerGraphics.displayRiver(communityCards);
-                    Collections.sort(players);
-                    int startPlayer = findStartingPlayer();
-                    sortPlayers(startPlayer);
-                    setCurrentPlayer(players.get(players.size() - 1));
-                    allPlayerCheck = true;
-                    roundOfBetting();
-                } else if (Poker.getCommunityCards().size() == 5&&!(allPlayerCheck)) {
-                    round+=1;
-                    PokerGraphics.displayAllCards(players);
+            } else{
+                if(!(waitForAi)){
+                    if (players.size() == 1) {
+                        distributeWin();
+                    }
+                    if (communityCards.size() == 0) {
+                        flop();
+                        round += 1;
+                        Collections.sort(players);
+                        int startPlayer = findStartingPlayer();
+                        sortPlayers(startPlayer);
+                        setCurrentPlayer(players.get(players.size() - 1));
+                        roundOfBetting();
+                    } else if (Poker.getCommunityCards().size() == 3) {
+                        turnAndRiver();
+                        round += 1;
+                        PokerGraphics.displayTurn(communityCards);
+                        Collections.sort(players);
+                        int startPlayer = findStartingPlayer();
+                        sortPlayers(startPlayer);
+                        setCurrentPlayer(players.get(players.size() - 1));
+                        allPlayerCheck = true;
+                        roundOfBetting();
+                    } else if (Poker.getCommunityCards().size() == 4 && !(allPlayerCheck)) {
+                        turnAndRiver();
+                        round += 1;
+                        PokerGraphics.displayRiver(communityCards);
+                        Collections.sort(players);
+                        int startPlayer = findStartingPlayer();
+                        sortPlayers(startPlayer);
+                        setCurrentPlayer(players.get(players.size() - 1));
+                        allPlayerCheck = true;
+                        roundOfBetting();
+                    } else if (Poker.getCommunityCards().size() == 5 && !(allPlayerCheck)) {
+                        round += 1;
+                        System.out.println("entered");
+                        PokerGraphics.displayAllCards(players);
+                    }
                 }
             }
-        }else{
+        } else {
             if (players.size() == 1) {
-                    distributeWin();
-                }
-                if (communityCards.size() == 0) {
-                    flop();
-                    round += 1;
-                    Collections.sort(players);
-                    int startPlayer = findStartingPlayer();
-                    sortPlayers(startPlayer);
-                    setCurrentPlayer(players.get(players.size() - 1));
-                    roundOfBetting();
-                } else if (Poker.getCommunityCards().size() == 3) {
-                    turnAndRiver();
-                    round += 1;
-                    PokerGraphics.displayTurn(communityCards);
-                    Collections.sort(players);
-                    int startPlayer = findStartingPlayer();
-                    sortPlayers(startPlayer);
-                    setCurrentPlayer(players.get(players.size() - 1));
-                    allPlayerCheck = true;
-                    roundOfBetting();
-                } else if (Poker.getCommunityCards().size() == 4&&!(allPlayerCheck)) {
-                    turnAndRiver();
-                    round += 1;
-                    PokerGraphics.displayRiver(communityCards);
-                    Collections.sort(players);
-                    int startPlayer = findStartingPlayer();
-                    sortPlayers(startPlayer);
-                    setCurrentPlayer(players.get(players.size() - 1));
-                    allPlayerCheck = true;
-                    roundOfBetting();
-                } else if (Poker.getCommunityCards().size() == 5&&!(allPlayerCheck)) {
-                    round+=1;
-                    PokerGraphics.displayAllCards(players);
-                }
+                distributeWin();
+            }
+            if (communityCards.size() == 0) {
+                flop();
+                round += 1;
+                Collections.sort(players);
+                int startPlayer = findStartingPlayer();
+                sortPlayers(startPlayer);
+                setCurrentPlayer(players.get(players.size() - 1));
+                roundOfBetting();
+            } else if (Poker.getCommunityCards().size() == 3) {
+                turnAndRiver();
+                round += 1;
+                PokerGraphics.displayTurn(communityCards);
+                Collections.sort(players);
+                int startPlayer = findStartingPlayer();
+                sortPlayers(startPlayer);
+                setCurrentPlayer(players.get(players.size() - 1));
+                allPlayerCheck = true;
+                roundOfBetting();
+            } else if (Poker.getCommunityCards().size() == 4 && !(allPlayerCheck)) {
+                turnAndRiver();
+                round += 1;
+                PokerGraphics.displayRiver(communityCards);
+                Collections.sort(players);
+                int startPlayer = findStartingPlayer();
+                sortPlayers(startPlayer);
+                setCurrentPlayer(players.get(players.size() - 1));
+                allPlayerCheck = true;
+                roundOfBetting();
+            } else if (Poker.getCommunityCards().size() == 5 && !(allPlayerCheck)) {
+                round += 1;
+                PokerGraphics.displayAllCards(players);
+            }
         }
     }
 
-    public static void roundOfBetting() {
+    public void roundOfBetting() {
+        for (Player player : players) {
+            player.getPane().getChildren().clear();
+            PokerGraphics.addPlayerInfo(player);
+        }
         System.out.println("new round");
+        for (Player player : players) {
+
+            PokerGraphics.addPlayerInfo(player);
+        }
         PokerGraphics.displayPot();
         requiredChips = 0;
         if (round == 0) {
@@ -447,18 +489,19 @@ public class Poker {
         if (player.getChipsInCurrent() < requiredChips) {
             call(player, requiredChips);
         }
-        if(player.getChips()>=raise){
+        if (player.getChips() >= raise) {
             pot += raise;
             player.setChips(player.getChips() - raise);
             player.setChipsInCurrent(player.getChipsInCurrent() + raise);
             player.setTotalChipsInPot(player.getTotalChipsInPot() + raise);
-        }
-        else{
+        } else {
             pot += player.getChips();
             player.setChips(0);
             player.setChipsInCurrent(player.getChipsInCurrent() + player.getChips());
             player.setTotalChipsInPot(player.getTotalChipsInPot() + player.getChips());
         }
+        currentPlayer.getPane().getChildren().clear();
+        PokerGraphics.updatePlayerAction(currentPlayer, "Raised: " + raise);
         System.out.println(player.getName() + " raised " + raise);
         return raise;
     }
@@ -482,6 +525,8 @@ public class Poker {
             player.setChips(0);
             System.out.println("All In");
         }
+        currentPlayer.getPane().getChildren().clear();
+        PokerGraphics.updatePlayerAction(currentPlayer, "Called: "+ callAmount);
         System.out.println(player.getName() + " called");
     }
 
@@ -511,7 +556,7 @@ public class Poker {
         players = sortedPlayers;
     }
 
-    public static void distributeWin() {
+    public void distributeWin() {
         Hand winningHand = new Hand();
         Player winningPlayer = players.get(0);
         if (players.size() == 1) {
@@ -597,4 +642,14 @@ public class Poker {
         Poker.currentPlayer = currentPlayer;
     }
 
+    EventHandler taskFinished = new EventHandler() {
+        @Override
+        public void handle(Event event) {
+            System.out.println("Task Finished");
+            Task task = (Task) (event.getSource());
+            Integer response = (Integer) (task.getValue());
+            aiDecision(response.intValue());
+        }
+
+    };
 }

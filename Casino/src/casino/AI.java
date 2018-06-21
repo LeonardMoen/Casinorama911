@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
-
+import javafx.concurrent.Task;
 public class AI extends Player {
 
     public AI(String name, int playerNum) {
@@ -144,7 +144,7 @@ public class AI extends Player {
         return potOdds;
     }
 
-    public int rateOfReturn(ArrayList<Card> communityCards, ArrayList<Player> players, int pot, int requiredChips, int bigBlind) {
+    public Integer rateOfReturn(ArrayList<Card> communityCards, ArrayList<Player> players, int pot, int requiredChips, int bigBlind) {
 
         BigInteger totalCombinations = factorial((50 - communityCards.size())).divide(factorial(2).multiply(factorial(50 - communityCards.size() - 2))).multiply(factorial((48 - communityCards.size())).divide(factorial(5 - communityCards.size()).multiply(factorial(48 - communityCards.size() - (5 - communityCards.size())))));
         int totalCombination = totalCombinations.intValue();
@@ -158,8 +158,7 @@ public class AI extends Player {
         }
         deck.shuffle();
         double handStrength = handStrength(super.getPocketHand(), communityCards, totalCombination, deck.getDeck());
-        System.out.println(handStrength);
-
+        System.out.println(this.getName()+" "+handStrength);
         handStrength = handStrength / (players.size() - 1);
 
         int callAmount = requiredChips - super.getChipsInCurrent();

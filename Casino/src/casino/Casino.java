@@ -1,12 +1,8 @@
 package casino;
 
 import java.io.*;
-import java.math.BigInteger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -15,7 +11,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -28,12 +23,13 @@ import javafx.stage.Stage;
 
 public class Casino extends Application { //<--- extends Application for javaFX
 
-    ArrayList <Player> players = new ArrayList<>();
-    static PokerGraphics pokerGraphics;
+    private static ArrayList <Player> players = new ArrayList<>();
+    private static PokerGraphics pokerGraphics;
+    private static Poker poker;
     static Stage primaryStage;
     private static Player mainPlayer;
     //Pane rootPane = new Pane();
-    Pane roop = new Pane();
+    private static Pane roop = new Pane();
     static Scene menu;
     static String name;
 
@@ -43,8 +39,12 @@ public class Casino extends Application { //<--- extends Application for javaFX
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        mainPlayer = new Player("Player 1", 1);
         this.primaryStage = primaryStage;
+        menu();
+    }
+    
+    public static void menu(){
+        mainPlayer = new Player("Player 1", 1);
         ImageView menuImage = new ImageView();
         menuImage.setImage(ImageBuffer.menu);
         menuImage.setFitHeight(768);
@@ -61,16 +61,16 @@ public class Casino extends Application { //<--- extends Application for javaFX
         //menu scene
         //<editor-fold defaultstate="collapsed" desc="display menu buttons/title">
         double buttonsX = 430, buttonsY = 130;
-        double titleX = 250, titleY = 20;
+        double titleX = 350, titleY = 20;
 
         Pane tPane = new Pane();
-        Rectangle bck = new Rectangle(780, 100);
+        Rectangle bck = new Rectangle(580, 100);
         bck.setFill(Color.rgb(232, 173, 12, 0.75));
         bck.setArcHeight(45);
         bck.setArcWidth(45);
         tPane.getChildren().add(bck);
 
-        Text title = new Text("Casinorama 911");
+        Text title = new Text("Casinorama");
         title.setFont(titleF);
         title.setX(2);
         title.setY(90);
@@ -88,18 +88,23 @@ public class Casino extends Application { //<--- extends Application for javaFX
         label1.setFill(Color.WHITE);
         TextField nameInput = new TextField();
         Button submit = new Button("Submit");
+        HBox hb = new HBox(10);
         submit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
                 if ((nameInput.getText() != null && !nameInput.getText().isEmpty())) {
                     mainPlayer.setName(nameInput.getText());
                     name = nameInput.getText();
+                    roop.getChildren().remove(hb);
+                    Text text = new Text(550, 600, "Welcome "+name);
+                    text.setFont(new Font(30));
+                    roop.getChildren().add(text);
                 } else {
                     nameInput.setText("You have not entered a name.");
                 }
             }
         });
-        HBox hb = new HBox(10);
+        
         hb.setTranslateY(580);
         hb.setTranslateX(500);
         hb.getChildren().addAll(label1, nameInput, submit);
@@ -188,6 +193,16 @@ public class Casino extends Application { //<--- extends Application for javaFX
     public static PokerGraphics getPokerGraphics() {
         return pokerGraphics;
     }
+
+    public static Poker getPoker() {
+        return poker;
+    }
+
+    public static void setPoker(Poker poker) {
+        Casino.poker = poker;
+    }
+    
+    
 
     public static Player getMainPlayer() {
         return mainPlayer;
