@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import javafx.animation.PauseTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
@@ -80,7 +81,8 @@ public class RouletteGraphics {
     private Button rectButton = new Button();
     private Button outsideButton = new Button();
     private String buttonName = "";
-    Button instBack = new Button("Back");
+    private Button instBack = new Button("Back");
+    private boolean AI;
 
     private Rectangle coverBoard;
     private Rectangle coverBets;
@@ -124,13 +126,67 @@ public class RouletteGraphics {
         drawWheel(root);
         drawPlayers(root);
         coverBets(root);
+        drawAiButton(root);
 
-        //flyingChip(root, scene);
+        flyingChip(root, scene);
         playPlayer(root);
 
         Casino.primaryStage.setScene(scene);
         Casino.primaryStage.show();
 
+    }
+
+    public void drawAiButton(Group root) throws FileNotFoundException {
+        Rectangle r = new Rectangle(650, 30, 200, 50);
+        r.setFill(Color.DARKGREEN);
+
+        r.setArcWidth(25);
+        r.setArcHeight(25);
+        root.getChildren().add(r);
+
+        Image image = new Image(new FileInputStream("src\\Resource\\AI.png"), 5000, 5000, true, true);
+        r.setFill(new ImagePattern(image));
+
+        Button b = new Button("Ai AutoBet       ");
+        b.setFont(new Font(25));
+        b.setTranslateX(650);
+        b.setTranslateY(30);
+        b.setOpacity(0);
+        root.getChildren().add(b);
+
+        b.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                AI(root);
+
+            }
+        });
+    }
+
+    public void AI(Group root) {
+
+        if (playerNum < players.size() - 1) {
+            //coverAllBets(root);
+            int betPick = rand.nextInt(5);
+            if (betPick == 0) {
+                amountBet = 25;
+            } else if (betPick == 1) {
+                amountBet = 75;
+            } else if (betPick == 2) {
+                amountBet = 150;
+            } else if (betPick == 3) {
+                amountBet = players.get(playerNum).getChips();
+            }else if (betPick == 4){
+                amountBet = 0;
+            }
+            if (players.get(playerNum).getChips() < amountBet) {
+                amountBet = players.get(playerNum).getChips();
+            }
+            players.get(playerNum).setBet(amountBet);
+            AI = true;
+            updatePlayerMoneyText(root);
+            nextPlayer(root);
+        }
     }
 
     public void backbtn(Group root) throws FileNotFoundException {
@@ -400,7 +456,8 @@ public class RouletteGraphics {
         }
     }
 
-    public String nextPlayer(Group root) {
+    public void nextPlayer(Group root) {
+
         removeClickNums();
         removeClickOutside();
         coverBoard(root);
@@ -421,18 +478,22 @@ public class RouletteGraphics {
                 movePlayers(root, playerXLoc);
                 playerXLoc -= 325;
             }
+            if (AI) {
+                playerNum++;
+                System.out.println(playerNum+"playernum-----------------");
+                AI(root);
+            }
         }
 
         System.out.println("playernum===" + playerNum);
         playerNum++;
         System.out.println("Player num====" + playerNum);
         if (playerNum == players.size()) {
-
+            AI = false;
             roll(root);
             playerNum = 0;
             playerXLoc = -325;
         }
-        return null;
     }
 
     public void setClickNums() {
@@ -962,6 +1023,13 @@ public class RouletteGraphics {
         c.setOpacity(1);
         root.getChildren().add(c);
 
+        Font f = new Font(120);
+        winNumText.setX(1365);
+        winNumText.setY(200);
+        winNumText.setTextOrigin(VPos.TOP);
+        winNumText.setFont(f);
+        root.getChildren().add(winNumText);
+
     }
 
     public void rotateWheel(Group root, int angle) {
@@ -982,15 +1050,7 @@ public class RouletteGraphics {
             @Override
             public void handle(ActionEvent event) {
                 checkWin(root, winNum);
-                Font f = new Font(120);
-                winNumText.setX(1365);
-                winNumText.setY(200);
-                winNumText.setTextOrigin(VPos.TOP);
-                winNumText.setTextAlignment(TextAlignment.JUSTIFY);
-
                 winNumText.setText(String.valueOf(winNum));
-                winNumText.setFont(f);
-                root.getChildren().add(winNumText);
 
                 resetPlayers(root);
                 try {
@@ -1165,10 +1225,6 @@ public class RouletteGraphics {
         root.getChildren().remove(coverBets);
     }
 
-    public void AI(Group root) {
-
-    }
-
     public void QuestionMark(Group root) throws FileNotFoundException {
         Circle c = new Circle(500, 60, 40);
         c.setFill(Color.DARKGREEN);
@@ -1203,7 +1259,7 @@ public class RouletteGraphics {
         instBack.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                
+
                 inst1.toBack();
                 inst2.toBack();
                 inst1.setOpacity(0);
@@ -1225,9 +1281,10 @@ public class RouletteGraphics {
             inst2.setOpacity(1);
             instBack.toFront();
             instBack.setVisible(true);
-            
+
         }
 
     };
-
+    
+    
 }
