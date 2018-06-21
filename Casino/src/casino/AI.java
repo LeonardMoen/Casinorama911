@@ -53,9 +53,9 @@ public class AI extends Player {
                 return 0;
             } else if (pocketHand.pocketPair() && pocketHand.getPocketHand().get(0).getValue() > 11) {
                 return 0;
-            } else if (pocketHand.pocketPair() && raiseAmount <= bigBlind * 2) {
+            } else if (pocketHand.pocketPair()) {
                 return 0;
-            } else if (!(pocketHand.checkSuited()) && pocketHand.getPocketHand().get(0).getValue() == 1 && pocketHand.cardSeperation() <= 4 && raiseAmount <= bigBlind * 2) {
+            } else if (!(pocketHand.checkSuited()) && pocketHand.getPocketHand().get(0).getValue() == 1 && pocketHand.cardSeperation() <= 4) {
                 return 0;
             } else if (pocketHand.checkSuited() && pocketHand.cardSeperation() == 1 && pocketHand.getPocketHand().get(0).getValue() >= 11 && raiseAmount <= (int) (bigBlind * 2.5)) {
                 return 0;
