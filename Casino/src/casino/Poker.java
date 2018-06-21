@@ -577,10 +577,10 @@ public class Poker {
 
     public void distributeWin() {
         Hand winningHand = new Hand();
-        Player winningPlayer = getPlayers().get(0);
+        Player winningPlayer = null;
         if (getPlayers().size() == 1) {
             winningPlayer = getPlayers().get(0);
-            getPlayers().get(0).setChips(getPlayers().get(0).getChips() + getPot());
+            getPlayers().get(0).setChips(getPlayers().get(0).getChips() + pot);
             setPot(0);
             Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
                 @Override
@@ -600,8 +600,8 @@ public class Poker {
             int remainingPot = 0;
             for (Player player : getPlayers()) {
                 if (player.getTotalChipsInPot() > winningPlayer.getTotalChipsInPot()) {
-                    setPot(getPot() - player.getTotalChipsInPot() - winningPlayer.getTotalChipsInPot());
-                    remainingPot += player.getTotalChipsInPot() - winningPlayer.getTotalChipsInPot();
+                    pot= pot - (player.getTotalChipsInPot() - winningPlayer.getTotalChipsInPot());
+                    remainingPot += (player.getTotalChipsInPot() - winningPlayer.getTotalChipsInPot());
                 }
             }
             winningPlayer.setChips(winningPlayer.getChips() + getPot());
