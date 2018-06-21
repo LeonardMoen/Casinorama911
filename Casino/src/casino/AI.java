@@ -46,18 +46,18 @@ public class AI extends Player {
             }
             return -1;
         } else {
-            int raiseAmount = requiredChips - bigBlind;
+            int raiseAmount = requiredChips - super.getChipsInCurrent();
             if (pocketHand.checkSuited() && pocketHand.getPocketHand().get(0).getValue() == 1 && pocketHand.cardSeperation() <= 3) {
                 return 0;
-            } else if (pocketHand.checkSuited() && pocketHand.getPocketHand().get(0).getValue() == 1 && raiseAmount <= bigBlind * 2) {
+            } else if (pocketHand.checkSuited() && pocketHand.getPocketHand().get(0).getValue() == 1) {
                 return 0;
             } else if (pocketHand.pocketPair() && pocketHand.getPocketHand().get(0).getValue() > 11) {
                 return 0;
-            } else if (pocketHand.pocketPair() && raiseAmount <= bigBlind * 2) {
+            } else if (pocketHand.pocketPair()) {
                 return 0;
-            } else if (!(pocketHand.checkSuited()) && pocketHand.getPocketHand().get(0).getValue() == 1 && pocketHand.cardSeperation() <= 4 && raiseAmount <= bigBlind * 2) {
+            } else if (!(pocketHand.checkSuited()) && pocketHand.getPocketHand().get(0).getValue() == 1 && pocketHand.cardSeperation() <= 4) {
                 return 0;
-            } else if (pocketHand.checkSuited() && pocketHand.cardSeperation() == 1 && pocketHand.getPocketHand().get(0).getValue() >= 11 && raiseAmount <= (int) (bigBlind * 2.5)) {
+            } else if (pocketHand.checkSuited() && pocketHand.cardSeperation() == 1 && pocketHand.getPocketHand().get(0).getValue() >= 11 && raiseAmount <= (int) (bigBlind * 4)) {
                 return 0;
             } else if (pocketHand.checkSuited() && pocketHand.cardSeperation() == 1 && raiseAmount <= (int) (bigBlind * 1.5)) {
                 return 0;
@@ -162,10 +162,6 @@ public class AI extends Player {
         handStrength = handStrength / (players.size() - 1);
 
         int callAmount = requiredChips - super.getChipsInCurrent();
-
-        if (super.getChips() - callAmount < 4 * bigBlind && handStrength < 0.5) {
-            return 4;
-        }
 
         double potOdds = potOdds(pot, callAmount);
         try {

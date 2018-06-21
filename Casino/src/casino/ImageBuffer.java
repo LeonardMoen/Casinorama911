@@ -74,6 +74,7 @@ public class ImageBuffer {
     public static Image chip100 = null;
     public static Image chip500 = null;
     public static Image chip1000 = null;
+    public static Image chipAllIn = null;
 
     //etc
     public static Image back1 = null;
@@ -152,6 +153,7 @@ public class ImageBuffer {
             chip100 = new Image(new FileInputStream("src/Resource/chip100.png"), 180, 180, true, true);
             chip500 = new Image(new FileInputStream("src/Resource/chip500.png"), 180, 180, true, true);
             chip1000 = new Image(new FileInputStream("src/Resource/chip1000.png"), 180, 180, true, true);
+            chipAllIn = new Image(new FileInputStream("src/Resource/chipallin.png"), 180, 180, true, true);
 
             //etc
             back1 = new Image(new FileInputStream("src/Resource/back.png"), 1203, 1803, true, true);
