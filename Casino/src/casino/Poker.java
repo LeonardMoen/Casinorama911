@@ -354,20 +354,20 @@ public class Poker {
         boolean everyoneAllIn = false;
         boolean waitForAi = false;
         allPlayerCheck = false;
+        PokerGraphics.displayPot();
+        if (playerIndex > 0) {
+            setCurrentPlayer(getPlayers().get(playerIndex - 1));
+        } else {
+            setCurrentPlayer(getPlayers().get(getPlayers().size() - 1));
+        }
         int numPlayerNotAllIn = 0;
         for (Player player : getPlayers()) {
             if (player.getChips() > 0) {
                 numPlayerNotAllIn += 1;
             }
         }
-        if (numPlayerNotAllIn <= 1) {
+        if (numPlayerNotAllIn <= 1&&(currentPlayer.getChipsInCurrent()==requiredChips||currentPlayer.getChips()==0)) {
             everyoneAllIn = true;
-        }
-        PokerGraphics.displayPot();
-        if (playerIndex > 0) {
-            setCurrentPlayer(getPlayers().get(playerIndex - 1));
-        } else {
-            setCurrentPlayer(getPlayers().get(getPlayers().size() - 1));
         }
         if (!(everyoneAllIn)) {
             if (getCurrentPlayer().getChipsInCurrent() == getRequiredChips() && getRequiredChips() == 0 && getCurrentPlayer().getNumTurn() == 0) {
