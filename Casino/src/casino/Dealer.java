@@ -1,12 +1,13 @@
 package casino;
 
-public class Dealer {
+public class Dealer extends Player {
 
     private PocketHand dealerHand;
     private int total, optionalTotal;
     private boolean bust = false;
 
     public Dealer(Deck deck) {
+        super("Dealer", deck, 5);
         this.dealerHand = new PocketHand(deck);
     }
 
@@ -72,6 +73,6 @@ public class Dealer {
     }
 
     public boolean checkSeventeen() {
-        return total >= 17;
+        return getTotal() >= 17;
     }
 }

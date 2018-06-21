@@ -32,46 +32,52 @@ import javafx.util.Duration;
 
 public class PokerGraphics {
 
-    static Pane rootPane;
+    private static Pane rootPane;
 
     //etc on table
-    static Pane pokerBtns = new VBox(2);
-    static Pane burnPile = new Pane();
-    static HBox commCards = new HBox();
-    static Pane potPane = new Pane();
+    private static Pane pokerBtns = new VBox(2);
+    private static Pane burnPile = new Pane();
+    private static HBox commCards = new HBox();
+    private static Pane potPane = new Pane();
 
-    static Random rand = new Random();
-    static int raiseAmount;
-    static Text raiseText, waitText;
-    //positions
-    final public static double deckX = 850 - 40, deckY = Player.middleY,
-            flopX = 430 + 40, flopY = Player.middleY, burnX = 860 + 40, potX = 300 + 30, potY = 320,
-            cardScale = 0.7,
-            chipSize = 17;
+    private static Random rand = new Random();
+    private static int raiseAmount;
 
-    ImagePattern ip = null;
+    private static Text raiseText;
+    private static Text waitText;
+    private static boolean clicked = false;
+
+    private static final double deckX = 1100;
+    private static final double deckY = Player.middleY;
+    private static final double flopX = 700;
+    private static final double flopY = Player.middleY;
+    private static final double burnX = 1200;
+    private static final double potX = Player.betweenLeft;
+    private static final double potY = Player.middleY + 75;
+    private static final double chipSize = 20;
+    private ImagePattern ip = null;
 
     public PokerGraphics() {
 
     }
 
     public static void pokerSetUp() {
-        rootPane = new Pane();
+        setRootPane(new Pane());
         ImagePattern ip = new ImagePattern(ImageBuffer.pokerTable);
         ImageView pTable = new ImageView();
         pTable.setImage(ImageBuffer.pokerTable);
-        pTable.setFitHeight(768);
-        pTable.setFitWidth(1366);
-        pTable.setX(-40);
-        pTable.setY(-80);
-        Scene pokerScene = new Scene(rootPane, 1366, 768);
-        rootPane.getChildren().add(pTable);
+        pTable.setFitHeight(1080);
+        pTable.setFitWidth(1920);
+        pTable.setX(0);
+        pTable.setY(-40);
+        Scene pokerScene = new Scene(getRootPane(), 1920, 1080);
+        getRootPane().getChildren().add(pTable);
 
         //poker scene back button
         Button backBtn = new Button();
         backBtn.setText("Back");
         backBtn.setOnAction(e -> Casino.primaryStage.setScene(Casino.menu));
-        rootPane.getChildren().add(backBtn);
+        getRootPane().getChildren().add(backBtn);
 
         Casino.primaryStage.setScene(pokerScene);
         Poker poker = new Poker();
@@ -79,7 +85,7 @@ public class PokerGraphics {
         ArrayList<Player> players = Poker.getPlayers();
         for (Player player : Poker.getAllPlayers()) {
             addPlayerInfo(player);
-            rootPane.getChildren().add(player.getPane());
+            getRootPane().getChildren().add(player.getPane());
         }
         //displayShuffle(deck);
         Casino.getPoker().playPoker();
@@ -88,22 +94,22 @@ public class PokerGraphics {
         Font f = new Font("Times New Roman", 16);
 
         //positioning the panes
-        Poker.getDeck().getdPane().setTranslateX(deckX);
-        Poker.getDeck().getdPane().setTranslateY(deckY);
-        commCards.setTranslateX(flopX);
-        commCards.setTranslateY(flopY);
-        burnPile.setTranslateX(burnX);
-        burnPile.setTranslateY(deckY);
-        potPane.setTranslateX(potX);
-        potPane.setTranslateY(potY);
-        rootPane.getChildren().add(potPane);
-        rootPane.getChildren().add(commCards);
+        Poker.getDeck().getdPane().setTranslateX(getDeckX());
+        Poker.getDeck().getdPane().setTranslateY(getDeckY());
+        getCommCards().setTranslateX(getFlopX());
+        getCommCards().setTranslateY(getFlopY());
+        getBurnPile().setTranslateX(getBurnX());
+        getBurnPile().setTranslateY(getDeckY());
+        getPotPane().setTranslateX(getPotX());
+        getPotPane().setTranslateY(getPotY());
+        getRootPane().getChildren().add(getPotPane());
+        getRootPane().getChildren().add(getCommCards());
     }
 
     public void createButtons() {
-        pokerBtns = new VBox();
+        setPokerBtns(new VBox());
         Font f = new Font("Times New Roman", 16);
-        rootPane.getChildren().add(pokerBtns);
+        getRootPane().getChildren().add(getPokerBtns());
         //button call
         Button btnCall = new Button();
         btnCall.setText("Call");
@@ -118,16 +124,18 @@ public class PokerGraphics {
                         System.out.println("Call");
                         Poker.call(Poker.getCurrentPlayer(), requiredChips);
                         int playerIndex = Poker.getPlayers().indexOf(Poker.getCurrentPlayer());
-                        rootPane.getChildren().remove(pokerBtns);
+                        getRootPane().getChildren().remove(getPokerBtns());
                         Casino.getPoker().determiningNextAction(playerIndex);
                     } else {
                         System.out.println("You cannot call");
+                        getPokerBtns().getChildren().remove(btnCall);
                     }
                 }
             }
         });
 
         //button raise
+        clicked = false;
         Pane raisePane = new HBox();
         HBox hb = new HBox();
         Button btnRaise = new Button();
@@ -138,9 +146,10 @@ public class PokerGraphics {
         btnRaise.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (!(Poker.getCurrentPlayer() instanceof AI)) {
-                    raiseAmount = 0;
+                if (!(Poker.getCurrentPlayer() instanceof AI) && !(clicked)) {
+                    setRaiseAmount(0);
                     createChips(hb);
+                    clicked = true;
                 }
             }
         });
@@ -160,7 +169,7 @@ public class PokerGraphics {
                     PokerGraphics.displayFold(Poker.getCurrentPlayer());
                     int playerIndex = players.indexOf(Poker.getCurrentPlayer());
                     Poker.getPlayers().remove(Poker.getCurrentPlayer());
-                    rootPane.getChildren().remove(pokerBtns);
+                    getRootPane().getChildren().remove(getPokerBtns());
                     Casino.getPoker().determiningNextAction(playerIndex);
                 }
             }
@@ -182,16 +191,17 @@ public class PokerGraphics {
                         PokerGraphics.updatePlayerAction(Poker.getCurrentPlayer(), "Check");
                         System.out.println("Check");
                         int playerIndex = players.indexOf(Poker.getCurrentPlayer());
-                        rootPane.getChildren().remove(pokerBtns);
+                        getRootPane().getChildren().remove(getPokerBtns());
                         Casino.getPoker().determiningNextAction(playerIndex);
                     } else {
                         System.out.println("You cannot check");
+                        getPokerBtns().getChildren().remove(btnCheck);
                     }
                 }
             }
         });
-        pokerBtns.setTranslateY(370);
-        pokerBtns.getChildren().addAll(btnCheck, btnCall, btnFold, raisePane);
+        getPokerBtns().setTranslateY(700);
+        getPokerBtns().getChildren().addAll(btnCheck, btnCall, btnFold, raisePane);
         //the raising buttons
         //Pane betPane = new HBox();
         //button raise
@@ -200,44 +210,45 @@ public class PokerGraphics {
     }
 
     public void createChips(HBox raisePane) {
+        raiseAmount = 0;
         System.out.println("raise");
-        raiseText = new Text();
+        setRaiseText(new Text());
         //button raise
         Font f = new Font("Times New Roman", 16);
         //betPane.getChildren().add(btnRaise);
         //the chip buttons for raising
-        double x = chipSize, y = chipSize;
-        ip = null;
+        double x = getChipSize(), y = getChipSize();
+        setIp(null);
 
         Pane betChips = new Pane();
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 4; j++) {
-                Circle c = new Circle(x + (j * chipSize * 2), y + (i * chipSize * 2), chipSize);
+                Circle c = new Circle(x + (j * getChipSize() * 2), y + (i * getChipSize() * 2), getChipSize());
                 c.setOnMouseEntered(ChipOnMouseEntered);
                 c.setOnMouseExited(ChipOnMouseExited);
                 if (i == 0) {
                     switch (j) {
                         case 0:
-                            if (Poker.getPlayers().get(0).getChips() >= 1000) {
-                                ip = new ImagePattern(ImageBuffer.chip1000);
-                                c.setOnMouseClicked(chip1000OnClickAction);
+                            if (Poker.getPlayers().get(0).getChips() >= 1) {
+                                setIp(new ImagePattern(ImageBuffer.chipAllIn));
+                                c.setOnMouseClicked(chipAllInOnClickAction);
                             }
                             break;
                         case 1:
                             if (Poker.getPlayers().get(0).getChips() >= 500) {
-                                ip = new ImagePattern(ImageBuffer.chip500);
+                                setIp(new ImagePattern(ImageBuffer.chip500));
                                 c.setOnMouseClicked(chip500OnClickAction);
                             }
                             break;
                         case 2:
                             if (Poker.getPlayers().get(0).getChips() >= 100) {
-                                ip = new ImagePattern(ImageBuffer.chip100);
+                                setIp(new ImagePattern(ImageBuffer.chip100));
                                 c.setOnMouseClicked(chip100OnClickAction);
                             }
                             break;
                         case 3:
                             if (Poker.getPlayers().get(0).getChips() >= 50) {
-                                ip = new ImagePattern(ImageBuffer.chip50);
+                                setIp(new ImagePattern(ImageBuffer.chip50));
                                 c.setOnMouseClicked(chip50OnClickAction);
                             }
                             break;
@@ -248,28 +259,28 @@ public class PokerGraphics {
                     switch (j) {
                         case 0:
                             if (Poker.getPlayers().get(0).getChips() >= 25) {
-                                ip = new ImagePattern(ImageBuffer.chip25);
+                                setIp(new ImagePattern(ImageBuffer.chip25));
                                 c.setOnMouseClicked(chip25OnClickAction);
                             }
                             break;
                         case 1:
                             if (Poker.getPlayers().get(0).getChips() >= 10) {
 
-                                ip = new ImagePattern(ImageBuffer.chip10);
+                                setIp(new ImagePattern(ImageBuffer.chip10));
                                 c.setOnMouseClicked(chip10OnClickAction);
                             }
                             break;
                         case 2:
                             if (Poker.getPlayers().get(0).getChips() >= 5) {
 
-                                ip = new ImagePattern(ImageBuffer.chip5);
+                                setIp(new ImagePattern(ImageBuffer.chip5));
                                 c.setOnMouseClicked(chip5OnClickAction);
                             }
                             break;
                         case 3:
                             if (Poker.getPlayers().get(0).getChips() >= 1) {
 
-                                ip = new ImagePattern(ImageBuffer.chip1);
+                                setIp(new ImagePattern(ImageBuffer.chip1));
                                 c.setOnMouseClicked(chip1OnClickAction);
                             }
                             break;
@@ -277,8 +288,9 @@ public class PokerGraphics {
                             break;
                     }
                 }
-                c.setFill(ip);
+                c.setFill(getIp());
                 betChips.getChildren().add(c);
+                setIp(null);
             }
         }
 
@@ -294,21 +306,11 @@ public class PokerGraphics {
                 if (!(Poker.getCurrentPlayer() instanceof AI)) {
                     int requiredChips = Poker.getRequiredChips();
                     Poker.call(Poker.getCurrentPlayer(), requiredChips);
-                    if (raiseAmount <= Poker.getCurrentPlayer().getChips()) {
-                        Poker.raise(Poker.getCurrentPlayer(), requiredChips, raiseAmount);
-                        Poker.getCurrentPlayer().setChipsInCurrent(Poker.getCurrentPlayer().getChipsInCurrent() + raiseAmount);
-                        Poker.getCurrentPlayer().setChips(Poker.getCurrentPlayer().getChips() - raiseAmount);
-                        Poker.getCurrentPlayer().setTotalChipsInPot(Poker.getCurrentPlayer().getTotalChipsInPot() + raiseAmount);
-                    } else {
-                        Poker.raise(Poker.getCurrentPlayer(), requiredChips, Poker.getCurrentPlayer().getChips());
-                        Poker.getCurrentPlayer().setChipsInCurrent(Poker.getCurrentPlayer().getChipsInCurrent() + Poker.getCurrentPlayer().getChips());
-                        Poker.getCurrentPlayer().setChips(0);
-                        Poker.getCurrentPlayer().setTotalChipsInPot(Poker.getCurrentPlayer().getTotalChipsInPot() + Poker.getCurrentPlayer().getChips());
-                    }
-                    Poker.requiredChips += raiseAmount;
+                    Poker.raise(Poker.getCurrentPlayer(), requiredChips, raiseAmount);
+                    Poker.setRequiredChips(Poker.getRequiredChips() + getRaiseAmount());
                     int playerIndex = players.indexOf(Poker.getCurrentPlayer());
                     raisePane.getChildren().clear();
-                    rootPane.getChildren().remove(pokerBtns);
+                    getRootPane().getChildren().remove(getPokerBtns());
                     Casino.getPoker().determiningNextAction(playerIndex);
                 }
             }
@@ -324,20 +326,22 @@ public class PokerGraphics {
             public void handle(ActionEvent event) {
                 ArrayList<Player> players = Poker.getPlayers();
                 if (!(Poker.getCurrentPlayer() instanceof AI)) {
-                    raiseAmount = 0;
-                    raiseText.setText("Raise: " + raiseAmount);
+                    setRaiseAmount(0);
+                    getRaiseText().setText("Raise: " + getRaiseAmount());
+                    raisePane.getChildren().clear();
+                    createChips(raisePane);
                 }
             }
         });
         raisePane.getChildren().add(reset);
 
         //displaying raise amount
-        raiseText = new Text();
-        raiseText.setText("Raise: " + raiseAmount);
-        raiseText.setFont(f);
-        raiseText.setFill(Color.WHITE);
-        raisePane.setMargin(raiseText, new Insets(-18, 0, 0, -185));
-        raisePane.getChildren().add(raiseText);
+        setRaiseText(new Text());
+        getRaiseText().setText("Raise: " + getRaiseAmount());
+        getRaiseText().setFont(f);
+        getRaiseText().setFill(Color.WHITE);
+        raisePane.setMargin(getRaiseText(), new Insets(-18, 0, 0, -185));
+        raisePane.getChildren().add(getRaiseText());
     }
 
     public static void addPlayerInfo(Player player) {
@@ -366,15 +370,15 @@ public class PokerGraphics {
         infoBck.setY(-4);
 
         if (player.getPlayerNum() == 1 || player.getPlayerNum() == 2 || player.getPlayerNum() == 8) { //places info on bottom
-            playerInfo.setTranslateY(95);
+            playerInfo.setTranslateY(95 + 40);
         } else if (player.getPlayerNum() == 3) { //places info on leftside
             playerInfo.setTranslateX(-135);
-            playerInfo.setTranslateY(0);
+            playerInfo.setTranslateY(0 + 40);
         } else if (player.getPlayerNum() == 7) { //places info on rightside
-            playerInfo.setTranslateX(135);
-            playerInfo.setTranslateY(0);
+            playerInfo.setTranslateX(135 + 40);
+            playerInfo.setTranslateY(0 + 40);
         } else if (player.getPlayerNum() == 4 || player.getPlayerNum() == 5 || player.getPlayerNum() == 6) { //places info on top
-            playerInfo.setTranslateY(-70);
+            playerInfo.setTranslateY(-70 - 20);
         }
 
         Text title = new Text(player.getName());
@@ -394,8 +398,8 @@ public class PokerGraphics {
         playerInfo.getChildren().addAll(infoBck, vbox);
         player.getPane().getChildren().add(playerInfo);
     }
-    
-    public static void updatePlayerAction(Player player, String action){
+
+    public static void updatePlayerAction(Player player, String action) {
         String blind;
         Pane playerInfo = new Pane();
 
@@ -420,15 +424,15 @@ public class PokerGraphics {
         infoBck.setY(-4);
 
         if (player.getPlayerNum() == 1 || player.getPlayerNum() == 2 || player.getPlayerNum() == 8) { //places info on bottom
-            playerInfo.setTranslateY(95);
+            playerInfo.setTranslateY(95 + 40);
         } else if (player.getPlayerNum() == 3) { //places info on leftside
             playerInfo.setTranslateX(-135);
-            playerInfo.setTranslateY(0);
+            playerInfo.setTranslateY(0 + 40);
         } else if (player.getPlayerNum() == 7) { //places info on rightside
-            playerInfo.setTranslateX(135);
-            playerInfo.setTranslateY(0);
+            playerInfo.setTranslateX(135 + 40);
+            playerInfo.setTranslateY(0 + 40);
         } else if (player.getPlayerNum() == 4 || player.getPlayerNum() == 5 || player.getPlayerNum() == 6) { //places info on top
-            playerInfo.setTranslateY(-70);
+            playerInfo.setTranslateY(-70 - 20);
         }
 
         Text title = new Text(player.getName());
@@ -679,8 +683,8 @@ public class PokerGraphics {
             card.setFill(ip);
             Path cpath = new Path();
             cpath.getElements().add(new MoveTo(0, 0));
-            cpath.getElements().add(new CubicCurveTo(-rand.nextInt(500) + 100, -rand.nextInt(500) + 200, -rand.nextInt(500) + 200, rand.nextInt(200) + 100, rand.nextInt(500) + 100, rand.nextInt(200) + 100));
-            cpath.getElements().add(new CubicCurveTo(rand.nextInt(500) + 100, rand.nextInt(500) + 200, rand.nextInt(500) + 200, -rand.nextInt(200) + 100, 0, 0));
+            cpath.getElements().add(new CubicCurveTo(-rand.nextInt(500) + 100, -rand.nextInt(500) + 200, -rand.nextInt(500) + 200, getRand().nextInt(200) + 100, getRand().nextInt(500) + 100, getRand().nextInt(200) + 100));
+            cpath.getElements().add(new CubicCurveTo(getRand().nextInt(500) + 100, getRand().nextInt(500) + 200, getRand().nextInt(500) + 200, -rand.nextInt(200) + 100, 0, 0));
             cpath.getElements().add(new MoveTo(0, 0));
 
             PathTransition cPT = new PathTransition();
@@ -696,8 +700,8 @@ public class PokerGraphics {
 
     public static void displayDeck(Deck deck) {
         deck.getdPane().getChildren().clear();
-        deck.getdPane().setTranslateX(deckX);
-        deck.getdPane().setTranslateY(deckY);
+        deck.getdPane().setTranslateX(getDeckX());
+        deck.getdPane().setTranslateY(getDeckY());
         ImagePattern ip = new ImagePattern(ImageBuffer.back1);
         for (int i = 0; i < deck.getDeck().size() - 1; i++) {
             Card card = deck.getDeck().get(i);
@@ -705,42 +709,42 @@ public class PokerGraphics {
             card.setY(0 - (i * 0.25));
             deck.getdPane().getChildren().add(displayCard(card));
         }
-        rootPane.getChildren().add(deck.getdPane());
+        getRootPane().getChildren().add(deck.getdPane());
     }
 
     public static void displayBurn() {
-        burnPile.setTranslateX(burnX);
-        burnPile.setTranslateY(deckY);
+        getBurnPile().setTranslateX(getBurnX());
+        getBurnPile().setTranslateY(getDeckY());
         Card card = Poker.getDeck().getDeck().get(0);
         card.setFaceUp(false);
-        burnPile.getChildren().add(displayCard(card));
+        getBurnPile().getChildren().add(displayCard(card));
     }
 
     public static void displayFlop(ArrayList<Card> communityCards) {
-        commCards.setTranslateX(flopX);
-        commCards.setTranslateY(flopY);
+        getCommCards().setTranslateX(getFlopX());
+        getCommCards().setTranslateY(getFlopY());
         for (int i = 0; i < 3; i++) {
             Card card = communityCards.get(i);
             card.setFaceUp(true);
-            commCards.getChildren().add(displayCard(card));
+            getCommCards().getChildren().add(displayCard(card));
         }
     }
 
     public static void displayTurn(ArrayList<Card> communityCards) {
         Card card = communityCards.get(3);
         card.setFaceUp(true);
-        commCards.getChildren().add(displayCard(card));
+        getCommCards().getChildren().add(displayCard(card));
     }
 
     public static void displayRiver(ArrayList<Card> communityCards) {
         Card card = communityCards.get(4);
         card.setFaceUp(true);
-        commCards.getChildren().add(displayCard(card));
+        getCommCards().getChildren().add(displayCard(card));
     }
 
     public static void removeCommunityCard() {
-        for (int i = commCards.getChildren().size() - 1; i >= 0; i--) {
-            commCards.getChildren().remove(i);
+        for (int i = getCommCards().getChildren().size() - 1; i >= 0; i--) {
+            getCommCards().getChildren().remove(i);
         }
     }
 
@@ -769,6 +773,24 @@ public class PokerGraphics {
         timeline.play();
     }
 
+    public static void displayAllCardsAllIn(ArrayList<Player> playersInRound) {
+
+        for (Player player : playersInRound) {
+            HBox pocketCards = new HBox();
+            player.getPane().getChildren().clear();
+            addPlayerInfo(player);
+            for (int i = 0; i < 2; i++) {
+                Card card = player.getPocketHand().getPocketHand().get(i);
+                if (!card.isFaceUp()) {
+                    System.out.println("flipped");
+                    card.setFaceUp(true);
+                }
+                pocketCards.getChildren().add(displayCard(card));
+            }
+            player.getPane().getChildren().add(pocketCards);
+        }
+    }
+
     public static void displayFold(Player player) {
         player.getPane().getChildren().clear();
         addPlayerInfo(player);
@@ -776,7 +798,7 @@ public class PokerGraphics {
             Card card = player.getPocketHand().getPocketHand().get(i);
             Path path = new Path();
             path.getElements().add(new MoveTo(card.getX(), card.getY()));
-            path.getElements().add(new LineTo(burnX, deckY));
+            path.getElements().add(new LineTo(getBurnX(), getDeckY()));
             PathTransition pt = new PathTransition();
             pt.setNode(card);
             pt.setPath(path);
@@ -786,9 +808,9 @@ public class PokerGraphics {
     }
 
     public static void displayPot() {
-        potPane.getChildren().clear();
+        getPotPane().getChildren().clear();
 
-        int totalPot = Poker.pot, k = 0, i;
+        int totalPot = Poker.getPot(), k = 0, i;
         double x = 0, y = 0;
         ImagePattern chipImage;
         Pane p1000 = new Pane();
@@ -803,24 +825,24 @@ public class PokerGraphics {
         if (totalPot > 55000) {
             y = 100;
         }
-        p25.setTranslateX(x - chipSize + 3);
+        p25.setTranslateX(x - getChipSize() + 3);
         p25.setTranslateY(y);
-        p10.setTranslateX(x - chipSize + (chipSize * 2) + (3 * 2));
+        p10.setTranslateX(x - getChipSize() + (getChipSize() * 2) + (3 * 2));
         p10.setTranslateY(y);
-        p5.setTranslateX(x - chipSize + ((chipSize * 2) * 2) + (3 * 3));
+        p5.setTranslateX(x - getChipSize() + ((getChipSize() * 2) * 2) + (3 * 3));
         p5.setTranslateY(y);
-        p1.setTranslateX(x - chipSize + ((chipSize * 2) * 3) + (3 * 4));
+        p1.setTranslateX(x - getChipSize() + ((getChipSize() * 2) * 3) + (3 * 4));
         p1.setTranslateY(y);
         p1000.setTranslateX(x + 3);                            //25
-        p1000.setTranslateY(y - (chipSize * 2));
-        p500.setTranslateX(x + (chipSize * 2) + (3 * 2));    //10
-        p500.setTranslateY(y - (chipSize * 2));
-        p100.setTranslateX(x + ((chipSize * 2) * 2) + (3 * 3));   //5
-        p100.setTranslateY(y - (chipSize * 2));
-        p50.setTranslateX(x + ((chipSize * 2) * 3) + (3 * 4));   //1
-        p50.setTranslateY(y - (chipSize * 2));
+        p1000.setTranslateY(y - (getChipSize() * 2));
+        p500.setTranslateX(x + (getChipSize() * 2) + (3 * 2));    //10
+        p500.setTranslateY(y - (getChipSize() * 2));
+        p100.setTranslateX(x + ((getChipSize() * 2) * 2) + (3 * 3));   //5
+        p100.setTranslateY(y - (getChipSize() * 2));
+        p50.setTranslateX(x + ((getChipSize() * 2) * 3) + (3 * 4));   //1
+        p50.setTranslateY(y - (getChipSize() * 2));
 
-        Text pot = new Text(Integer.toString(Poker.pot) + " Chips");
+        Text pot = new Text(Integer.toString(Poker.getPot()) + " Chips");
         Rectangle bck = new Rectangle(85, 12);
         bck.setFill(Color.rgb(0, 0, 0, 0.3));
         bck.setArcHeight(15);
@@ -838,9 +860,9 @@ public class PokerGraphics {
         for (i = totalPot; i >= 1000; i -= 1000) {
             k++;
             chipImage = new ImagePattern(ImageBuffer.chip1000);
-            Circle chip = new Circle(chipSize, chipImage);
+            Circle chip = new Circle(getChipSize(), chipImage);
             chip.setEffect(highlight);
-            chip.setCenterY(0 - (chipSize / 10 * k));
+            chip.setCenterY(0 - (getChipSize() / 10 * k));
             chip.setCenterX(0 + -rand.nextInt(2) + 1);
             p1000.getChildren().add(chip);
             totalPot -= 1000;
@@ -849,9 +871,9 @@ public class PokerGraphics {
         for (i = totalPot; i >= 500; i -= 500) {
             k++;
             chipImage = new ImagePattern(ImageBuffer.chip500);
-            Circle chip = new Circle(chipSize, chipImage);
+            Circle chip = new Circle(getChipSize(), chipImage);
             chip.setEffect(highlight);
-            chip.setCenterY(0 - (chipSize / 8 * k));
+            chip.setCenterY(0 - (getChipSize() / 8 * k));
             chip.setCenterX(0 + -rand.nextInt(2) + 1);
             p500.getChildren().add(chip);
             totalPot -= 500;
@@ -860,9 +882,9 @@ public class PokerGraphics {
         for (i = totalPot; i >= 100; i -= 100) {
             k++;
             chipImage = new ImagePattern(ImageBuffer.chip100);
-            Circle chip = new Circle(chipSize, chipImage);
+            Circle chip = new Circle(getChipSize(), chipImage);
             chip.setEffect(highlight);
-            chip.setCenterY(0 - (chipSize / 8 * k));
+            chip.setCenterY(0 - (getChipSize() / 8 * k));
             chip.setCenterX(0 + -rand.nextInt(2) + 1);
             p100.getChildren().add(chip);
             totalPot -= 100;
@@ -871,9 +893,9 @@ public class PokerGraphics {
         for (i = totalPot; i >= 50; i -= 50) {
             k++;
             chipImage = new ImagePattern(ImageBuffer.chip50);
-            Circle chip = new Circle(chipSize, chipImage);
+            Circle chip = new Circle(getChipSize(), chipImage);
             chip.setEffect(highlight);
-            chip.setCenterY(0 - (chipSize / 8 * k));
+            chip.setCenterY(0 - (getChipSize() / 8 * k));
             chip.setCenterX(0 + -rand.nextInt(2) + 1);
             p50.getChildren().add(chip);
             totalPot -= 50;
@@ -882,9 +904,9 @@ public class PokerGraphics {
         for (i = totalPot; i >= 25; i -= 25) {
             k++;
             chipImage = new ImagePattern(ImageBuffer.chip25);
-            Circle chip = new Circle(chipSize, chipImage);
+            Circle chip = new Circle(getChipSize(), chipImage);
             chip.setEffect(highlight);
-            chip.setCenterY(0 - (chipSize / 8 * k));
+            chip.setCenterY(0 - (getChipSize() / 8 * k));
             chip.setCenterX(0 + -rand.nextInt(2) + 1);
             p25.getChildren().add(chip);
             totalPot -= 25;
@@ -893,9 +915,9 @@ public class PokerGraphics {
         for (i = totalPot; i >= 10; i -= 10) {
             k++;
             chipImage = new ImagePattern(ImageBuffer.chip10);
-            Circle chip = new Circle(chipSize, chipImage);
+            Circle chip = new Circle(getChipSize(), chipImage);
             chip.setEffect(highlight);
-            chip.setCenterY(0 - (chipSize / 8 * k));
+            chip.setCenterY(0 - (getChipSize() / 8 * k));
             chip.setCenterX(0 + -rand.nextInt(2) + 1);
             p10.getChildren().add(chip);
             totalPot -= 10;
@@ -904,9 +926,9 @@ public class PokerGraphics {
         for (i = totalPot; i >= 5; i -= 5) {
             k++;
             chipImage = new ImagePattern(ImageBuffer.chip5);
-            Circle chip = new Circle(chipSize, chipImage);
+            Circle chip = new Circle(getChipSize(), chipImage);
             chip.setEffect(highlight);
-            chip.setCenterY(0 - (chipSize / 8 * k));
+            chip.setCenterY(0 - (getChipSize() / 8 * k));
             chip.setCenterX(0 + -rand.nextInt(2) + 1);
             p5.getChildren().add(chip);
             totalPot -= 5;
@@ -915,19 +937,18 @@ public class PokerGraphics {
         for (i = totalPot; i >= 1; i -= 1) {
             k++;
             chipImage = new ImagePattern(ImageBuffer.chip1);
-            Circle chip = new Circle(chipSize, chipImage);
+            Circle chip = new Circle(getChipSize(), chipImage);
             chip.setEffect(highlight);
-            chip.setCenterY(0 - (chipSize / 8 * k));
+            chip.setCenterY(0 - (getChipSize() / 8 * k));
             chip.setCenterX(0 + -rand.nextInt(2) + 1);
             p1.getChildren().add(chip);
             totalPot -= 1;
         }
-        potPane.getChildren().addAll(p1000, p500, p100, p50, p25, p10, p5, p1, bck, pot);
+        getPotPane().getChildren().addAll(p1000, p500, p100, p50, p25, p10, p5, p1, bck, pot);
     }
 
     public static void displayDealPlayers(ArrayList<Player> players) {
         Image image = null;
-        double cardScale = 0.6;
 
         for (Player player : players) {
             HBox pocketCards = new HBox();
@@ -937,12 +958,8 @@ public class PokerGraphics {
                 //is it computer or person to hide cards or not to hide cards
                 if (player instanceof AI) {
                     card.setFaceUp(false);
-                    cardScale = 1;
-                    card.setScaleX(cardScale);
-                    card.setScaleY(cardScale);
                 } else {
                     card.setFaceUp(true);
-                    cardScale = 1;
                 }
                 pocketCards.getChildren().add(displayCard(card));
             }
@@ -954,23 +971,24 @@ public class PokerGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            if (Poker.getCurrentPlayer().getChips() < 1) {
+            if (Poker.getCurrentPlayer().getChips() - raiseAmount - 1 < 0) {
                 source.setVisible(false);
             } else {
-                raiseAmount += 1;
-                raiseText.setText("Raise: " + raiseAmount);
+                setRaiseAmount(getRaiseAmount() + 1);
+                getRaiseText().setText("Raise: " + getRaiseAmount());
             }
+
         }
     };
     EventHandler chip5OnClickAction = new EventHandler() {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            if (Poker.getCurrentPlayer().getChips() < 5) {
+            if (Poker.getCurrentPlayer().getChips() - raiseAmount - 5 < 0) {
                 source.setVisible(false);
             } else {
-                raiseAmount += 5;
-                raiseText.setText("Raise: " + raiseAmount);
+                setRaiseAmount(getRaiseAmount() + 5);
+                getRaiseText().setText("Raise: " + getRaiseAmount());
             }
         }
     };
@@ -978,11 +996,11 @@ public class PokerGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            if (Poker.getCurrentPlayer().getChips() < 10) {
+            if (Poker.getCurrentPlayer().getChips() - raiseAmount - 10 < 0) {
                 source.setVisible(false);
             } else {
-                raiseAmount += 10;
-                raiseText.setText("Raise: " + raiseAmount);
+                setRaiseAmount(getRaiseAmount() + 10);
+                getRaiseText().setText("Raise: " + getRaiseAmount());
             }
         }
     };
@@ -990,11 +1008,11 @@ public class PokerGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            if (Poker.getCurrentPlayer().getChips() < 25) {
+            if (Poker.getCurrentPlayer().getChips() - raiseAmount - 25 < 0) {
                 source.setVisible(false);
             } else {
-                raiseAmount += 25;
-                raiseText.setText("Raise: " + raiseAmount);
+                setRaiseAmount(getRaiseAmount() + 25);
+                getRaiseText().setText("Raise: " + getRaiseAmount());
             }
         }
     };
@@ -1002,11 +1020,11 @@ public class PokerGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            if (Poker.getCurrentPlayer().getChips() < 50) {
+            if (Poker.getCurrentPlayer().getChips() - raiseAmount - 50 < 0) {
                 source.setVisible(false);
             } else {
-                raiseAmount += 50;
-                raiseText.setText("Raise: " + raiseAmount);
+                setRaiseAmount(getRaiseAmount() + 50);
+                getRaiseText().setText("Raise: " + getRaiseAmount());
             }
         }
     };
@@ -1014,11 +1032,11 @@ public class PokerGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            if (Poker.getCurrentPlayer().getChips() < 100) {
+            if (Poker.getCurrentPlayer().getChips() - raiseAmount - 100 < 0) {
                 source.setVisible(false);
             } else {
-                raiseAmount += 100;
-                raiseText.setText("Raise: " + raiseAmount);
+                setRaiseAmount(getRaiseAmount() + 100);
+                getRaiseText().setText("Raise: " + getRaiseAmount());
             }
         }
     };
@@ -1026,24 +1044,20 @@ public class PokerGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            if (Poker.getCurrentPlayer().getChips() < 500) {
+            if (Poker.getCurrentPlayer().getChips() - raiseAmount - 500 < 0) {
                 source.setVisible(false);
             } else {
-                raiseAmount += 500;
-                raiseText.setText("Raise: " + raiseAmount);
+                setRaiseAmount(getRaiseAmount() + 500);
+                getRaiseText().setText("Raise: " + getRaiseAmount());
             }
         }
     };
-    EventHandler chip1000OnClickAction = new EventHandler() {
+    EventHandler chipAllInOnClickAction = new EventHandler() {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            if (Poker.getCurrentPlayer().getChips() < 1000) {
-                source.setVisible(false);
-            } else {
-                raiseAmount += 1000;
-                raiseText.setText("Raise: " + raiseAmount);
-            }
+            setRaiseAmount(Poker.getCurrentPlayer().getChips());
+            getRaiseText().setText("Raise: " + getRaiseAmount());
         }
     };
     EventHandler ChipOnMouseEntered = new EventHandler() {
@@ -1061,4 +1075,200 @@ public class PokerGraphics {
             source.setEffect(null);
         }
     };
+
+    /**
+     * @return the rootPane
+     */
+    public static Pane getRootPane() {
+        return rootPane;
+    }
+
+    /**
+     * @param aRootPane the rootPane to set
+     */
+    public static void setRootPane(Pane aRootPane) {
+        rootPane = aRootPane;
+    }
+
+    /**
+     * @return the pokerBtns
+     */
+    public static Pane getPokerBtns() {
+        return pokerBtns;
+    }
+
+    /**
+     * @param aPokerBtns the pokerBtns to set
+     */
+    public static void setPokerBtns(Pane aPokerBtns) {
+        pokerBtns = aPokerBtns;
+    }
+
+    /**
+     * @return the burnPile
+     */
+    public static Pane getBurnPile() {
+        return burnPile;
+    }
+
+    /**
+     * @param aBurnPile the burnPile to set
+     */
+    public static void setBurnPile(Pane aBurnPile) {
+        burnPile = aBurnPile;
+    }
+
+    /**
+     * @return the commCards
+     */
+    public static HBox getCommCards() {
+        return commCards;
+    }
+
+    /**
+     * @param aCommCards the commCards to set
+     */
+    public static void setCommCards(HBox aCommCards) {
+        commCards = aCommCards;
+    }
+
+    /**
+     * @return the potPane
+     */
+    public static Pane getPotPane() {
+        return potPane;
+    }
+
+    /**
+     * @param aPotPane the potPane to set
+     */
+    public static void setPotPane(Pane aPotPane) {
+        potPane = aPotPane;
+    }
+
+    /**
+     * @return the rand
+     */
+    public static Random getRand() {
+        return rand;
+    }
+
+    /**
+     * @param aRand the rand to set
+     */
+    public static void setRand(Random aRand) {
+        rand = aRand;
+    }
+
+    /**
+     * @return the raiseAmount
+     */
+    public static int getRaiseAmount() {
+        return raiseAmount;
+    }
+
+    /**
+     * @param aRaiseAmount the raiseAmount to set
+     */
+    public static void setRaiseAmount(int aRaiseAmount) {
+        raiseAmount = aRaiseAmount;
+    }
+
+    /**
+     * @return the raiseText
+     */
+    public static Text getRaiseText() {
+        return raiseText;
+    }
+
+    /**
+     * @param aRaiseText the raiseText to set
+     */
+    public static void setRaiseText(Text aRaiseText) {
+        raiseText = aRaiseText;
+    }
+
+    /**
+     * @return the waitText
+     */
+    public static Text getWaitText() {
+        return waitText;
+    }
+
+    /**
+     * @param aWaitText the waitText to set
+     */
+    public static void setWaitText(Text aWaitText) {
+        waitText = aWaitText;
+    }
+
+    /**
+     * @return the deckX
+     */
+    public static double getDeckX() {
+        return deckX;
+    }
+
+    /**
+     * @return the deckY
+     */
+    public static double getDeckY() {
+        return deckY;
+    }
+
+    /**
+     * @return the flopX
+     */
+    public static double getFlopX() {
+        return flopX;
+    }
+
+    /**
+     * @return the flopY
+     */
+    public static double getFlopY() {
+        return flopY;
+    }
+
+    /**
+     * @return the burnX
+     */
+    public static double getBurnX() {
+        return burnX;
+    }
+
+    /**
+     * @return the potX
+     */
+    public static double getPotX() {
+        return potX;
+    }
+
+    /**
+     * @return the potY
+     */
+    public static double getPotY() {
+        return potY;
+    }
+
+    /**
+     * @return the chipSize
+     */
+    public static double getChipSize() {
+        return chipSize;
+    }
+
+    /**
+     * @return the ip
+     */
+    public ImagePattern getIp() {
+        return ip;
+    }
+
+    /**
+     * @param ip the ip to set
+     */
+    public void setIp(ImagePattern ip) {
+        this.ip = ip;
+    }
 }

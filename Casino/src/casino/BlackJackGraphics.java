@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -13,14 +15,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 public class BlackJackGraphics {
 
@@ -33,14 +39,17 @@ public class BlackJackGraphics {
     private static Button btnBet;
     private static Pane root = new Pane();
     private static int round = 1, bet, x = 0;
-    private static Pane pCard = new Pane();
     private static Pane pBet = new HBox();
-    private static Pane bCard = new Pane();
     static Pane buttons = new HBox();
     static ImagePattern ip;
     static double chipSize = 17;
     static Text betText;
     static int betAmount;
+    static Pane betPane;
+    static HBox dealerCard = new HBox();
+    static ArrayList<HBox> pCard = new ArrayList<>();
+    static ArrayList<Pane> playerInfo = new ArrayList<>();
+    static Pane dealerPane = new Pane();
 
     public BlackJackGraphics() {
     }
@@ -251,31 +260,134 @@ public class BlackJackGraphics {
     }
 
     public static void printCard(int handNum) throws InterruptedException, IOException {
-        int x = 300, y = 500;
-        pCard.getChildren().clear();
-        if (root.getChildren().contains(pCard)) {
-            root.getChildren().remove(pCard);
-        }
+        pCard.get(x).getChildren().clear();
         for (int i = 0; i < currentPlayer.getPocketHands().get(handNum).getPlayerHand().size(); i++) {
             Card card = currentPlayer.getPocketHands().get(handNum).getPlayerHand().get(i);
             if (!card.isFaceUp()) {
                 System.out.println("flipped");
                 card.setFaceUp(true);
             }
-            card.setX(x);
-            card.setY(y);
-            pCard.getChildren().add(displayCard(card));
-            x += 100;
+            pCard.get(x).getChildren().add(displayCard(card));
+            pCard.get(x).setSpacing(-50);
+            pCard.get(x).setTranslateX(currentPlayer.getPane().getTranslateX());
+            pCard.get(x).setTranslateY(currentPlayer.getPane().getTranslateY());
         }
-        root.getChildren().add(pCard);
+        if (root.getChildren().contains(pCard.get(x))) {
+            root.getChildren().remove(pCard.get(x));
+        }
+        root.getChildren().add(pCard.get(x));
         setButtons(handNum);
     }
 
+    public static void setButtonSize() {
+        hit.setMinSize(90, 90);
+        stay.setMinSize(90, 90);
+        split.setMinSize(90, 90);
+        dDown.setMinSize(90, 90);
+    }
+
+    public static void checkInsuranceWin() {
+        if (BlackjackJAVA.dealer.getDealerHand().getPlayerHand().get(0).getWorth() == 1 && BlackjackJAVA.dealer.getDealerHand().getPlayerHand().get(1).getWorth() == 10) {
+            for (int i = 0; i < BlackjackJAVA.numOfPlayers.size(); i++) {
+                if (BlackjackJAVA.numOfPlayers.get(i).isInsurance()) {
+                    BlackjackJAVA.numOfPlayers.get(i).setChips(BlackjackJAVA.numOfPlayers.get(i).getChips() + BlackjackJAVA.numOfPlayers.get(i).getInsuranceAmount() * 3);
+                    //System.out.println("Player " + numOfPlayers.get(i).getName() + " insurance paid off! Chips: " + numOfPlayers.get(i).getChips());
+                }
+            }
+        }
+    }
+
+    public static void checkWin() throws IOException {
+        checkInsuranceWin();
+        if (BlackjackJAVA.dealer.isBust()) {
+            for (int i = 0; i < BlackjackJAVA.numOfPlayers.size(); i++) {
+                for (int s = 0; s < BlackjackJAVA.numOfPlayers.get(i).getPocketHands().size(); s++) {
+                    if (BlackjackJAVA.numOfPlayers.get(i).getTotal(s) <= 21 && !BlackjackJAVA.numOfPlayers.get(i).isNaturalBlackJack()) {
+                        BlackjackJAVA.numOfPlayers.get(i).setChips(BlackjackJAVA.numOfPlayers.get(i).getChips() + BlackjackJAVA.numOfPlayers.get(i).getBet() * 2);
+                        setWin(i, 0);
+                    } else if (BlackjackJAVA.numOfPlayers.get(i).getTotal(s) > 21) {
+                        setWin(i, 1);
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < BlackjackJAVA.numOfPlayers.size(); i++) {
+                for (int s = 0; s < BlackjackJAVA.numOfPlayers.get(i).getPocketHands().size(); s++) {
+                    if (BlackjackJAVA.numOfPlayers.get(i).setTotal(s) > BlackjackJAVA.numOfPlayers.get(i).getTotal(s) && BlackjackJAVA.numOfPlayers.get(i).setTotal(s) <= 21) {
+                        BlackjackJAVA.numOfPlayers.get(i).setObTotal(BlackjackJAVA.numOfPlayers.get(i).setTotal(s));
+                    } else {
+                        BlackjackJAVA.numOfPlayers.get(i).setObTotal(BlackjackJAVA.numOfPlayers.get(i).getTotal(s));
+                    }
+                    if (BlackjackJAVA.numOfPlayers.get(i).getTotal(s) > 21) {
+                        setWin(i, 1);
+                    }
+                    if (!BlackjackJAVA.numOfPlayers.get(i).isNaturalBlackJack() && BlackjackJAVA.numOfPlayers.get(i).getTotal() <= 21) {
+                        if (BlackjackJAVA.dealer.getTotal() > BlackjackJAVA.numOfPlayers.get(i).getTotal()) {
+                            setWin(i, 1);
+                            BlackjackJAVA.numOfPlayers.get(i).setBet(0);
+                        } else if (BlackjackJAVA.dealer.getTotal() == BlackjackJAVA.numOfPlayers.get(i).getTotal()) {
+                            setWin(i, 2);
+                            BlackjackJAVA.numOfPlayers.get(i).setChips(BlackjackJAVA.numOfPlayers.get(i).getChips() + BlackjackJAVA.numOfPlayers.get(i).getBet());
+                        } else if (BlackjackJAVA.dealer.getTotal() < BlackjackJAVA.numOfPlayers.get(i).getTotal()) {
+                            setWin(i, 0);
+                            BlackjackJAVA.numOfPlayers.get(i).setChips(BlackjackJAVA.numOfPlayers.get(i).getChips() + BlackjackJAVA.numOfPlayers.get(i).getBet() * 2);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void setWin(int i, int win) {
+        Text name = new Text(BlackjackJAVA.numOfPlayers.get(i).getName());
+        Text chips = new Text("Chips: $" + BlackjackJAVA.numOfPlayers.get(i).getChips());
+        Text bet = new Text("Bet: $" + BlackjackJAVA.numOfPlayers.get(i).getBet());
+        Text condition = new Text();
+        if (win == 0) {
+            condition.setText("Win!");
+        } else if (win == 1) {
+            condition.setText("Lose!");
+        } else if (win == 2) {
+            condition.setText("Stands!");
+        }
+        name.setFill(Color.WHITE);
+        chips.setFill(Color.WHITE);
+        bet.setFill(Color.WHITE);
+        condition.setFill(Color.WHITE);
+        playerInfo.get(i).setTranslateX(BlackjackJAVA.numOfPlayers.get(i).getPane().getTranslateX());
+        playerInfo.get(i).setTranslateY(BlackjackJAVA.numOfPlayers.get(i).getPane().getTranslateY() + 200);
+        chips.setY(20);
+        bet.setY(40);
+        condition.setX(60);
+        playerInfo.get(i).getChildren().clear();
+        playerInfo.get(i).getChildren().addAll(name, chips, bet, condition);
+    }
+
+    public static void setThinking() {
+        Text name = new Text(BlackjackJAVA.numOfPlayers.get(x).getName());
+        Text chips = new Text("Chips: $" + BlackjackJAVA.numOfPlayers.get(x).getChips());
+        Text bet = new Text("Bet: $" + BlackjackJAVA.numOfPlayers.get(x).getBet());
+        Text thinking = new Text("Thinking...");
+        name.setFill(Color.WHITE);
+        chips.setFill(Color.WHITE);
+        bet.setFill(Color.WHITE);
+        thinking.setFill(Color.WHITE);
+        playerInfo.get(x).setTranslateX(BlackjackJAVA.numOfPlayers.get(x).getPane().getTranslateX());
+        playerInfo.get(x).setTranslateY(BlackjackJAVA.numOfPlayers.get(x).getPane().getTranslateY() + 200);
+        chips.setY(20);
+        bet.setY(40);
+        thinking.setX(40);
+        playerInfo.get(x).getChildren().clear();
+        playerInfo.get(x).getChildren().addAll(name, chips, bet, thinking);
+    }
+
     public static void setButtons(int handNum) throws InterruptedException, IOException {
+        setButtonSize();
         clearBtn();
         if (!currentPlayer.isStay()) {
             System.out.println(currentPlayer.getName());
             if (currentPlayer.isAi()) {
+                setThinking();
                 BlackjackAI ai = (BlackjackAI) currentPlayer;
                 ai.setSplit();
                 ai.setdDown(handNum);
@@ -283,23 +395,64 @@ public class BlackJackGraphics {
                 if (round == 1) {
                     if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
                         currentPlayer.setNaturalBlackJack(true);
+                        setWin(x, 0);
                         currentPlayer.setStay(true);
                         currentPlayer.setChips((int) (currentPlayer.getBet() * 1.5 + currentPlayer.getChips() + currentPlayer.getBet()));
                         printCard(handNum);
                     }
                     if (ai.isSplit()) {
                         System.out.println("Split");
-                        BlackjackJAVA.playerSplit(currentPlayer, 0);
+                        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                try {
+                                    BlackjackJAVA.playerSplit(currentPlayer, 0);
+                                } catch (IOException | InterruptedException ex) {
+                                    Logger.getLogger(BlackJackGraphics.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            }
+                        }));
+                        timeline.play();
                     } else if (ai.isdDown()) {
                         System.out.println("dd");
-                        BlackjackJAVA.playerDD(currentPlayer, 0);
+                        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                try {
+                                    BlackjackJAVA.playerDD(currentPlayer, 0);
+                                } catch (IOException | InterruptedException ex) {
+                                    Logger.getLogger(BlackJackGraphics.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            }
+                        }));
+                        timeline.play();
                     } else if (ai.isHit()) {
                         System.out.println("hit");
-                        BlackjackJAVA.playerHit(currentPlayer, 0);
+                        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                try {
+                                    BlackjackJAVA.playerHit(currentPlayer, 0);
+                                } catch (IOException | InterruptedException ex) {
+                                    Logger.getLogger(BlackJackGraphics.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            }
+                        }));
+                        timeline.play();
                     } else if (!ai.isHit()) {
                         System.out.println("stay");
-                        currentPlayer.setStay(true);
-                        setButtons(0);
+                        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                try {
+                                    currentPlayer.setStay(true);
+                                    setButtons(0);
+                                } catch (IOException | InterruptedException ex) {
+                                    Logger.getLogger(BlackJackGraphics.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            }
+                        }));
+                        timeline.play();
                     }
                 } else {
                     if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
@@ -307,17 +460,38 @@ public class BlackJackGraphics {
                         printCard(handNum);
                     } else if (ai.isHit()) {
                         System.out.println("hit");
-                        BlackjackJAVA.playerHit(currentPlayer, 0);
+                        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                try {
+                                    BlackjackJAVA.playerHit(currentPlayer, 0);
+                                } catch (IOException | InterruptedException ex) {
+                                    Logger.getLogger(BlackJackGraphics.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            }
+                        }));
+                        timeline.play();
                     } else if (!ai.isHit()) {
                         System.out.println("stay");
-                        currentPlayer.setStay(true);
-                        setButtons(0);
+                        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                try {
+                                    currentPlayer.setStay(true);
+                                    setButtons(0);
+                                } catch (IOException | InterruptedException ex) {
+                                    Logger.getLogger(BlackJackGraphics.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            }
+                        }));
+                        timeline.play();
                     }
                 }
             } else {
                 if (round == 1) {
                     if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
                         currentPlayer.setNaturalBlackJack(true);
+                        setWin(x, 0);
                         currentPlayer.setStay(true);
                         currentPlayer.setChips((int) (currentPlayer.getBet() * 1.5 + currentPlayer.getChips() + currentPlayer.getBet()));
                         printCard(handNum);
@@ -340,6 +514,8 @@ public class BlackJackGraphics {
                         buttons.getChildren().addAll(hit, stay);
                     }
                 }
+                buttons.setTranslateX(100);
+                buttons.setTranslateY(900);
                 root.getChildren().add(buttons);
             }
         } else if (currentPlayer.isSplit()) {
@@ -366,33 +542,74 @@ public class BlackJackGraphics {
         }
     }
 
-    public static void checkWin() {
+    public static void setDealerThinking() {
+        dealerPane.getChildren().clear();
+        Text dealer = new Text("Dealer");
+        Text thinking = new Text("Thinking");
+        dealer.setFill(Color.WHITE);
+        thinking.setFill(Color.WHITE);
+        dealer.setY(-40);
+        thinking.setY(-20);
+        dealerPane.getChildren().addAll(dealer, thinking);
+        dealerPane.setTranslateX(BlackjackJAVA.dealer.getPane().getTranslateX());
+        dealerPane.setTranslateY(BlackjackJAVA.dealer.getPane().getTranslateY());
+        if (root.getChildren().contains(dealerPane)) {
+            root.getChildren().remove(dealerPane);
+        }
+        root.getChildren().add(dealerPane);
     }
 
-    public static void dealerPlay() {
-        while (!BlackjackJAVA.dealer.checkSeventeen()) {
-            BlackjackJAVA.dealer.getDealerHand().hitCard(BlackjackJAVA.deck);
-//            printDealer();
+    public static void printDealer() throws InterruptedException, IOException {
+        dealerCard.getChildren().clear();
+        setDealerThinking();
+        for (int i = 0; i < BlackjackJAVA.dealer.getDealerHand().getPlayerHand().size(); i++) {
+            Card card = BlackjackJAVA.dealer.getDealerHand().getPlayerHand().get(i);
+            card.setFaceUp(true);
+            dealerCard.getChildren().add(displayCard(card));
+            dealerCard.setSpacing(-50);
+            dealerCard.setTranslateX(BlackjackJAVA.dealer.getPane().getTranslateX());
+            dealerCard.setTranslateY(BlackjackJAVA.dealer.getPane().getTranslateY());
         }
-        if (BlackjackJAVA.dealer.getTotal() > 21) {
-            BlackjackJAVA.dealer.setBust(true);
+        if (root.getChildren().contains(dealerCard)) {
+            root.getChildren().remove(dealerCard);
         }
+        root.getChildren().add(dealerCard);
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    if (BlackjackJAVA.dealer.checkSeventeen()) {
+                        setDealerBox();
+                        checkWin();
+                    } else {
+                        BlackjackJAVA.playDealer();
+                    }
+                } catch (IOException | InterruptedException ex) {
+                    Logger.getLogger(BlackJackGraphics.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }));
+        timeline.play();
+
     }
 
     public static void nextPlayer() throws InterruptedException, IOException {
         round = 1;
         x += 1;
+        resetInfo(x - 1);
         if (x == BlackjackJAVA.numOfPlayers.size()) {
             x = 0;
             currentPlayer = BlackjackJAVA.numOfPlayers.get(x);
-//            dealerPlay();
+            BlackjackJAVA.playDealer();
         } else {
             currentPlayer = BlackjackJAVA.numOfPlayers.get(x);
+            pCard.add(new HBox());
             printCard(0);
         }
     }
 
     public static void begin(String name) throws IOException, InterruptedException {
+        root = new Pane();
         hit.setOnAction((ActionEvent event) -> {
             try {
                 BlackjackJAVA.playerHit(currentPlayer, 0);
@@ -431,50 +648,181 @@ public class BlackJackGraphics {
                         .getName()).log(Level.SEVERE, null, ex);
             }
         });
+        ImagePattern ip = new ImagePattern(ImageBuffer.pokerTable);
+        ImageView pTable = new ImageView();
+        pTable.setImage(ImageBuffer.pokerTable);
+        Button backBtn = new Button();
+        backBtn.setText("Back");
+        backBtn.setOnAction(e -> Casino.primaryStage.setScene(Casino.menu));
+        pTable.setFitHeight(1080);
+        pTable.setFitWidth(1920);
+        pTable.setX(0);
+        pTable.setY(-40);
         Scene scene = new Scene(root, 1920, 1080);
+        root.getChildren().addAll(pTable, backBtn);
         Casino.primaryStage.setTitle("BLACKJACK!");
         Casino.primaryStage.setScene(scene);
         Casino.primaryStage.show();
         BlackjackJAVA.main(name);
     }
 
-    public static void printDealer() {
+    public static void setDealerBox() {
+        dealerPane.getChildren().clear();
+        Text dealer = new Text("Dealer");
+        dealer.setFill(Color.WHITE);
+        dealer.setY(-40);
+        dealerPane.getChildren().add(dealer);
+        dealerPane.setTranslateX(BlackjackJAVA.dealer.getPane().getTranslateX());
+        dealerPane.setTranslateY(BlackjackJAVA.dealer.getPane().getTranslateY());
+        if (root.getChildren().contains(dealerPane)) {
+            root.getChildren().remove(dealerPane);
+        }
+        root.getChildren().add(dealerPane);
+    }
+
+    public static void printBeginDealer() {
+        for (int i = 0; i < BlackjackJAVA.dealer.getDealerHand().getPlayerHand().size(); i++) {
+            Card card = BlackjackJAVA.dealer.getDealerHand().getPlayerHand().get(i);
+            if (i == 0) {
+                card.setFaceUp(true);
+            }
+            dealerCard.getChildren().add(displayCard(card));
+            dealerCard.setSpacing(-50);
+            dealerCard.setTranslateX(BlackjackJAVA.dealer.getPane().getTranslateX());
+            dealerCard.setTranslateY(BlackjackJAVA.dealer.getPane().getTranslateY());
+        }
+        if (root.getChildren().contains(dealerCard)) {
+            root.getChildren().remove(dealerCard);
+        }
+        setDealerBox();
+        root.getChildren().addAll(dealerCard);
+        if (BlackjackJAVA.dealer.checkInsured()) {
+            showInsurance(0);
+        }
+    }
+
+    public static void getInsurance(int n) {
+        BlackjackJAVA.numOfPlayers.get(n).setInsurance(true);
+
+        BlackjackJAVA.numOfPlayers.get(n).setInsuranceAmount();
 
     }
 
-    public static void printBoard() throws InterruptedException, IOException {    // When I make the board. need to print the players cards
-        printDealer();
-        bCard.getChildren().clear();
-        if (root.getChildren().contains(bCard)) {
-            root.getChildren().remove(bCard);
+    public static void showInsurance(int n) {
+        if (BlackjackJAVA.numOfPlayers.get(n).getChips() >= BlackjackJAVA.numOfPlayers.get(n).getBet() / 2) {
+            if (BlackjackJAVA.numOfPlayers.get(n).isAi()) {
+                BlackjackAI ai = ((BlackjackAI) (BlackjackJAVA.numOfPlayers.get(n)));
+                if (ai.isInsurance()) {
+                    getInsurance(n);
+                }
+            } else { //add insurnace buttons pane to root
+            }
+        } else { //not enough chips
         }
-        int lX = 150, y = 50;
+        if (n == BlackjackJAVA.numOfPlayers.size() - 1) {
+            showInsurance(n - 1);
+        }
+    }
+
+    public static void printBoard() throws InterruptedException, IOException {    // When I make the board. need to print the players cards
+        ArrayList<HBox> boardCards = new ArrayList<>();
+        if (root.getChildren().contains(boardCards)) {
+            root.getChildren().remove(boardCards);
+        }
         for (int c = 0; c < BlackjackJAVA.numOfPlayers.size(); c++) {
+
             for (int i = 0; i < BlackjackJAVA.numOfPlayers.get(c).getPocketHands().get(0).getPlayerHand().size(); i++) {
+                boardCards.add(new HBox());
                 Card card = BlackjackJAVA.numOfPlayers.get(c).getPocketHands().get(0).getPlayerHand().get(i);
                 if (!card.isFaceUp()) {
                     System.out.println("flipped");
                     card.setFaceUp(true);
                 }
-                card.setX(lX);
-                card.setY(y);
-                bCard.getChildren().add(displayCard(card));
-                lX += 100;
+                boardCards.get(c).getChildren().add(displayCard(card));
+                boardCards.get(c).setSpacing(-50);
+                boardCards.get(c).setTranslateX(BlackjackJAVA.numOfPlayers.get(c).getPane().getTranslateX());
+                boardCards.get(c).setTranslateY(BlackjackJAVA.numOfPlayers.get(c).getPane().getTranslateY());
+
             }
-            y += 80;
-            lX = 150;
         }
-        root.getChildren().add(bCard);
+        root.getChildren().addAll(boardCards);
+        pCard.add(new HBox());
         printCard(0);
     }
 
-    public static void setBet(int n) throws IOException {
+    public static void printBlankBoard() throws InterruptedException, IOException {    // When I make the board. need to print the players cards
+        printBeginDealer();
+        ArrayList<HBox> boardCards = new ArrayList<>();
+        if (root.getChildren().contains(boardCards)) {
+            root.getChildren().remove(boardCards);
+        }
+        for (int c = 0; c < BlackjackJAVA.numOfPlayers.size(); c++) {
+
+            for (int i = 0; i < BlackjackJAVA.numOfPlayers.get(c).getPocketHands().get(0).getPlayerHand().size(); i++) {
+                boardCards.add(new HBox());
+                Card card = BlackjackJAVA.numOfPlayers.get(c).getPocketHands().get(0).getPlayerHand().get(i);
+                boardCards.get(c).getChildren().add(displayCard(card));
+                boardCards.get(c).setSpacing(-50);
+                boardCards.get(c).setTranslateX(BlackjackJAVA.numOfPlayers.get(c).getPane().getTranslateX());
+                boardCards.get(c).setTranslateY(BlackjackJAVA.numOfPlayers.get(c).getPane().getTranslateY());
+
+            }
+        }
+        root.getChildren().addAll(boardCards);
+        pCard.add(new HBox());
+        printPlayerInfo();
+        setBet(0);
+    }
+
+    public static void printPlayerInfo() {
+        if (root.getChildren().contains(playerInfo)) {
+            root.getChildren().remove(playerInfo);
+        }
+        for (int i = 0; i < BlackjackJAVA.numOfPlayers.size(); i++) {
+            playerInfo.add(new Pane());
+            Text name = new Text(BlackjackJAVA.numOfPlayers.get(i).getName());
+            Text chips = new Text("Chips: $" + BlackjackJAVA.numOfPlayers.get(i).getChips());
+            Text bet = new Text("Bet: $" + BlackjackJAVA.numOfPlayers.get(i).getBet());
+            name.setFill(Color.WHITE);
+            chips.setFill(Color.WHITE);
+            bet.setFill(Color.WHITE);
+            playerInfo.get(i).setTranslateX(BlackjackJAVA.numOfPlayers.get(i).getPane().getTranslateX());
+            playerInfo.get(i).setTranslateY(BlackjackJAVA.numOfPlayers.get(i).getPane().getTranslateY() + 200);
+            chips.setY(20);
+            bet.setY(40);
+            playerInfo.get(i).getChildren().addAll(name, chips, bet);
+        }
+        root.getChildren().addAll(playerInfo);
+
+    }
+
+    public static void resetInfo(int n) {
+        Text name = new Text(BlackjackJAVA.numOfPlayers.get(n).getName());
+        Text chips = new Text("Chips: $" + BlackjackJAVA.numOfPlayers.get(n).getChips());
+        Text bet = new Text("Bet: $" + BlackjackJAVA.numOfPlayers.get(n).getBet());
+        name.setFill(Color.WHITE);
+        chips.setFill(Color.WHITE);
+        bet.setFill(Color.WHITE);
+        playerInfo.get(n).setTranslateX(BlackjackJAVA.numOfPlayers.get(n).getPane().getTranslateX());
+        playerInfo.get(n).setTranslateY(BlackjackJAVA.numOfPlayers.get(n).getPane().getTranslateY() + 200);
+        chips.setY(20);
+        bet.setY(40);
+        playerInfo.get(n).getChildren().clear();
+        playerInfo.get(n).getChildren().addAll(name, chips, bet);
+    }
+
+    public static void setBet(int n) throws InterruptedException, IOException {
+        if (root.getChildren().contains(betPane)) {
+            root.getChildren().remove(betPane);
+        }
+        betPane = new Pane();
         currentPlayer = BlackjackJAVA.numOfPlayers.get(n);
         if (currentPlayer.isAi()) {
             BlackjackAI ai = (BlackjackAI) currentPlayer;
             ai.setRealBet();
             ai.setBet(ai.getRealBet());
             System.out.println(currentPlayer.getName() + " bet " + currentPlayer.getBet());
+            resetInfo(n);
             if (n == BlackjackJAVA.numOfPlayers.size() - 1) {
                 currentPlayer = BlackjackJAVA.numOfPlayers.get(0);
                 try {
@@ -488,65 +836,16 @@ public class BlackJackGraphics {
                 setBet(n + 1);
             }
         } else {
-            Text bText = new Text("Bet: ");
-            bText.setFont(new Font(16));
-            TextField tf = new TextField();
-            btnBet = new Button("Bet");
-            pBet.setTranslateY(300);
-            pBet.setTranslateX(500);
-
-            pBet.getChildren().addAll(bText, tf, btnBet);
-            root.getChildren().addAll(pBet);
-
-            btnBet.setOnAction((ActionEvent event) -> {
-                if ((tf.getText() != null && !tf.getText().isEmpty())) {
-                    if (Integer.parseInt(tf.getText()) > currentPlayer.getChips()) {
-                        pBet.getChildren().clear();
-                        root.getChildren().remove(pBet);
-                        System.out.println(currentPlayer.getName() + " not enough chips");
-                        try {
-                            setBet(n);
-
-                        } catch (IOException ex) {
-                            Logger.getLogger(BlackJackGraphics.class
-                                    .getName()).log(Level.SEVERE, null, ex);
-                        }
-                    } else {
-                        bet = Integer.parseInt(tf.getText());
-                        currentPlayer.setBet(bet);
-                        System.out.println(currentPlayer.getName() + " bet " + currentPlayer.getBet());
-                        pBet.getChildren().clear();
-                        root.getChildren().remove(pBet);
-                        if (n == BlackjackJAVA.numOfPlayers.size() - 1) {
-                            currentPlayer = BlackjackJAVA.numOfPlayers.get(0);
-                            try {
-                                printBoard();
-
-                            } catch (InterruptedException | IOException ex) {
-                                Logger.getLogger(BlackJackGraphics.class
-                                        .getName()).log(Level.SEVERE, null, ex);
-                            }
-                        } else {
-                            try {
-                                setBet(n + 1);
-
-                            } catch (IOException ex) {
-                                Logger.getLogger(BlackJackGraphics.class
-                                        .getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
-                    }
-                }
-            });
+            betPane.getChildren().add(createChips(n));
+            betPane.setTranslateY(900);
+            betPane.setTranslateX(1600);
+            root.getChildren().add(betPane);
         }
     }
 
-    public static HBox createChips() {
+    public static HBox createChips(int n) {
         System.out.println("Bet");
-        //button raise
         Font f = new Font("Times New Roman", 16);
-        //betPane.getChildren().add(btnRaise);
-        //the chip buttons for raising
         double x = chipSize, y = chipSize;
         ip = null;
         betAmount = 0;
@@ -561,25 +860,25 @@ public class BlackJackGraphics {
                 if (i == 0) {
                     switch (j) {
                         case 0:
-                            if (Poker.getPlayers().get(0).getChips() >= 1000) {
+                            if (currentPlayer.getChips() >= 1000) {
                                 ip = new ImagePattern(ImageBuffer.chip1000);
                                 c.setOnMouseClicked(chip1000OnClickAction);
                             }
                             break;
                         case 1:
-                            if (Poker.getPlayers().get(0).getChips() >= 500) {
+                            if (currentPlayer.getChips() >= 500) {
                                 ip = new ImagePattern(ImageBuffer.chip500);
                                 c.setOnMouseClicked(chip500OnClickAction);
                             }
                             break;
                         case 2:
-                            if (Poker.getPlayers().get(0).getChips() >= 100) {
+                            if (currentPlayer.getChips() >= 100) {
                                 ip = new ImagePattern(ImageBuffer.chip100);
                                 c.setOnMouseClicked(chip100OnClickAction);
                             }
                             break;
                         case 3:
-                            if (Poker.getPlayers().get(0).getChips() >= 50) {
+                            if (currentPlayer.getChips() >= 50) {
                                 ip = new ImagePattern(ImageBuffer.chip50);
                                 c.setOnMouseClicked(chip50OnClickAction);
                             }
@@ -590,27 +889,27 @@ public class BlackJackGraphics {
                 } else if (i == 1) {
                     switch (j) {
                         case 0:
-                            if (Poker.getPlayers().get(0).getChips() >= 25) {
+                            if (currentPlayer.getChips() >= 25) {
                                 ip = new ImagePattern(ImageBuffer.chip25);
                                 c.setOnMouseClicked(chip25OnClickAction);
                             }
                             break;
                         case 1:
-                            if (Poker.getPlayers().get(0).getChips() >= 10) {
+                            if (currentPlayer.getChips() >= 10) {
 
                                 ip = new ImagePattern(ImageBuffer.chip10);
                                 c.setOnMouseClicked(chip10OnClickAction);
                             }
                             break;
                         case 2:
-                            if (Poker.getPlayers().get(0).getChips() >= 5) {
+                            if (currentPlayer.getChips() >= 5) {
 
                                 ip = new ImagePattern(ImageBuffer.chip5);
                                 c.setOnMouseClicked(chip5OnClickAction);
                             }
                             break;
                         case 3:
-                            if (Poker.getPlayers().get(0).getChips() >= 1) {
+                            if (currentPlayer.getChips() >= 1) {
 
                                 ip = new ImagePattern(ImageBuffer.chip1);
                                 c.setOnMouseClicked(chip1OnClickAction);
@@ -633,29 +932,33 @@ public class BlackJackGraphics {
         confirm.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                ArrayList<Player> players = Poker.getPlayers();
-                if (!(Poker.getCurrentPlayer() instanceof AI)) {
-                    int requiredChips = Poker.getRequiredChips();
-                    Poker.call(Poker.getCurrentPlayer(), requiredChips);
-                    if (betAmount > currentPlayer.getChips()) {
-                        bPane.getChildren().clear();
-                        root.getChildren().remove(blkJckBtns);
-                        System.out.println(currentPlayer.getName() + " not enough chips");
-//                        setBet(n);
-                    } else {
-                        bet = betAmount;
-                        currentPlayer.setBet(bet);
-                        System.out.println(currentPlayer.getName() + " bet " + currentPlayer.getBet());
-                        bPane.getChildren().clear();
-                        root.getChildren().remove(blkJckBtns);
-//                        if (n == BlackjackJAVA.numOfPlayers.size() - 1) {
-//                            currentPlayer = BlackjackJAVA.numOfPlayers.get(0);
-//                            printBoard();
-//                        } else {
-//                            setBet(n + 1);
-//                        }
-                    }
+                if (betAmount > currentPlayer.getChips() || betAmount == 0) {
+                    betAmount = 0;
+                    betText.setText("Bet: " + betAmount);
+                } else {
+                    bet = betAmount;
+                    currentPlayer.setBet(bet);
+                    resetInfo(n);
+                    System.out.println(currentPlayer.getName() + " bet " + currentPlayer.getBet());
                     bPane.getChildren().clear();
+                    root.getChildren().remove(bPane);
+                    if (n == BlackjackJAVA.numOfPlayers.size() - 1) {
+                        currentPlayer = BlackjackJAVA.numOfPlayers.get(0);
+                        try {
+                            printBoard();
+
+                        } catch (InterruptedException | IOException ex) {
+                            Logger.getLogger(BlackJackGraphics.class
+                                    .getName()).log(Level.SEVERE, null, ex);
+                        }
+                    } else {
+                        try {
+                            setBet(n + 1);
+                        } catch (IOException | InterruptedException ex) {
+                            Logger.getLogger(BlackJackGraphics.class
+                                    .getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
                 }
             }
         });
@@ -668,8 +971,7 @@ public class BlackJackGraphics {
         reset.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                ArrayList<Player> players = Poker.getPlayers();
-                if (!(Poker.getCurrentPlayer() instanceof AI)) {
+                if (!(currentPlayer.isAi())) {
                     betAmount = 0;
                     betText.setText("Bet: " + betAmount);
                 }
@@ -678,23 +980,58 @@ public class BlackJackGraphics {
         bPane.getChildren().add(reset);
 
         betText = new Text();
-        betText.setText("Raise: " + betAmount);
+        betText.setText("Bet: " + betAmount);
         betText.setFill(Color.WHITE);
-        bPane.setMargin(betText, new Insets(50, 0, 0, -50));
+        bPane.setMargin(betText, new Insets(-18, 0, 0, -185));
         bPane.getChildren().add(betText);
 
         return bPane;
+    }
+
+    public static void addPlayerInfo(Player player) {
+        String blind;
+
+        Pane playerInfo = new Pane();
+        playerInfo.setTranslateY(95 + 40);
+
+        VBox vbox = new VBox();
+//        vbox.setPadding(new Insets(5));
+        vbox.setSpacing(0);
+
+        Rectangle infoBck = new Rectangle(140, 70);
+        infoBck.setFill(Color.rgb(0, 0, 0, 0.3));
+        infoBck.setArcHeight(25);
+        infoBck.setArcWidth(25);
+        infoBck.setX(-7);
+        infoBck.setY(-4);
+
+        Text title = new Text(player.getName());
+        title.setFill(Color.WHITE);
+        title.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        vbox.getChildren().add(title);
+
+        Text options[] = new Text[]{
+            new Text("Chips: " + player.getChips()),
+            new Text("Bet: " + player.getBet())};
+
+        for (int i = 0; i < 2; i++) {
+            options[i].setFill(Color.WHITESMOKE);
+            VBox.setMargin(options[i], new Insets(0, 0, -2, 5));
+            vbox.getChildren().add(options[i]);
+        }
+        playerInfo.getChildren().addAll(infoBck, vbox);
+        player.getPane().getChildren().add(playerInfo);
     }
 
     static EventHandler chip1OnClickAction = new EventHandler() {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            if (Poker.getCurrentPlayer().getChips() < 1) {
+            if (currentPlayer.getChips() < 1) {
                 source.setVisible(false);
             } else {
                 betAmount += 1;
-                betText.setText("Raise: " + betAmount);
+                betText.setText("Bet: " + betAmount);
             }
         }
     };
@@ -702,11 +1039,11 @@ public class BlackJackGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            if (Poker.getCurrentPlayer().getChips() < 5) {
+            if (currentPlayer.getChips() < 5) {
                 source.setVisible(false);
             } else {
                 betAmount += 5;
-                betText.setText("Raise: " + betAmount);
+                betText.setText("Bet: " + betAmount);
             }
         }
     };
@@ -714,11 +1051,11 @@ public class BlackJackGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            if (Poker.getCurrentPlayer().getChips() < 10) {
+            if (currentPlayer.getChips() < 10) {
                 source.setVisible(false);
             } else {
                 betAmount += 10;
-                betText.setText("Raise: " + betAmount);
+                betText.setText("Bet: " + betAmount);
             }
         }
     };
@@ -726,11 +1063,11 @@ public class BlackJackGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            if (Poker.getCurrentPlayer().getChips() < 25) {
+            if (currentPlayer.getChips() < 25) {
                 source.setVisible(false);
             } else {
                 betAmount += 25;
-                betText.setText("Raise: " + betAmount);
+                betText.setText("Bet: " + betAmount);
             }
         }
     };
@@ -738,11 +1075,11 @@ public class BlackJackGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            if (Poker.getCurrentPlayer().getChips() < 50) {
+            if (currentPlayer.getChips() < 50) {
                 source.setVisible(false);
             } else {
                 betAmount += 50;
-                betText.setText("Raise: " + betAmount);
+                betText.setText("Bet: " + betAmount);
             }
         }
     };
@@ -750,11 +1087,11 @@ public class BlackJackGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            if (Poker.getCurrentPlayer().getChips() < 100) {
+            if (currentPlayer.getChips() < 100) {
                 source.setVisible(false);
             } else {
                 betAmount += 100;
-                betText.setText("Raise: " + betAmount);
+                betText.setText("Bet: " + betAmount);
             }
         }
     };
@@ -762,11 +1099,11 @@ public class BlackJackGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            if (Poker.getCurrentPlayer().getChips() < 500) {
+            if (currentPlayer.getChips() < 500) {
                 source.setVisible(false);
             } else {
                 betAmount += 500;
-                betText.setText("Raise: " + betAmount);
+                betText.setText("Bet: " + betAmount);
             }
         }
     };
@@ -774,11 +1111,11 @@ public class BlackJackGraphics {
         @Override
         public void handle(Event event) {
             Circle source = (Circle) event.getSource();
-            if (Poker.getCurrentPlayer().getChips() < 1000) {
+            if (currentPlayer.getChips() < 1000) {
                 source.setVisible(false);
             } else {
                 betAmount += 1000;
-                betText.setText("Raise: " + betAmount);
+                betText.setText("Bet: " + betAmount);
             }
         }
     };
