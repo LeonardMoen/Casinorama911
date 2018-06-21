@@ -767,6 +767,24 @@ public class PokerGraphics {
         }));
         timeline.play();
     }
+    
+    public static void displayAllCardsAllIn(ArrayList<Player> playersInRound) {
+
+        for (Player player : playersInRound) {
+            HBox pocketCards = new HBox();
+            player.getPane().getChildren().clear();
+            addPlayerInfo(player);
+            for (int i = 0; i < 2; i++) {
+                Card card = player.getPocketHand().getPocketHand().get(i);
+                if (!card.isFaceUp()) {
+                    System.out.println("flipped");
+                    card.setFaceUp(true);
+                }
+                pocketCards.getChildren().add(displayCard(card));
+            }
+            player.getPane().getChildren().add(pocketCards);
+        }
+    }
 
     public static void displayFold(Player player) {
         player.getPane().getChildren().clear();
