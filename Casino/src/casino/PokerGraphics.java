@@ -227,10 +227,10 @@ public class PokerGraphics {
                 if (i == 0) {
                     switch (j) {
                         case 0:
-//                            if (Poker.getPlayers().get(0).getChips() >= 1000) {
-//                                setIp(new ImagePattern(ImageBuffer.chip1000));
-//                                c.setOnMouseClicked(chip1000OnClickAction);
-//                            }
+                            if (Poker.getPlayers().get(0).getChips() >= 1) {
+                                setIp(new ImagePattern(ImageBuffer.chipAllIn));
+                                c.setOnMouseClicked(chipAllInOnClickAction);
+                            }
                             break;
                         case 1:
                             if (Poker.getPlayers().get(0).getChips() >= 500) {
