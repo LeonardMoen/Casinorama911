@@ -200,26 +200,26 @@ public class BlackjackJAVA {
         }
     }
 
-    public static void playDealer() throws InterruptedException {
-        System.out.println("\n~ DEALER ~ ");
+    public static void playDealer() throws InterruptedException, IOException {
         printDealer();
-        while (!dealer.checkSeventeen()) {
-            System.out.println("");
+        if (!dealer.checkSeventeen()) {
+            //System.out.println("Dealer hit");
             dealer.getDealerHand().hitCard(deck);
-            printDealer();
-            Thread.sleep(1000);
+            BlackJackGraphics.printDealer();
         }
         if (dealer.getTotal() > 21) {
             System.out.println("\nDealer BUST!");
             dealer.setBust(true);
         }
+        BlackJackGraphics.checkWin();
+
     }
 
     public static void printDealer() {
         for (int i = 0; i < dealer.getDealerHand().getPlayerHand().size(); i++) {
             System.out.print(dealer.getDealerHand().getPlayerHand().get(i) + "\t\t");
         }
-        System.out.print("Total: " + dealer.getTotal());
+        //   System.out.print("Total: " + dealer.getTotal());
     }
 
     public static void printCards(Player player, int handNum) throws IOException, InterruptedException {

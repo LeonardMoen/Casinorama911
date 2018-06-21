@@ -72,6 +72,6 @@ public class Dealer {
     }
 
     public boolean checkSeventeen() {
-        return total >= 17;
+        return getTotal() >= 17;
     }
 }
