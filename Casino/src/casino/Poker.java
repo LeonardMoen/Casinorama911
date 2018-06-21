@@ -576,6 +576,7 @@ public class Poker {
     }
 
     public void distributeWin() {
+        boolean sidePot= false;
         Hand winningHand = new Hand();
         Player winningPlayer = null;
         if (getPlayers().size() == 1) {
@@ -602,11 +603,15 @@ public class Poker {
                 if (player.getTotalChipsInPot() > winningPlayer.getTotalChipsInPot()) {
                     pot= pot - (player.getTotalChipsInPot() - winningPlayer.getTotalChipsInPot());
                     remainingPot += (player.getTotalChipsInPot() - winningPlayer.getTotalChipsInPot());
+                    sidePot=true;
                 }
             }
             winningPlayer.setChips(winningPlayer.getChips() + getPot());
-            getPlayers().remove(winningPlayer);
+            players.remove(winningPlayer);
             setPot(0 + remainingPot);
+            if(sidePot){
+                distributeWin();
+            }
             System.out.println(winningPlayer.getName() + " Chips: " + winningPlayer.getChips());
             playPoker();
         }
