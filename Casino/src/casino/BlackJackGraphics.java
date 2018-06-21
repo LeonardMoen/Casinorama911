@@ -681,6 +681,7 @@ public class BlackJackGraphics {
     }
 
     public static void printBeginDealer() {
+        dealerPane.getChildren().clear();
         for (int i = 0; i < BlackjackJAVA.dealer.getDealerHand().getPlayerHand().size(); i++) {
             Card card = BlackjackJAVA.dealer.getDealerHand().getPlayerHand().get(i);
             if (i == 0) {
