@@ -2,6 +2,7 @@ package casino;
 
 import java.io.*;
 import java.util.ArrayList;
+import javafx.scene.layout.HBox;
 
 public class BlackjackJAVA {
 
@@ -19,7 +20,7 @@ public class BlackjackJAVA {
         addAI();
         if (numOfPlayers.isEmpty()) {
         }
-        placeBets();
+        BlackJackGraphics.printBlankBoard();
 //        System.out.println("");
 //        printBoard();
 //        resetCharacteristics();
@@ -52,9 +53,9 @@ public class BlackjackJAVA {
 
     public static void addPlayer(String name) {
         if (name == null) {
-            numOfPlayers.add(new Player("Player 1", deck));
+            numOfPlayers.add(new Player("Player 1", deck, 1));
         } else {
-            numOfPlayers.add(new Player(name, deck));
+            numOfPlayers.add(new Player(name, deck, 1));
         }
         numOfPlayers.get(0).setChips(Casino.getMainPlayer().getChips());
     }
@@ -65,17 +66,13 @@ public class BlackjackJAVA {
     }
 
     public static void addAI() throws IOException {
-        numOfPlayers.add(new BlackjackAI("John", deck));
-        numOfPlayers.add(new BlackjackAI("Bob", deck));
-        numOfPlayers.add(new BlackjackAI("Harry", deck));
-    }
-
-    public static void placeBets() throws IOException, InterruptedException {
-        BlackJackGraphics.setBet(0);
+        numOfPlayers.add(new BlackjackAI("John", deck, 2));
+        numOfPlayers.add(new BlackjackAI("Bob", deck, 8));
     }
 
     public static void resetCharacteristics() {
         for (int i = 0; i < numOfPlayers.size(); i++) {
+            numOfPlayers.get(i).getPane().getChildren().clear();
             numOfPlayers.get(i).setBet(0);
             numOfPlayers.get(i).setStay(false);
             numOfPlayers.get(i).setNaturalBlackJack(false);
@@ -89,6 +86,7 @@ public class BlackjackJAVA {
                 numOfPlayers.get(i).getPocketHands().remove(s);
             }
             numOfPlayers.get(i).getPocketHands().add(new PocketHand(deck));
+
         }
         dealer = new Dealer(deck);
     }
@@ -200,18 +198,19 @@ public class BlackjackJAVA {
         }
     }
 
-    public static void playDealer() throws InterruptedException {
-        System.out.println("\n~ DEALER ~ ");
-        printDealer();
-        while (!dealer.checkSeventeen()) {
-            System.out.println("");
+    public static void playDealer() throws InterruptedException, IOException {
+        BlackJackGraphics.printDealer();
+        if (!dealer.checkSeventeen()) {
             dealer.getDealerHand().hitCard(deck);
-            printDealer();
-            Thread.sleep(1000);
+            BlackJackGraphics.printDealer();
         }
         if (dealer.getTotal() > 21) {
             System.out.println("\nDealer BUST!");
             dealer.setBust(true);
+        }
+        if (dealer.checkSeventeen()) {
+            BlackJackGraphics.setDealerBox();
+            BlackJackGraphics.checkWin();
         }
     }
 
@@ -219,7 +218,7 @@ public class BlackjackJAVA {
         for (int i = 0; i < dealer.getDealerHand().getPlayerHand().size(); i++) {
             System.out.print(dealer.getDealerHand().getPlayerHand().get(i) + "\t\t");
         }
-        System.out.print("Total: " + dealer.getTotal());
+        //   System.out.print("Total: " + dealer.getTotal());
     }
 
     public static void printCards(Player player, int handNum) throws IOException, InterruptedException {

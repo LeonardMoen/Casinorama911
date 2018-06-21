@@ -14,8 +14,8 @@ public class BlackjackAI extends Player {
     // private ArrayList<Card> counted = new ArrayList<>();
     private Random r = new Random();
 
-    public BlackjackAI(String name, Deck deck) {
-        super(name, deck);
+    public BlackjackAI(String name, Deck deck,int playerNum) {
+        super(name, deck, playerNum);
         setNumDecks(deck);
         setBettingUnit();
         setAi();

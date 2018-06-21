@@ -1,6 +1,7 @@
 package casino;
 
 import java.util.ArrayList;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 
 public class Player implements Comparable {
@@ -17,6 +18,7 @@ public class Player implements Comparable {
     private boolean insurance = false, stay = false, naturalBlackJack, ai = false, split;
     private double x = 0, y = 0;
     private Pane playerPane;
+    private HBox hBox;
     final public static double top = 130, bottom = 700, middleY = (top + bottom) / 2, farLeft = 200, farRight = 1550, middleX = (farLeft + farRight) / 2, betweenLeft = (farLeft + middleX) / 2, betweenRight = (farRight + middleX) / 2,
             p1x = middleX, p1y = bottom,
             p2x = betweenLeft - 50, p2y = bottom,
@@ -28,6 +30,7 @@ public class Player implements Comparable {
             p8x = betweenRight + 50, p8y = bottom;
 
     private int numTurn;
+
     public Player(String name, int playerNum) {
         this.name = name;
         this.playerNum = playerNum;
@@ -35,10 +38,10 @@ public class Player implements Comparable {
         blind = new Blind();
         pocketHand = new PocketHand();
         this.chipsInCurrent = 0;
-        this.totalChipsInPot=0;
+        this.totalChipsInPot = 0;
         playerPane = new Pane();
         setPlayerPosition();
-        this.numTurn=0;
+        this.numTurn = 0;
     }
 
     public void setPlayerPosition() {
@@ -138,10 +141,19 @@ public class Player implements Comparable {
         return stay;
     }
 
-    public Player(String name, Deck deck) {
+    public Player(String name, Deck deck, int playerNum) {
         this.name = name;
+        this.playerNum = playerNum;
         this.chips = 500;
         this.pocketHands.add(new PocketHand(deck));
+        playerPane = new Pane();
+        setPlayerPosition();
+        hBox = new HBox();
+        //playerPane.getChildren().add(hBox);
+    }
+
+    public HBox gethBox() {
+        return hBox;
     }
 
     public void setInsurance(boolean insurance) {
@@ -301,8 +313,6 @@ public class Player implements Comparable {
     public void setNumTurn(int numTurn) {
         this.numTurn = numTurn;
     }
-    
-    
 
     @Override
     public int compareTo(Object t) {
