@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Scanner;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.layout.Pane;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.util.Duration;
 
 public class Poker {
 
@@ -275,7 +279,7 @@ public class Poker {
             AI ai = (AI) (getCurrentPlayer());
             int response;
             if (getRound() != 0) {
-                response = ai.rateOfReturn(getCommunityCards(), getPlayers(), getPot(), getRequiredChips(), getBigBlind());
+                //response = ai.rateOfReturn(getCommunityCards(), getPlayers(), getPot(), getRequiredChips(), getBigBlind());
                 Task task = new Task<Integer>() {
                     @Override
                     protected Integer call() throws Exception {
@@ -375,7 +379,7 @@ public class Poker {
                     if (getPlayers().size() == 1) {
                         distributeWin();
                     }
-                    if (getCommunityCards().size() == 0) {
+                    if (getCommunityCards().size() == 0&&currentPlayer.getPlayerNum()!=1) {
                         flop();
                         setRound(getRound() + 1);
                         Collections.sort(getPlayers());
@@ -523,17 +527,19 @@ public class Poker {
             player.setChips(player.getChips() - callAmount);
             player.setChipsInCurrent(player.getChipsInCurrent() + callAmount);
             player.setTotalChipsInPot(player.getTotalChipsInPot() + callAmount);
+            getCurrentPlayer().getPane().getChildren().clear();
+            PokerGraphics.updatePlayerAction(getCurrentPlayer(), "Called: "+ callAmount);
+            System.out.println(player.getName() + " called");
 
         } else {
             setPot(getPot() + player.getChips());
             player.setChipsInCurrent(player.getChipsInCurrent() + player.getChips());
             player.setTotalChipsInPot(player.getTotalChipsInPot() + player.getChips());
             player.setChips(0);
+            getCurrentPlayer().getPane().getChildren().clear();
+            PokerGraphics.updatePlayerAction(getCurrentPlayer(), "All In");
             System.out.println("All In");
         }
-        getCurrentPlayer().getPane().getChildren().clear();
-        PokerGraphics.updatePlayerAction(getCurrentPlayer(), "Called: "+ callAmount);
-        System.out.println(player.getName() + " called");
     }
 
     public static void sortPlayers(int startPlayer) {
@@ -569,6 +575,12 @@ public class Poker {
             winningPlayer = getPlayers().get(0);
             getPlayers().get(0).setChips(getPlayers().get(0).getChips() + getPot());
             setPot(0);
+            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(10), new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    playPoker();
+                }
+            }));
         } else {
             for (Player player : getPlayers()) {
                 player.setHand(determineHand(player.getPocketHand(), getCommunityCards()));
@@ -587,9 +599,10 @@ public class Poker {
             winningPlayer.setChips(winningPlayer.getChips() + getPot());
             getPlayers().remove(winningPlayer);
             setPot(0 + remainingPot);
+            System.out.println(winningPlayer.getName() + " Chips: " + winningPlayer.getChips());
+            playPoker();
         }
-        System.out.println(winningPlayer.getName() + " Chips: " + winningPlayer.getChips());
-        playPoker();
+       
     }
 
     public static ArrayList<Player> getAllPlayers() {
