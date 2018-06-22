@@ -1,5 +1,6 @@
 package casino;
 
+import static casino.BlackJackGraphics.printPlayerInfo;
 import java.io.*;
 import java.util.ArrayList;
 import javafx.scene.layout.HBox;
@@ -26,7 +27,8 @@ public class BlackjackJAVA {
         addAI();
         if (numOfPlayers.isEmpty()) {
         }
-        BlackJackGraphics.printBlankBoard();
+        BlackJackGraphics.printPlayerInfo();
+        BlackJackGraphics.setBet(0);
 //        System.out.println("");
 //        printBoard();
 //        resetCharacteristics();
@@ -95,93 +97,6 @@ public class BlackjackJAVA {
 
         }
         dealer = new Dealer(deck);
-    }
-
-    public static void printBoard() throws IOException, InterruptedException {
-        BlackjackAI ai;
-        System.out.println("\nDEALER ~ HAND");
-        System.out.println(dealer.getDealerHand().getPlayerHand().get(0) + "\t*********");
-        if (dealer.checkInsured()) {
-            System.out.println("Would you like insurance?");
-        }
-        for (int i = 0; i < numOfPlayers.size(); i++) {
-            if (dealer.getDealerHand().getPlayerHand().get(0).getValue() == 1) {
-                System.out.print(numOfPlayers.get(i).getName().toUpperCase() + " ~ Would you like insurance?");
-                if (numOfPlayers.get(i).isAi()) {
-                    ai = (BlackjackAI) (numOfPlayers.get(i));
-                    if (ai.isInsurance()) {
-                        System.out.print(" yes");
-                        getInsurance(i);
-                    } else {
-                        System.out.print(" no");
-                    }
-                    System.out.println("");
-                } else if (stdin.readLine().equalsIgnoreCase("yes")) {
-                    getInsurance(i);
-                }
-            }
-        }
-        if (1 != dealer.getDealerHand().getPlayerHand().get(0).getValue()) {
-            Thread.sleep(2000);
-        }
-        System.out.println("");
-        for (int i = 0; i < numOfPlayers.size(); i++) {
-            System.out.println("\t\t" + numOfPlayers.get(i).getName().toUpperCase() + "\t\tBet: $" + numOfPlayers.get(i).getBet());
-            System.out.println("~HAND~");
-            if (numOfPlayers.get(i).setTotal(0) != 0) {
-                if (numOfPlayers.get(i).setTotal(0) != numOfPlayers.get(i).getTotal(0)) {
-                    if (numOfPlayers.get(i).setTotal(0) == 21 || numOfPlayers.get(i).getTotal(0) == 21) {
-                        System.out.println(numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(0) + "\t\t" + numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(1) + "\t\tTotal: 21");
-                    } else {
-                        System.out.println(numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(0) + "\t\t" + numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal(0) + " or " + numOfPlayers.get(i).setTotal(0));
-                    }
-                } else {
-                    System.out.println(numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(0) + "\t\t" + numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal(0));
-                }
-            } else {
-                System.out.println(numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(0) + "\t\t" + numOfPlayers.get(i).getPocketHands().get(0).getPlayerHand().get(1) + "\t\tTotal: " + numOfPlayers.get(i).getTotal(0));
-            }
-            playRound(i, 0);
-        }
-        playDealer(true);
-        System.out.println("");
-        checkWin();
-    }
-
-    public static void checkWin() throws IOException {
-        checkInsuranceWin();
-        if (dealer.isBust()) {
-            for (int i = 0; i < numOfPlayers.size(); i++) {
-                for (int s = 0; s < numOfPlayers.get(i).getPocketHands().size(); s++) {
-                    if (numOfPlayers.get(i).getTotal(s) <= 21 && !numOfPlayers.get(i).isNaturalBlackJack()) {
-                        numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet() * 2);
-                        System.out.println("Player " + numOfPlayers.get(i).getName() + " won due to dealer BUST!");
-                    }
-                }
-            }
-        } else {
-            for (int i = 0; i < numOfPlayers.size(); i++) {
-                for (int s = 0; s < numOfPlayers.get(i).getPocketHands().size(); s++) {
-                    if (numOfPlayers.get(i).setTotal(s) > numOfPlayers.get(i).getTotal(s) && numOfPlayers.get(i).setTotal(s) <= 21) {
-                        numOfPlayers.get(i).setObTotal(numOfPlayers.get(i).setTotal(s));
-                    } else {
-                        numOfPlayers.get(i).setObTotal(numOfPlayers.get(i).getTotal(s));
-                    }
-                    if (!numOfPlayers.get(i).isNaturalBlackJack() && numOfPlayers.get(i).getTotal() <= 21) {
-                        if (dealer.getTotal() > numOfPlayers.get(i).getTotal()) {
-                            System.out.println("Player " + numOfPlayers.get(i).getName() + " lost!");
-                            numOfPlayers.get(i).setBet(0);
-                        } else if (dealer.getTotal() == numOfPlayers.get(i).getTotal()) {
-                            System.out.println("Player " + numOfPlayers.get(i).getName() + " stands!");
-                            numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet());
-                        } else if (dealer.getTotal() < numOfPlayers.get(i).getTotal()) {
-                            System.out.println("Player " + numOfPlayers.get(i).getName() + " won!");
-                            numOfPlayers.get(i).setChips(numOfPlayers.get(i).getChips() + numOfPlayers.get(i).getBet() * 2);
-                        }
-                    }
-                }
-            }
-        }
     }
 
     public static void checkInsuranceWin() {
