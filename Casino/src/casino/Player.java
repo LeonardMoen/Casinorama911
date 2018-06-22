@@ -152,6 +152,13 @@ public class Player implements Comparable {
         //playerPane.getChildren().add(hBox);
     }
 
+    public Player(String name, int playerNum, boolean k) {
+        this.name = name;
+        this.playerNum = playerNum;
+        playerPane = new Pane();
+        setPlayerPosition();
+    }
+
     public HBox gethBox() {
         return hBox;
     }

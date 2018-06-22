@@ -13,6 +13,12 @@ public class BlackjackJAVA {
     public static Dealer dealer;
     public static int round = 1;
 
+    public static void resetEverything() {
+        deck = null;
+        numOfPlayers.clear();
+        dealer = null;
+    }
+
     public static void main(String name) throws IOException, InterruptedException {
         makeDeck();
         addPlayer(name);
@@ -137,7 +143,7 @@ public class BlackjackJAVA {
             }
             playRound(i, 0);
         }
-        playDealer();
+        playDealer(true);
         System.out.println("");
         checkWin();
     }
@@ -198,8 +204,10 @@ public class BlackjackJAVA {
         }
     }
 
-    public static void playDealer() throws InterruptedException, IOException {
-        BlackJackGraphics.printDealer();
+    public static void playDealer(boolean t) throws InterruptedException, IOException {
+        if (t) {
+            BlackJackGraphics.printDealer();
+        }
         if (!dealer.checkSeventeen()) {
             dealer.getDealerHand().hitCard(deck);
             BlackJackGraphics.printDealer();

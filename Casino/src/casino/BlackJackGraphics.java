@@ -10,6 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -31,6 +32,7 @@ import javafx.util.Duration;
 public class BlackJackGraphics {
 
     public static Player currentPlayer;
+    private static boolean reset;
     static Pane blkJckBtns = new VBox(2);
     private static Button stay = new Button("Stay");
     private static Button dDown = new Button("Double Down");
@@ -45,7 +47,7 @@ public class BlackJackGraphics {
     static double chipSize = 17;
     static Text betText;
     static int betAmount;
-    static Pane betPane;
+    static Pane betPane = new Pane();
     static HBox dealerCard = new HBox();
     static ArrayList<HBox> pCard = new ArrayList<>();
     static ArrayList<Pane> playerInfo = new ArrayList<>();
@@ -298,7 +300,7 @@ public class BlackJackGraphics {
         }
     }
 
-    public static void checkWin() throws IOException {
+    public static void checkWin() throws IOException, InterruptedException {
         checkInsuranceWin();
         if (BlackjackJAVA.dealer.isBust()) {
             for (int i = 0; i < BlackjackJAVA.numOfPlayers.size(); i++) {
@@ -337,10 +339,73 @@ public class BlackJackGraphics {
                 }
             }
         }
-        resetRound();
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    resetRound();
+                } catch (IOException | InterruptedException ex) {
+                    Logger.getLogger(BlackJackGraphics.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }));
+        timeline.play();
     }
 
-    public static void resetRound() {
+    public static void resetCharacteristics() {
+        BlackjackJAVA.dealer = new Dealer(BlackjackJAVA.deck);
+        for (int i = 0; i < BlackjackJAVA.numOfPlayers.size(); i++) {
+            BlackjackJAVA.numOfPlayers.get(i).getPane().getChildren().clear();
+            BlackjackJAVA.numOfPlayers.get(i).setBet(0);
+            BlackjackJAVA.numOfPlayers.get(i).setStay(false);
+            BlackjackJAVA.numOfPlayers.get(i).setNaturalBlackJack(false);
+            BlackjackJAVA.numOfPlayers.get(i).setInsurance(false);
+            BlackjackJAVA.numOfPlayers.get(i).setInsuranceAmount(0);
+            if (BlackjackJAVA.numOfPlayers.get(i).isAi()) {
+                BlackjackAI ai = (BlackjackAI) (BlackjackJAVA.numOfPlayers.get(i));
+                ai.set(BlackjackJAVA.deck, BlackjackJAVA.numOfPlayers, BlackjackJAVA.dealer);
+            }
+            for (int s = 0; s < BlackjackJAVA.numOfPlayers.get(i).getPocketHands().size(); s++) {
+                BlackjackJAVA.numOfPlayers.get(i).getPocketHands().remove(s);
+            }
+            BlackjackJAVA.numOfPlayers.get(i).getPocketHands().add(new PocketHand(BlackjackJAVA.deck));
+        }
+    }
+
+    public static void resetRound() throws InterruptedException, IOException {
+        pCard.clear();
+        playerInfo.clear();
+        boardCards.clear();
+        dealerPane.getChildren().clear();
+        dealerCard.getChildren().clear();
+        betPane.getChildren().clear();
+        buttons.getChildren().clear();
+        resetCharacteristics();
+        root = new Pane();
+        ImagePattern ip = new ImagePattern(ImageBuffer.pokerTable);
+        ImageView pTable = new ImageView();
+        pTable.setImage(ImageBuffer.pokerTable);
+        Button backBtn = new Button();
+        backBtn.setText("Back");
+        backBtn.setOnAction(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                Casino.getMainPlayer().setChips(BlackjackJAVA.numOfPlayers.get(0).getChips());
+                reset = true;
+                Casino.primaryStage.setScene(Casino.menu);
+            }
+        });
+        pTable.setFitHeight(1080);
+        pTable.setFitWidth(1920);
+        pTable.setX(0);
+        pTable.setY(-40);
+        Scene scene = new Scene(root, 1920, 1080);
+        root.getChildren().addAll(pTable, backBtn);
+        Casino.primaryStage.setTitle("Blackjack");
+        Casino.primaryStage.setScene(scene);
+        Casino.primaryStage.show();
+        currentPlayer = BlackjackJAVA.numOfPlayers.get(0);
+        printBlankBoard();
     }
 
     public static void setWin(int i, int win) {
@@ -354,6 +419,8 @@ public class BlackJackGraphics {
             condition.setText("Lose!");
         } else if (win == 2) {
             condition.setText("Stands!");
+        } else if (win == 3) {
+            condition.setText("Natural Blackjack!");
         }
         name.setFill(Color.WHITE);
         chips.setFill(Color.WHITE);
@@ -400,7 +467,7 @@ public class BlackJackGraphics {
                 if (round == 1) {
                     if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
                         currentPlayer.setNaturalBlackJack(true);
-                        setWin(x, 0);
+                        setWin(x, 3);
                         currentPlayer.setStay(true);
                         currentPlayer.setChips((int) (currentPlayer.getBet() * 1.5 + currentPlayer.getChips() + currentPlayer.getBet()));
                         printCard(handNum);
@@ -496,7 +563,7 @@ public class BlackJackGraphics {
                 if (round == 1) {
                     if (currentPlayer.getPocketHands().get(handNum).checkBlackJack() || currentPlayer.setTotal(handNum) == 21) {
                         currentPlayer.setNaturalBlackJack(true);
-                        setWin(x, 0);
+                        setWin(x, 3);
                         currentPlayer.setStay(true);
                         currentPlayer.setChips((int) (currentPlayer.getBet() * 1.5 + currentPlayer.getChips() + currentPlayer.getBet()));
                         printCard(handNum);
@@ -587,7 +654,7 @@ public class BlackJackGraphics {
                         setDealerBox();
                         checkWin();
                     } else {
-                        BlackjackJAVA.playDealer();
+                        BlackjackJAVA.playDealer(false);
                     }
                 } catch (IOException | InterruptedException ex) {
                     Logger.getLogger(BlackJackGraphics.class.getName()).log(Level.SEVERE, null, ex);
@@ -605,7 +672,7 @@ public class BlackJackGraphics {
         if (x == BlackjackJAVA.numOfPlayers.size()) {
             x = 0;
             currentPlayer = BlackjackJAVA.numOfPlayers.get(x);
-            BlackjackJAVA.playDealer();
+            BlackjackJAVA.playDealer(true);
         } else {
             currentPlayer = BlackjackJAVA.numOfPlayers.get(x);
             pCard.add(new HBox());
@@ -615,6 +682,14 @@ public class BlackJackGraphics {
 
     public static void begin(String name) throws IOException, InterruptedException {
         root = new Pane();
+        root.getChildren().clear();
+        pCard.clear();
+        playerInfo.clear();
+        boardCards.clear();
+        dealerPane.getChildren().clear();
+        dealerCard.getChildren().clear();
+        betPane.getChildren().clear();
+        buttons.getChildren().clear();
         hit.setOnAction((ActionEvent event) -> {
             try {
                 BlackjackJAVA.playerHit(currentPlayer, 0);
@@ -658,7 +733,14 @@ public class BlackJackGraphics {
         pTable.setImage(ImageBuffer.pokerTable);
         Button backBtn = new Button();
         backBtn.setText("Back");
-        backBtn.setOnAction(e -> Casino.primaryStage.setScene(Casino.menu));
+        backBtn.setOnAction(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                Casino.getMainPlayer().setChips(BlackjackJAVA.numOfPlayers.get(0).getChips());
+                reset = true;
+                Casino.primaryStage.setScene(Casino.menu);
+            }
+        });
         pTable.setFitHeight(1080);
         pTable.setFitWidth(1920);
         pTable.setX(0);
@@ -668,6 +750,7 @@ public class BlackJackGraphics {
         Casino.primaryStage.setTitle("Blackjack");
         Casino.primaryStage.setScene(scene);
         Casino.primaryStage.show();
+        BlackjackJAVA.resetEverything();
         BlackjackJAVA.main(name);
     }
 
