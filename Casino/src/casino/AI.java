@@ -11,9 +11,6 @@ public class AI extends Player {
         super(name, playerNum);
     }
 
-//    public AI(String name, Deck deck) {
-//        super(name, deck);
-//    }
 
     public int preFlopBetting(int bigBlind, int requiredChips) {
         PocketHand pocketHand = super.getPocketHand();
