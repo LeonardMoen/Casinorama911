@@ -361,6 +361,7 @@ public class BlackJackGraphics {
     }
 
     public static void resetCharacteristics() {
+        round=1;
         BlackjackJAVA.dealer = new Dealer(BlackjackJAVA.deck);
         for (int i = 0; i < BlackjackJAVA.numOfPlayers.size(); i++) {
             BlackjackJAVA.numOfPlayers.get(i).getPane().getChildren().clear();
