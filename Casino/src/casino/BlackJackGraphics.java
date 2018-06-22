@@ -308,6 +308,7 @@ public class BlackJackGraphics {
                 for (int s = 0; s < BlackjackJAVA.numOfPlayers.get(i).getPocketHands().size(); s++) {
                     if (BlackjackJAVA.numOfPlayers.get(i).getTotal(s) <= 21 && !BlackjackJAVA.numOfPlayers.get(i).isNaturalBlackJack()) {
                         BlackjackJAVA.numOfPlayers.get(i).setChips(BlackjackJAVA.numOfPlayers.get(i).getChips() + (BlackjackJAVA.numOfPlayers.get(i).getBet() * 2));
+                        BlackjackJAVA.numOfPlayers.get(i).setBet(0);
                         setWin(i, 0);
                     } else if (BlackjackJAVA.numOfPlayers.get(i).getTotal(s) > 21) {
                         setWin(i, 1);
