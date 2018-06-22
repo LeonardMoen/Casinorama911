@@ -5,7 +5,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 
 public class Player implements Comparable {
-
+    private boolean alreadyPaid;
     private String name;
     private int chips;
     private PocketHand pocketHand;
@@ -320,6 +320,16 @@ public class Player implements Comparable {
     public void setNumTurn(int numTurn) {
         this.numTurn = numTurn;
     }
+
+    public boolean isAlreadyPaid() {
+        return alreadyPaid;
+    }
+
+    public void setAlreadyPaid(boolean alreadyPaid) {
+        this.alreadyPaid = alreadyPaid;
+    }
+    
+    
 
     @Override
     public int compareTo(Object t) {
