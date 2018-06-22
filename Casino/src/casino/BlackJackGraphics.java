@@ -407,7 +407,7 @@ public class BlackJackGraphics {
         root.getChildren().addAll(pTable, backBtn);
 //        Casino.primaryStage.setTitle("Blackjack");
 //        Casino.primaryStage.setScene(scene);
-//        Casino.primaryStage.show();
+//        Casino.primaryStage.show();z
         printPlayerInfo();
         setBet(0);
     }
