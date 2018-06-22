@@ -336,9 +336,11 @@ public class BlackJackGraphics {
                         } else if (BlackjackJAVA.dealer.getTotal() == BlackjackJAVA.numOfPlayers.get(i).getTotal()) {
                             setWin(i, 2);
                             BlackjackJAVA.numOfPlayers.get(i).setChips(BlackjackJAVA.numOfPlayers.get(i).getChips() + BlackjackJAVA.numOfPlayers.get(i).getBet());
+                            BlackjackJAVA.numOfPlayers.get(i).setBet(0);
                         } else if (BlackjackJAVA.dealer.getTotal() < BlackjackJAVA.numOfPlayers.get(i).getTotal()) {
                             setWin(i, 0);
                             BlackjackJAVA.numOfPlayers.get(i).setChips(BlackjackJAVA.numOfPlayers.get(i).getChips() + (BlackjackJAVA.numOfPlayers.get(i).getBet() * 2));
+                            BlackjackJAVA.numOfPlayers.get(i).setBet(0);
                         }
                     }
                 }
