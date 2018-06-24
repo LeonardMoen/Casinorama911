@@ -42,6 +42,7 @@ public class BlackJackGraphics {
     private static Pane root = new Pane();
     private static int round = 1, bet, x = 0;
     private static Pane pBet = new HBox();
+    private static HBox noChips = new HBox();
     static Pane buttons = new HBox();
     static ImagePattern ip;
     static double chipSize = 17;
@@ -917,32 +918,6 @@ public class BlackJackGraphics {
         playerInfo.get(n).getChildren().addAll(name, chips, bet);
     }
 
-    public static void setBet(int n) throws InterruptedException, IOException {
-        if (root.getChildren().contains(betPane)) {
-            root.getChildren().remove(betPane);
-        }
-        betPane.getChildren().clear();
-        currentPlayer = BlackjackJAVA.numOfPlayers.get(n);
-        if (currentPlayer.isAi()) {
-            BlackjackAI ai = (BlackjackAI) currentPlayer;
-            ai.setRealBet();
-            ai.setBet(ai.getRealBet());
-            System.out.println(currentPlayer.getName() + " bet " + currentPlayer.getBet());
-            resetInfo(n);
-            if (n == BlackjackJAVA.numOfPlayers.size() - 1) {
-                currentPlayer = BlackjackJAVA.numOfPlayers.get(0);
-                printBeginDealer();
-            } else {
-                setBet(n + 1);
-            }
-        } else {
-            betPane.getChildren().add(createChips(n));
-            betPane.setTranslateY(900);
-            betPane.setTranslateX(1600);
-            root.getChildren().add(betPane);
-        }
-    }
-
     public static HBox createChips(int n) {
         System.out.println("Bet");
         Font f = new Font("Times New Roman", 16);
@@ -1232,4 +1207,84 @@ public class BlackJackGraphics {
             source.setEffect(null);
         }
     };
+    
+    public static void setBet(int n) throws InterruptedException, IOException {
+        if (root.getChildren().contains(betPane)) {
+            root.getChildren().remove(betPane);
+        }
+        betPane.getChildren().clear();
+        noChips.getChildren().clear();
+        currentPlayer = BlackjackJAVA.numOfPlayers.get(n);
+        if (currentPlayer.getChips() == 0) {
+            if (currentPlayer.isAi()) {
+                BlackjackJAVA.numOfPlayers.remove(n);
+                setBet(n);
+            }
+            Button leave = new Button("Leave");
+            Text text = new Text("No more chips!");
+            text.setFill(Color.WHITE);
+            leave.setOnAction(new EventHandler() {
+                @Override
+                public void handle(Event event) {
+                    root.getChildren().remove(noChips);
+                    noChips.getChildren().clear();
+                    Casino.getMainPlayer().setChips(BlackjackJAVA.numOfPlayers.get(0).getChips());
+                    reset = false;
+                    Casino.primaryStage.setScene(Casino.menu);
+                }
+            });
+            Text buy = new Text("Amount->");
+            buy.setFill(Color.WHITE);
+            TextField buying = new TextField();
+            Button buyBtn = new Button("Buy");
+            buyBtn.setOnAction(new EventHandler() {
+                @Override
+                public void handle(Event event) {
+                    if (buying.getText() != null && !buying.getText().isEmpty()) {
+                        root.getChildren().remove(noChips);
+                        noChips.getChildren().clear();
+                        noChips.setSpacing(0);
+                        currentPlayer.setChips(Integer.parseInt(buying.getText()));
+                        resetInfo(BlackjackJAVA.numOfPlayers.indexOf(currentPlayer));
+                        try {
+                            setBet(BlackjackJAVA.numOfPlayers.indexOf(currentPlayer));
+                        } catch (InterruptedException | IOException ex) {
+                            Logger.getLogger(BlackJackGraphics.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+            });
+            leave.setTranslateX(-75);
+            leave.setTranslateY(50);
+            noChips.getChildren().addAll(buy, buying, buyBtn, leave);
+            noChips.setSpacing(10);
+
+            noChips.setTranslateX(1600);
+            noChips.setTranslateY(900);
+            betPane.setTranslateY(950);
+            betPane.setTranslateX(1600);
+            betPane.getChildren().add(text);
+            root.getChildren().addAll(betPane, noChips);
+        }
+        if (currentPlayer.getChips() != 0) {
+            if (currentPlayer.isAi()) {
+                BlackjackAI ai = (BlackjackAI) currentPlayer;
+                ai.setRealBet();
+                ai.setBet(ai.getRealBet());
+                System.out.println(currentPlayer.getName() + " bet " + currentPlayer.getBet());
+                resetInfo(n);
+                if (n == BlackjackJAVA.numOfPlayers.size() - 1) {
+                    currentPlayer = BlackjackJAVA.numOfPlayers.get(0);
+                    printBeginDealer();
+                } else {
+                    setBet(n + 1);
+                }
+            } else {
+                betPane.getChildren().add(createChips(n));
+                betPane.setTranslateY(900);
+                betPane.setTranslateX(1600);
+                root.getChildren().add(betPane);
+            }
+        }
+    }
 }
